@@ -1,0 +1,4 @@
+asyncpg==0.26.0
+aiohttp==3.8.1
+twitchio==2.4.0
+pyyaml==6.0
