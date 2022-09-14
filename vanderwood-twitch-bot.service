@@ -1,0 +1,12 @@
+[Unit]
+Description=Vanderwood Twitch Bot Service
+After=multi-user.target
+
+[Service]
+Type=simple
+WorkingDirectory=/project/vanderwood-twitch-bot/
+ExecStart=/project/vanderwood-twitch-bot/venv/bin/python3  /project/vanderwood-twitch-bot/bot.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
