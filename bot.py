@@ -5,11 +5,13 @@ import sys
 import traceback
 from typing import Any, Dict, List
 
-import asyncpg
 import yaml
 from aiohttp import ClientSession
 from aiohttp.web_runner import GracefulExit
 from twitchio.ext import commands, eventsub
+from tortoise import Tortoise
+
+from app import settings
 
 
 # Define function to process yaml config file
@@ -34,17 +36,18 @@ class Bot(commands.Bot):
         """
         self.conf_options = conf_options
         super().__init__(token=access_token, prefix=prefix, initial_channels=initial_channels)
-
-    async def ainit(self) -> None:
-        database_config = self.conf_options["APP"]["DATABASE"]
-        self.conn = await asyncpg.connect(
-            user=database_config["DBUSER"],
-            password=database_config["DBPASS"],
-            database=database_config["DBNAME"],
-            host=database_config["DBHOST"],
-            port=database_config["DBPORT"],
-        )
+    
+    async def tinit(self) -> None:
         self.session = ClientSession()
+        await Tortoise.init(
+            config=settings.TORTOISE,
+        )
+
+        await Tortoise.generate_schemas(safe=True)
+    
+    async def stop(self) -> None:
+        await self.session.close()
+        await Tortoise.close_connections()
 
 
 if __name__ == "__main__":
@@ -61,10 +64,10 @@ if __name__ == "__main__":
         conf_options=conf_options,
     )
 
-    for filename in os.listdir("./modules/cogs/"):
+    for filename in os.listdir("./app/modules/cogs/"):
         if filename.endswith(".py"):
             try:
-                bot.load_module(f"modules.cogs.{filename.strip('.py')}")
+                bot.load_module(f"app.modules.cogs.{filename.strip('.py')}")
             except Exception:
                 print(f"Failed to load extension modules.cogs.{filename}.", file=sys.stderr)
                 traceback.print_exc()
@@ -100,12 +103,14 @@ if __name__ == "__main__":
     #            raise
 
     bot.loop.create_task(eventsub_client.listen(port=conf_options["APP"]["PORT"]))
-    bot.loop.create_task(bot.ainit())
+    bot.loop.create_task(bot.tinit())
     bot.loop.create_task(bot.connect())
     for channel in conf_options["APP"]["ACCOUNTS"]:
         #eventsubbot.loop.create_task(subscribe_follows(channel["id"]))
         pass
     try:
         bot.loop.run_forever()
+        bot.loop.run_until_complete(bot.stop())
     except GracefulExit:
+        bot.loop.run_until_complete(bot.stop())
         sys.exit(0)
