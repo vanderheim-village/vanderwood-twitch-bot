@@ -6,3 +6,8 @@ target-version = ["py310"]
 src_paths = [".", "src"]
 profile = "black"
 line_length = 100
+
+[tool.aerich]
+tortoise_orm = "app.settings.TORTOISE"
+location = "./migrations"
+src_folder = "./."
