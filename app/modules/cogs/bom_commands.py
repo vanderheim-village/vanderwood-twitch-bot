@@ -1,3 +1,4 @@
+import random
 from twitchio.ext import commands
 from app.models import Clan, Player
 from tortoise.functions import Count
@@ -6,20 +7,7 @@ from tortoise.functions import Count
 class BomCommandsCog(commands.Cog):
     def __init__(self, bot: commands.Cog) -> None:
         self.bot = bot
-    
-    @commands.command()
-    async def play(self, ctx: commands.Context) -> None:
-        """
-        !play command
-        """
 
-        if Clan.all().annotate(Count("id")) == 0:
-            await ctx.send("No clans have been created yet.")
-        else:
-            await ctx.send("Clans have been created.")
-
-
-    
     @commands.command()
     async def rank(self, ctx: commands.Context, clanname: str) -> None:
         """
