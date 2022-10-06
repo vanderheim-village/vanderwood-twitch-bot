@@ -17,10 +17,14 @@ class BomModCommandsCog(commands.Cog):
         if await Clan.get(tag=clantag).exists():
             clan_id = await Clan.get(tag=clantag)
             if (await Player.get(name=playername).exists()):
-                await Player.get(name=playername).update(clan=clan_id)
-                await ctx.send(f"@{playername} has been added to the {clantag} clan.")
+                if (await Player.get(name=playername).is_enabled()):
+                    await Player.get(name=playername).update(clan=clan_id)
+                    await ctx.send(f"@{playername} has been added to the {clantag} clan.")
+                else:
+                    await Player.get(name=playername).update(clan=clan_id, enabled=True)
+                    await ctx.send(f"@{playername} has been added to the {clantag} clan.")
             else:
-                await Player.create(name=playername, clan=clan_id)
+                await Player.create(name=playername, clan=clan_id, enabled=True)
                 await ctx.send(f"@{playername} has been added to the {clantag} clan.")
         else:
             await ctx.send(f"Clan {clantag} does not exist.")
