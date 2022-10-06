@@ -15,7 +15,7 @@ class StatusManager(Manager):
 class Player(Model):
     id = fields.IntField(pk=True)
     name = fields.CharField(max_length=255, unique=True)
-    clan = fields.ForeignKeyField('models.Clan', related_name='players')
+    clan = fields.ForeignKeyField('models.Clan', related_name='players', null=True)
     enabled = fields.BooleanField(default=True)
 
     enabled_players = StatusManager()
