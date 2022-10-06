@@ -1,5 +1,6 @@
 from twitchio.ext import commands
-
+from app.models import Clan, Player
+from tortoise.functions import Count
 
 class BomModCommandsCog(commands.Cog):
     def __init__(self, bot: commands.Cog) -> None:
@@ -9,14 +10,21 @@ class BomModCommandsCog(commands.Cog):
         return ctx.author.is_mod
     
     @commands.command()
-    async def add(self, ctx: commands.Context, clanname: str, playername: str) -> None:
+    async def add(self, ctx: commands.Context, clantag: str, playername: str) -> None:
         """
         !add command
         """
-        await ctx.send(
-            f"Adding {playername} to {clanname}."
-        )
-    
+        if await Clan.get(tag=clantag).exists():
+            clan_id = await Clan.get(tag=clantag)
+            if (await Player.get(name=playername).exists()):
+                await Player.get(name=playername).update(clan=clan_id)
+                await ctx.send(f"@{playername} has been added to the {clantag} clan.")
+            else:
+                await Player.create(name=playername, clan=clan_id)
+                await ctx.send(f"@{playername} has been added to the {clantag} clan.")
+        else:
+            await ctx.send(f"Clan {clantag} does not exist.")
+            
     @commands.command()
     async def remove(self, ctx: commands.Context, clanname: str, playername: str) -> None:
         """
