@@ -9,7 +9,7 @@ class BomSubCommandsCog(commands.Cog):
         self.bot = bot
     
     async def cog_check(self, ctx: commands.Context) -> bool:
-        return ctx.author.is_subscriber
+        return ctx.author.is_subscriber or ctx.author.is_mod
     
     @commands.command()
     async def join(self, ctx: commands.Context) -> None:
