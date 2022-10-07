@@ -1,6 +1,7 @@
 from twitchio.ext import commands
 from app.models import Clan, Player
 from tortoise.functions import Count
+from tortoise import fields
 
 class BomModCommandsCog(commands.Cog):
     def __init__(self, bot: commands.Cog) -> None:
@@ -16,27 +17,34 @@ class BomModCommandsCog(commands.Cog):
         """
         if await Clan.get(tag=clantag).exists():
             clan_id = await Clan.get(tag=clantag)
+            clan = await Clan.get(tag=clantag).values("name", "tag")
             if (await Player.get(name=playername).exists()):
-                if (await Player.get(name=playername).is_enabled()):
+                if ((await Player.get(name=playername)).is_enabled()):
                     await Player.get(name=playername).update(clan=clan_id)
-                    await ctx.send(f"@{playername} has been added to the {clantag} clan.")
+                    await ctx.send(f"Welcome @{playername} to the [{clan['tag']}] {clan['name']} Clan roster!")
                 else:
                     await Player.get(name=playername).update(clan=clan_id, enabled=True)
-                    await ctx.send(f"@{playername} has been added to the {clantag} clan.")
+                    await ctx.send(f"Welcome @{playername} to the [{clan['tag']}] {clan['name']} Clan roster!")
             else:
                 await Player.create(name=playername, clan=clan_id, enabled=True)
-                await ctx.send(f"@{playername} has been added to the {clantag} clan.")
+                await ctx.send(f"Welcome @{playername} to the [{clan['tag']}] {clan['name']} Clan roster!")
         else:
             await ctx.send(f"Clan {clantag} does not exist.")
             
     @commands.command()
-    async def remove(self, ctx: commands.Context, clanname: str, playername: str) -> None:
+    async def remove(self, ctx: commands.Context, playername: str) -> None:
         """
         !remove command
         """
-        await ctx.send(
-            f"Removing {playername} from {clanname}."
-        )
+        if (await Player.get(name=playername).exists()):
+            if ((await Player.get(name=playername)).is_enabled()):
+                await Player.get(name=playername).update(clan_id=None, enabled=False)
+                await ctx.send(f"Removed @{playername} from their clan!")
+            else:
+                await ctx.send(f"@{playername} is not in a Clan roster!")
+        else:
+            await ctx.send(f"@{playername} does not currently exist!")
+    
     
     @commands.command()
     async def addpoints(self, ctx: commands.Context, playername: str, points: int) -> None:
