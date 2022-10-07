@@ -1,7 +1,5 @@
 from twitchio.ext import commands
 from app.models import Clan, Player, Season
-from tortoise.functions import Count
-from tortoise import fields
 
 class BomModCommandsCog(commands.Cog):
     def __init__(self, bot: commands.Cog) -> None:
