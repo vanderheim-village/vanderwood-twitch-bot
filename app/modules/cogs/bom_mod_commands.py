@@ -82,6 +82,26 @@ class BomModCommandsCog(commands.Cog):
         await ctx.send(
             f"Setting end date to {enddate}."
         )
+    
+    @commands.command()
+    async def createclan(self, ctx: commands.Context, clantag: str, *, clanname: str) -> None:
+        """
+        !createclan command
+        """
+        if (len(clantag) <= 4):
+            if (await Clan.get(tag=clantag).exists()):
+                if (await Clan.get(name=clanname).exists()):
+                    await ctx.send(f"A clan with the name {clanname} and tag {clantag} already exists.")
+                else:
+                    await ctx.send(f"A clan with the tag {clantag} already exists.")
+            else:
+                if (await Clan.get(name=clanname).exists()):
+                    await ctx.send(f"A clan with the name {clanname} already exists.")
+                else:
+                    await Clan.create(name=clanname, tag=clantag)
+                    await ctx.send(f"Clan {clanname} with tag {clantag} has been created.")
+        else:
+            await ctx.send(f"Clan tag {clantag} is too long. It should be max 4 characters.")
 
 def prepare(bot: commands.Bot) -> None:
     bot.add_cog(BomModCommandsCog(bot))
