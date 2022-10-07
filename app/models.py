@@ -2,6 +2,8 @@ from enum import unique
 from tortoise.models import Model
 from tortoise.manager import Manager
 from tortoise import fields
+from datetime import datetime, timezone
+from tortoise.expressions import Q
 
 class Clan(Model):
     id = fields.IntField(pk=True)
@@ -23,12 +25,20 @@ class Player(Model):
     def is_enabled(self) -> bool:
         return self.enabled
 
+class SeasonActiveManager(Manager):
+    def get_queryset(self):
+        return super(SeasonActiveManager, self).get_queryset().filter(
+            Q(start_date__lte=datetime.now(timezone.utc)) and Q(end_date__gte=datetime.now(timezone.utc)) or 
+            Q(end_date__isnull=True) & Q(start_date__lte=datetime.utcnow())
+        )
 
 class Season(Model):
     id = fields.IntField(pk=True)
-    start_date = fields.DatetimeField()
+    name = fields.CharField(max_length=255, unique=True)
+    start_date = fields.DatetimeField(auto_now_add=True)
     end_date = fields.DatetimeField(null=True)
 
+    active_seasons = SeasonActiveManager()
 
 class Session(Model):
     id = fields.IntField(pk=True)
