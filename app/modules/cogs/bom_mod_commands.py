@@ -1,5 +1,5 @@
 from twitchio.ext import commands
-from app.models import Clan, Player
+from app.models import Clan, Player, Season
 from tortoise.functions import Count
 from tortoise import fields
 
@@ -65,13 +65,15 @@ class BomModCommandsCog(commands.Cog):
         )
     
     @commands.command()
-    async def startseason(self, ctx: commands.Context) -> None:
+    async def startseason(self, ctx: commands.Context, *, season_name: str) -> None:
         """
         !startseason command
         """
-        await ctx.send(
-            f"Starting new season."
-        )
+        if await Season.active_seasons.all().exists():
+            await ctx.send("Battle of Midgard | A Season is already in progress.")
+        else:
+            await Season.create(name=season_name)
+            await ctx.send(f"Battle of Midgard | {season_name} has commenced! Good luck!")
     
     @commands.command()
     async def endseason(self, ctx: commands.Context) -> None:
