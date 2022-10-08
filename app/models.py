@@ -59,7 +59,7 @@ class Session(Model):
     season: ForeignKeyRelation[Season] = fields.ForeignKeyField(
         "models.Season", related_name="sessions"
     )
-    start_time = fields.DatetimeField()
+    start_time = fields.DatetimeField(auto_now_add=True)
     end_time = fields.DatetimeField(null=True)
 
 
