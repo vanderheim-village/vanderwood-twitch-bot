@@ -53,6 +53,7 @@ class Season(Model):
 
     active_seasons = SeasonActiveManager()
 
+
 class SessionActiveManager(Manager):
     def get_queryset(self) -> QuerySet["Session"]:
         return (
@@ -64,6 +65,7 @@ class SessionActiveManager(Manager):
                 | Q(end_time__isnull=True) & Q(start_time__lte=timezone.now()),
             )
         )
+
 
 class Session(Model):
     id = fields.IntField(pk=True)

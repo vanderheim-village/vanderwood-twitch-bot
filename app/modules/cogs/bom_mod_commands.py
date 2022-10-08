@@ -190,7 +190,7 @@ class BomModCommandsCog(commands.Cog):
                     await ctx.send(f"Clan {clanname} with tag {clantag} has been created.")
         else:
             await ctx.send(f"Clan tag {clantag} is too long. It should be max 4 characters.")
-    
+
     @commands.command()
     async def startsession(self, ctx: commands.Context) -> None:
         """
@@ -205,7 +205,7 @@ class BomModCommandsCog(commands.Cog):
                 await ctx.send("A session has been created for the current season.")
         else:
             await ctx.send("No active seasons!")
-    
+
     @commands.command()
     async def endsession(self, ctx: commands.Context) -> None:
         """
@@ -220,7 +220,6 @@ class BomModCommandsCog(commands.Cog):
                 await ctx.send("No session is currently in progress.")
         else:
             await ctx.send("No active seasons!")
-
 
 
 def prepare(bot: commands.Bot) -> None:
