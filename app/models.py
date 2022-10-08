@@ -1,10 +1,9 @@
-from tortoise import fields
+from tortoise import fields, timezone
 from tortoise.expressions import Q
 from tortoise.fields import ForeignKeyNullableRelation, ForeignKeyRelation
 from tortoise.manager import Manager
 from tortoise.models import Model
 from tortoise.queryset import QuerySet
-from tortoise import timezone
 
 
 class Clan(Model):
