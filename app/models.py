@@ -39,9 +39,9 @@ class SeasonActiveManager(Manager):
             super(SeasonActiveManager, self)
             .get_queryset()
             .filter(
-                Q(start_date__lte=datetime.now(timezone.utc))
-                and Q(end_date__gte=datetime.now(timezone.utc))
-                or Q(end_date__isnull=True) & Q(start_date__lte=datetime.utcnow())
+                Q(start_date__lte=datetime.now(timezone.utc)),
+                Q(end_date__gte=datetime.now(timezone.utc))
+                | Q(end_date__isnull=True) & Q(start_date__lte=datetime.utcnow()),
             )
         )
 
