@@ -51,6 +51,7 @@ class Season(Model):
     name = fields.CharField(max_length=255, unique=True)
     start_date = fields.DatetimeField(auto_now_add=True)
     end_date = fields.DatetimeField(null=True)
+    info_end_date = fields.DatetimeField(null=True)
 
     active_seasons = SeasonActiveManager()
 
