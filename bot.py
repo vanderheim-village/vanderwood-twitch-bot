@@ -8,8 +8,8 @@ from typing import Any, Dict, List
 import yaml
 from aiohttp import ClientSession
 from aiohttp.web_runner import GracefulExit
-from twitchio.ext import commands, eventsub
 from tortoise import Tortoise
+from twitchio.ext import commands, eventsub
 
 from app import settings
 
@@ -36,7 +36,7 @@ class Bot(commands.Bot):
         """
         self.conf_options = conf_options
         super().__init__(token=access_token, prefix=prefix, initial_channels=initial_channels)
-    
+
     async def tinit(self) -> None:
         self.session = ClientSession()
         await Tortoise.init(
@@ -44,7 +44,7 @@ class Bot(commands.Bot):
         )
 
         await Tortoise.generate_schemas(safe=True)
-    
+
     async def stop(self) -> None:
         await self.session.close()
         await Tortoise.close_connections()
@@ -77,8 +77,8 @@ if __name__ == "__main__":
         client_secret=conf_options["APP"]["CLIENT_SECRET"],
     )
 
-    #@eventsubbot.event()
-    #async def event_eventsub_notification_follow(payload: eventsub.ChannelFollowData) -> None:
+    # @eventsubbot.event()
+    # async def event_eventsub_notification_follow(payload: eventsub.ChannelFollowData) -> None:
     #    """
     #    Reacts to receicing a new channel follow event. It will respond in chat thanking the follower and giving them the discord link.
     #    """
@@ -90,7 +90,7 @@ if __name__ == "__main__":
         conf_options["APP"]["CALLBACK_URL"],
     )
 
-    #async def subscribe_follows(channel_id: int) -> None:
+    # async def subscribe_follows(channel_id: int) -> None:
     #    """
     #    Subscribes to new channel follow events.
     #    """
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     bot.loop.create_task(bot.tinit())
     bot.loop.create_task(bot.connect())
     for channel in conf_options["APP"]["ACCOUNTS"]:
-        #eventsubbot.loop.create_task(subscribe_follows(channel["id"]))
+        # eventsubbot.loop.create_task(subscribe_follows(channel["id"]))
         pass
     try:
         bot.loop.run_forever()
