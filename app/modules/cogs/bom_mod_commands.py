@@ -1,10 +1,10 @@
-from twitchio.ext import commands
-
-from app.models import Clan, Player, Season
-from app.helpers import date_validate
+from datetime import datetime
 
 from tortoise import timezone
-from datetime import datetime
+from twitchio.ext import commands
+
+from app.helpers import date_validate
+from app.models import Clan, Player, Points, Season
 
 
 class BomModCommandsCog(commands.Cog):
@@ -59,11 +59,40 @@ class BomModCommandsCog(commands.Cog):
             await ctx.send(f"@{playername} does not currently exist!")
 
     @commands.command()
-    async def addpoints(self, ctx: commands.Context, playername: str, points: int) -> None:
+    async def addpoints(self, ctx: commands.Context, playername: str, newpoints: int) -> None:
         """
         !addpoints command
         """
-        await ctx.send(f"Adding {points} points to {playername}.")
+        if await Season.active_seasons.all().exists():
+            season: Season = await Season.active_seasons.all().first()
+            if await Player.get_or_none(name=playername):
+                player = await Player.get(name=playername)
+                if player.is_enabled() and player.clan:
+                    clan = await player.clan.get()
+                    if await Points.get_or_none(player=player, season=season):
+                        points = await Points.get(player=player, season=season)
+                        points.points += newpoints
+                        await points.save()
+                        await ctx.send(
+                            f"Added {newpoints} points to @{playername} for the {season.name} season!"
+                        )
+                    else:
+                        assert player.clan is not None
+                        await Points.create(
+                            player_id=player.id,
+                            season_id=season.id,
+                            points=newpoints,
+                            clan_id=clan.id,
+                        )
+                        await ctx.send(
+                            f"Added {newpoints} points to @{playername} for the {season.name} season!"
+                        )
+                else:
+                    await ctx.send(f"@{playername} is not in a Clan roster!")
+            else:
+                await ctx.send(f"@{playername} is not in a Clan roster!")
+        else:
+            await ctx.send("No active seasons!")
 
     @commands.command()
     async def removepoints(self, ctx: commands.Context, playername: str, points: int) -> None:
