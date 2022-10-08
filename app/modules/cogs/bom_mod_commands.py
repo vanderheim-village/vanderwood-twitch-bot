@@ -4,7 +4,7 @@ from tortoise import timezone
 from twitchio.ext import commands
 
 from app.helpers import date_validate
-from app.models import Clan, Player, Points, Season
+from app.models import Clan, Player, Points, Season, Session
 
 
 class BomModCommandsCog(commands.Cog):
@@ -187,6 +187,37 @@ class BomModCommandsCog(commands.Cog):
                     await ctx.send(f"Clan {clanname} with tag {clantag} has been created.")
         else:
             await ctx.send(f"Clan tag {clantag} is too long. It should be max 4 characters.")
+    
+    @commands.command()
+    async def startsession(self, ctx: commands.Context) -> None:
+        """
+        !startsession command
+        """
+        if await Season.active_seasons.all().exists():
+            active_season: Season = await Season.active_seasons.all().first()
+            if await Session.active_session.all().exists():
+                await ctx.send("A session is already in progress.")
+            else:
+                await Session.create(season=active_season)
+                await ctx.send("A session has been created for the current season.")
+        else:
+            await ctx.send("No active seasons!")
+    
+    @commands.command()
+    async def endsession(self, ctx: commands.Context) -> None:
+        """
+        !endsession command
+        """
+        if await Season.active_seasons.all().exists():
+            active_season: Season = await Season.active_seasons.all().first()
+            if await Session.get_or_none(season=active_season):
+                await Session.active_session.all().update(end_time=timezone.now())
+                await ctx.send("The current session has been ended.")
+            else:
+                await ctx.send("No session is currently in progress.")
+        else:
+            await ctx.send("No active seasons!")
+
 
 
 def prepare(bot: commands.Bot) -> None:

@@ -1,5 +1,7 @@
 from twitchio.ext import commands
 
+from app.models import Clan, Player, Points, Season, Checkin
+
 
 class BomCommandsCog(commands.Cog):
     def __init__(self, bot: commands.Cog) -> None:
@@ -59,7 +61,8 @@ class BomCommandsCog(commands.Cog):
         """
         !checkin command
         """
-        await ctx.send(f"Checking in {ctx.author.name}.")
+        if await Season.active_seasons.all().exists():
+            pass
 
     @commands.command()
     async def myrewards(self, ctx: commands.Context) -> None:
