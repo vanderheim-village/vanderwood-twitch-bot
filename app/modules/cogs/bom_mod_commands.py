@@ -141,11 +141,14 @@ class BomModCommandsCog(commands.Cog):
         !endseason command
         """
         if await Season.active_seasons.all().exists():
-            active_season = await Season.active_seasons.all().first()
-            await Season.active_seasons.all().update(end_date=timezone.now())
-            await ctx.send(
-                f"Battle of Midgard | {active_season.name} has ended. The results will be posted shortly! Thank you to everyone for a great season!"
-            )
+            if await Session.active_session.all().exists():
+                await ctx.send("Please end the current session first!")
+            else:
+                active_season = await Season.active_seasons.all().first()
+                await Season.active_seasons.all().update(end_date=timezone.now())
+                await ctx.send(
+                    f"Battle of Midgard | {active_season.name} has ended. The results will be posted shortly! Thank you to everyone for a great season!"
+                )
         else:
             await ctx.send("Battle of Midgard | No Season is currently in progress.")
 
