@@ -95,11 +95,34 @@ class BomModCommandsCog(commands.Cog):
             await ctx.send("No active seasons!")
 
     @commands.command()
-    async def removepoints(self, ctx: commands.Context, playername: str, points: int) -> None:
+    async def removepoints(self, ctx: commands.Context, playername: str, losepoints: int) -> None:
         """
         !removepoints command
         """
-        await ctx.send(f"Removing {points} points from {playername}.")
+        if await Season.active_seasons.all().exists():
+            season: Season = await Season.active_seasons.all().first()
+            if await Player.get_or_none(name=playername):
+                player = await Player.get(name=playername)
+                if player.is_enabled() and player.clan:
+                    if await Points.get_or_none(player=player, season=season):
+                        points = await Points.get(player=player, season=season)
+                        newpoints = points.points - losepoints
+                        if newpoints <= 0:
+                            points.points = 0
+                        else:
+                            points.points -= losepoints
+                        await points.save()
+                        await ctx.send(
+                            f"Removed {losepoints} points from @{playername} for the {season.name} season!"
+                        )
+                    else:
+                        await ctx.send(f"@{playername} has no points for the {season.name} season!")
+                else:
+                    await ctx.send(f"@{playername} is not in a Clan roster!")
+            else:
+                await ctx.send(f"@{playername} is not in a Clan roster!")
+        else:
+            await ctx.send("No active seasons!")
 
     @commands.command()
     async def startseason(self, ctx: commands.Context, *, season_name: str) -> None:
