@@ -1,8 +1,10 @@
-from datetime import datetime
-
 from twitchio.ext import commands
 
 from app.models import Clan, Player, Season
+from app.helpers import date_validate
+
+from tortoise import timezone
+from datetime import datetime
 
 
 class BomModCommandsCog(commands.Cog):
@@ -88,7 +90,7 @@ class BomModCommandsCog(commands.Cog):
         """
         if await Season.active_seasons.all().exists():
             active_season = await Season.active_seasons.all().first()
-            await Season.active_seasons.all().update(end_date=datetime.utcnow())
+            await Season.active_seasons.all().update(end_date=timezone.now())
             await ctx.send(
                 f"Battle of Midgard | {active_season.name} has ended. The results will be posted shortly! Thank you to everyone for a great season!"
             )
@@ -100,7 +102,17 @@ class BomModCommandsCog(commands.Cog):
         """
         !setdate command
         """
-        await ctx.send(f"Setting end date to {enddate}.")
+        if await date_validate(enddate):
+            if await Season.active_seasons.all().exists():
+                active_season: Season = await Season.active_seasons.all().first()
+                date = datetime.strptime(enddate, "%d/%m/%Y")
+                date = timezone.make_aware(date)
+                await active_season.select_for_update().update(info_end_date=date)
+                await ctx.send(f"Battle of Midgard | {active_season.name} will end on {enddate}.")
+            else:
+                await ctx.send("Battle of Midgard | No Season is currently in progress.")
+        else:
+            await ctx.send("Invalid date format. Please use DD/MM/YYYY.")
 
     @commands.command()
     async def createclan(self, ctx: commands.Context, clantag: str, *, clanname: str) -> None:

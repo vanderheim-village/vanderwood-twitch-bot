@@ -1,11 +1,10 @@
-from datetime import datetime, timezone
-
 from tortoise import fields
 from tortoise.expressions import Q
 from tortoise.fields import ForeignKeyNullableRelation, ForeignKeyRelation
 from tortoise.manager import Manager
 from tortoise.models import Model
 from tortoise.queryset import QuerySet
+from tortoise import timezone
 
 
 class Clan(Model):
@@ -39,9 +38,9 @@ class SeasonActiveManager(Manager):
             super(SeasonActiveManager, self)
             .get_queryset()
             .filter(
-                Q(start_date__lte=datetime.now(timezone.utc)),
-                Q(end_date__gte=datetime.now(timezone.utc))
-                | Q(end_date__isnull=True) & Q(start_date__lte=datetime.utcnow()),
+                Q(start_date__lte=timezone.now()),
+                Q(end_date__gte=timezone.now())
+                | Q(end_date__isnull=True) & Q(start_date__lte=timezone.now()),
             )
         )
 
