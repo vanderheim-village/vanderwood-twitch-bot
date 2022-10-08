@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from twitchio.ext import commands
 
 from app.models import Clan, Player, Season
@@ -84,7 +86,14 @@ class BomModCommandsCog(commands.Cog):
         """
         !endseason command
         """
-        await ctx.send("Ending current season.")
+        if await Season.active_seasons.all().exists():
+            active_season = await Season.active_seasons.all().first()
+            await Season.active_seasons.all().update(end_date=datetime.utcnow())
+            await ctx.send(
+                f"Battle of Midgard | {active_season.name} has ended. The results will be posted shortly! Thank you to everyone for a great season!"
+            )
+        else:
+            await ctx.send("Battle of Midgard | No Season is currently in progress.")
 
     @commands.command()
     async def setdate(self, ctx: commands.Context, enddate: str) -> None:
