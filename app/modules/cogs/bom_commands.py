@@ -1,6 +1,20 @@
+from typing import List, TypedDict
+
 from twitchio.ext import commands
 
-from app.models import Checkin, Player, Points, Season, Session
+from app.models import Checkin, Clan, Player, Points, Season, Session
+
+
+class Standings(TypedDict):
+    name: str
+    points: int
+    tag: str
+
+
+class PlayerStandings(TypedDict):
+    name: str
+    points: int
+    clantag: str
 
 
 class BomCommandsCog(commands.Cog):
@@ -19,14 +33,54 @@ class BomCommandsCog(commands.Cog):
         """
         !standings command
         """
-        await ctx.send("Standings for current season.")
+        if await Season.active_seasons.all().exists():
+            season = await Season.active_seasons.all().first()
+            standings: List[Standings] = []
+            for clan in await Clan.all():
+                clan_standings: Standings = {
+                    "points": 0,
+                    "name": clan.name,
+                    "tag": clan.tag,
+                }
+                for points in await Points.filter(season=season, clan=clan):
+                    clan_standings["points"] += points.points
+                standings.append(clan_standings)
+            sorted_standings = sorted(standings, key=lambda k: k["points"], reverse=True)
+            await ctx.send(f"BOM | {season.name}:")
+            count = 0
+            for result in sorted_standings:
+                count += 1
+                await ctx.send(f"{count}. [{result['tag']}] {result['name']} - {result['points']}")
+        else:
+            await ctx.send("No active seasons!")
 
     @commands.command()
     async def overallrank(self, ctx: commands.Context) -> None:
         """
         !overallrank command
         """
-        await ctx.send("Overall ranking for all players in current season.")
+        if await Season.active_seasons.all().exists():
+            season = await Season.active_seasons.all().first()
+            standings: List[PlayerStandings] = []
+            for points_row in await Points.filter(season=season):
+                player = await points_row.player.get()
+                assert player.clan is not None
+                player_standings: PlayerStandings = {
+                    "points": points_row.points,
+                    "name": player.name,
+                    "clantag": player.clan.tag,
+                }
+                standings.append(player_standings)
+            sorted_standings = sorted(standings, key=lambda k: k["points"], reverse=True)
+            await ctx.send(f"BOM | {season.name}:")
+            count = 0
+            for result in sorted_standings[:10]:
+                count += 1
+                await ctx.send(
+                    f"{count}. [{result['clantag']}] {result['name']} - {result['points']}"
+                )
+        else:
+            await ctx.send("No active seasons!")
 
     @commands.command()
     async def myrank(self, ctx: commands.Context) -> None:
@@ -51,13 +105,16 @@ class BomCommandsCog(commands.Cog):
             season = await Season.active_seasons.all().first()
             start_date = season.start_date.strftime("%d/%m/%Y")
             if season.end_date == None:
-                await ctx.send(f"The current season started on {start_date} but doesn't have an end date yet.")
+                await ctx.send(
+                    f"The current season started on {start_date} but doesn't have an end date yet."
+                )
             else:
                 end_date = season.end_date.strftime("%d/%m/%Y")
-                await ctx.send(f"The current season started on {start_date} and ends on {end_date}.")
+                await ctx.send(
+                    f"The current season started on {start_date} and ends on {end_date}."
+                )
         else:
             await ctx.send("There is no active season.")
-
 
     @commands.command()
     async def mvp(self, ctx: commands.Context) -> None:
