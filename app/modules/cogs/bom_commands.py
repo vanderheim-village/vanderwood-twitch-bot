@@ -47,7 +47,17 @@ class BomCommandsCog(commands.Cog):
         """
         !dates command
         """
-        await ctx.send("Dates for current season.")
+        if await Season.active_seasons.all().exists():
+            season = await Season.active_seasons.all().first()
+            start_date = season.start_date.strftime("%d/%m/%Y")
+            if season.end_date == None:
+                await ctx.send(f"The current season started on {start_date} but doesn't have an end date yet.")
+            else:
+                end_date = season.end_date.strftime("%d/%m/%Y")
+                await ctx.send(f"The current season started on {start_date} and ends on {end_date}.")
+        else:
+            await ctx.send("There is no active season.")
+
 
     @commands.command()
     async def mvp(self, ctx: commands.Context) -> None:
