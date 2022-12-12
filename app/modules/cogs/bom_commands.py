@@ -68,7 +68,7 @@ class BomCommandsCog(commands.Cog):
                 player_standings: PlayerStandings = {
                     "points": points_row.points,
                     "name": player.name,
-                    "clantag": player.clan.tag,
+                    "clantag": (await player.clan.get()).tag,
                 }
                 standings.append(player_standings)
             sorted_standings = sorted(standings, key=lambda k: k["points"], reverse=True)
