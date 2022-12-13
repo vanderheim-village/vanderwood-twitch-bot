@@ -212,8 +212,7 @@ class BomModCommandsCog(commands.Cog):
         !endsession command
         """
         if await Season.active_seasons.all().exists():
-            active_season: Season = await Season.active_seasons.all().first()
-            if await Session.get_or_none(season=active_season):
+            if await Session.active_session.all().exists():
                 await Session.active_session.all().update(end_time=timezone.now())
                 await ctx.send("The current session has been ended.")
             else:
