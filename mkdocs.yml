@@ -1,0 +1,23 @@
+site_name: Battle of Midgard Twitch Bot Documentation
+repo_url: https://github.com/adb-web-designs/vanderwood-twitch-bot
+repo_name: adb-web-designs/vanderwood-twitch-bot
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: yellow
+  features:
+    - navigation.instant
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - toc.integrate
+    - navigation.top
+extra:
+  social:
+    - icon: fontawesome/brands/twitch
+      link: https://www.twitch.tv/VANDERWOODTV
+plugins:
+  - search:
+      lang: en
+  - social:
+      cards: true
