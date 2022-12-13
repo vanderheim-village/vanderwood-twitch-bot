@@ -90,13 +90,6 @@ class BomCommandsCog(commands.Cog):
         await ctx.send(f"Ranking for {ctx.author.name}.")
 
     @commands.command()
-    async def clanchampions(self, ctx: commands.Context) -> None:
-        """
-        !clanchampions command
-        """
-        await ctx.send("Clan champions for each clan")
-
-    @commands.command()
     async def dates(self, ctx: commands.Context) -> None:
         """
         !dates command
@@ -182,6 +175,13 @@ class BomCommandsCog(commands.Cog):
         !myrewards command
         """
         await ctx.send(f"Rewards for {ctx.author.name}.")
+
+    @commands.command()
+    async def clanchampions(self, ctx: commands.Context) -> None:
+        """
+        !clanchampions command
+        """
+        await ctx.send("Clan champions for each clan")
 
 
 def prepare(bot: commands.Bot) -> None:
