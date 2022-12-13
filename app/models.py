@@ -44,6 +44,15 @@ class SeasonActiveManager(Manager):
         )
 
 
+class PreviousSeasonsManager(Manager):
+    def get_queryset(self) -> QuerySet["Season"]:
+        return (
+            super(PreviousSeasonsManager, self)
+            .get_queryset()
+            .filter(Q(start_date__lte=timezone.now()), Q(end_date__lte=timezone.now()))
+        )
+
+
 class Season(Model):
     id = fields.IntField(pk=True)
     name = fields.CharField(max_length=255, unique=True)
@@ -52,6 +61,7 @@ class Season(Model):
     info_end_date = fields.DatetimeField(null=True)
 
     active_seasons = SeasonActiveManager()
+    previous_seasons = PreviousSeasonsManager()
 
 
 class SessionActiveManager(Manager):
