@@ -25,8 +25,34 @@ class BomCommandsCog(commands.Cog):
     async def rank(self, ctx: commands.Context, clanname: str) -> None:
         """
         !rank command
+
+        Display the top 10 players in the clan for the current season.
         """
-        await ctx.send(f"Ranking for {clanname}.")
+        if await Season.active_seasons.all().exists():
+            season = await Season.active_seasons.all().first()
+            if await Clan.get_or_none(tag=clanname):
+                clan = await Clan.get(tag=clanname)
+                standings: List[PlayerStandings] = []
+                for points_row in await Points.filter(season=season, clan=clan):
+                    player = await points_row.player.get()
+                    player_standings: PlayerStandings = {
+                        "points": points_row.points,
+                        "name": player.name,
+                        "clantag": clan.tag,
+                    }
+                    standings.append(player_standings)
+                sorted_standings = sorted(standings, key=lambda k: k["points"], reverse=True)
+                await ctx.send(f"BOM | {season.name}:")
+                count = 0
+                for result in sorted_standings[:10]:
+                    count += 1
+                    await ctx.send(
+                        f"{count}. [{result['clantag']}] {result['name']} - {result['points']}"
+                    )
+            else:
+                await ctx.send(f"Clan {clanname} does not exist.")
+        else:
+            await ctx.send("No active season.")
 
     @commands.command()
     async def standings(self, ctx: commands.Context) -> None:
