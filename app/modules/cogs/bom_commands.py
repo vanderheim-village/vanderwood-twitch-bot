@@ -121,7 +121,21 @@ class BomCommandsCog(commands.Cog):
         """
         !mvp command
         """
-        await ctx.send("MVP for last season.")
+        if await Season.all().exists():
+            previous_season = await Season.previous_seasons.order_by("-end_date").first()
+            await ctx.send(f"{previous_season.name}")
+            if await Points.filter(season=previous_season).exists():
+                points = await Points.filter(season=previous_season).order_by("-points").first()
+                assert points is not None
+                player = await points.player.get()
+                assert player.clan is not None
+                await ctx.send(
+                    f"Last season's Battle of Midgard MVP was {player.name} of {(await player.clan.get()).tag} with {points.points} points."
+                )
+            else:
+                await ctx.send(f"No MVP for {previous_season.name}.")
+        else:
+            await ctx.send("There are no seasons.")
 
     @commands.command()
     async def checkin(self, ctx: commands.Context) -> None:
