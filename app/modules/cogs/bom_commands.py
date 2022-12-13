@@ -1,5 +1,6 @@
 from typing import List, TypedDict
 
+from tortoise.functions import Sum
 from twitchio.ext import commands
 
 from app.models import Checkin, Clan, Player, Points, Season, Session
@@ -112,8 +113,89 @@ class BomCommandsCog(commands.Cog):
     async def myrank(self, ctx: commands.Context) -> None:
         """
         !myrank command
+
+        Display current season points, lifetime points, current season rank in clan and overall rank for current season.
         """
-        await ctx.send(f"Ranking for {ctx.author.name}.")
+        if await Season.active_seasons.all().exists():
+            if await Player.get_or_none(name=ctx.author.name):
+                player = await Player.get(name=ctx.author.name)
+                active_season = await Season.active_seasons.all().first()
+                assert player.clan is not None
+                if await player.clan.get() is None:
+                    await ctx.send("You are not in a clan.")
+                else:
+                    clan = await player.clan.get()
+                    if Points.get_or_none(player=player, season=active_season):
+                        current_season_points = (
+                            await Points.get(player=player, season=active_season)
+                        ).points
+                    else:
+                        current_season_points = 0
+                    if await Player.get_or_none(name=player.name):
+                        lifetime_points = (
+                            await Points.get(player=player)
+                            .annotate(sum=Sum("points"))
+                            .values_list("sum")
+                        )[0]
+                        print(lifetime_points)
+                    else:
+                        lifetime_points = 0
+
+                    if Points.get_or_none(player=player, season=active_season):
+                        standings: List[PlayerStandings] = []
+                        for points_row in await Points.filter(season=active_season):
+                            player = await points_row.player.get()
+                            assert player.clan is not None
+                            player_standings: PlayerStandings = {
+                                "points": points_row.points,
+                                "name": player.name,
+                                "clantag": (await player.clan.get()).tag,
+                            }
+                            standings.append(player_standings)
+                        sorted_standings = sorted(
+                            standings, key=lambda k: k["points"], reverse=True
+                        )
+                        count = 0
+                        for result in sorted_standings:
+                            count += 1
+                            if result["name"] == ctx.author.name:
+                                current_season_overall_rank = count
+                                break
+                    else:
+                        current_season_overall_rank = 0
+
+                    if Points.get_or_none(player=player, season=active_season):
+                        clan_standings: List[PlayerStandings] = []
+                        for points_row in await Points.filter(season=active_season, clan=clan):
+                            player = await points_row.player.get()
+                            assert player.clan is not None
+                            clan_player_standings: PlayerStandings = {
+                                "points": points_row.points,
+                                "name": player.name,
+                                "clantag": (await player.clan.get()).tag,
+                            }
+                            clan_standings.append(clan_player_standings)
+                        clan_sorted_standings = sorted(
+                            clan_standings, key=lambda k: k["points"], reverse=True
+                        )
+                        count = 0
+                        for result in clan_sorted_standings:
+                            count += 1
+                            if result["name"] == ctx.author.name:
+                                current_season_clan_rank = count
+                                break
+                    else:
+                        current_season_clan_rank = 0
+
+                    await ctx.send(f"{ctx.author.name} [{clan.tag}]:")
+                    await ctx.send(f"Current season points: {current_season_points}")
+                    await ctx.send(f"{clan.tag} rank: {current_season_clan_rank}")
+                    await ctx.send(f"Overall rank: {current_season_overall_rank}")
+                    await ctx.send(f"Lifetime points: {lifetime_points}")
+            else:
+                await ctx.send("You are not registered.")
+        else:
+            await ctx.send("No active seasons!")
 
     @commands.command()
     async def dates(self, ctx: commands.Context) -> None:
