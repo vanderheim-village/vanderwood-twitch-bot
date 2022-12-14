@@ -18,7 +18,7 @@ The bot has a number of commands that are available to the streamer, subscribers
 
 ### Streamer Commands
 
-* **!createclan** - Creates a clan which streamers can join in the Battle of Midgard game.
+* **!createclan** - Creates a clan which viewers can join in the Battle of Midgard game.
 * **!add** - Adds a viewer to a clan in the Battle of Midgard game.
 * **!remove** - Removes a viewer from a clan in the Battle of Midgard game.
 * **!startseason** - Starts a new season of the Battle of Midgard game.
