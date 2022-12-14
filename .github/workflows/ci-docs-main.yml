@@ -18,7 +18,7 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install mkdocs-material
-          pip install pillow cairosvg
+          pip install pillow cairosvg mike
       - name: Setup Docs Deploy
         run: |
           git config --global user.name "Docs Deploy"
