@@ -43,6 +43,6 @@ The bot has a number of commands that are available to the streamer, subscribers
 * **!mvp** - Displays the MVP from the previous season of the Battle of Midgard game.
 * **!checkin** - Checks the viewer into the current session of the Battle of Midgard game.
 
-*** General Commands ***
+### General Commands
 
 * **!help** - Displays a link to this documentation.
