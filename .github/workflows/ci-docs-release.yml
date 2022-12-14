@@ -1,4 +1,4 @@
-name: Build/Publish Rlease Docs
+name: Build/Publish Latest Release Docs
 
 on:
   release:
@@ -25,4 +25,4 @@ jobs:
           git config --global user.name "Docs Deploy"
           git config --global user.email "docs.deploy@adbwebdesigns.co.uk"
       - name: Build Docs Website
-        run: mike deploy --push ${RELEASE_TAG_VERSION}
+        run: mike deploy --push --update-aliases ${RELEASE_TAG_VERSION} latest

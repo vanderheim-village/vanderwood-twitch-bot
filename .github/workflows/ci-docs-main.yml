@@ -1,4 +1,4 @@
-name: Build/Publish Latest Master Docs 
+name: Build/Publish Develop Docs 
 on:
   push:
     branches:
@@ -24,4 +24,4 @@ jobs:
           git config --global user.name "Docs Deploy"
           git config --global user.email "docs.deploy@adbwebdesigns.co.uk"
       - name: Build Docs Website
-        run: mike deploy --push latest
+        run: mike deploy --push develop
