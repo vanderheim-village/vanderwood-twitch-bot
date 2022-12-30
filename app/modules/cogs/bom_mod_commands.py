@@ -22,22 +22,25 @@ class BomModCommandsCog(commands.Cog):
         if await Clan.get_or_none(tag=clantag):
             clan = await Clan.get(tag=clantag)
             if await Player.get_or_none(name=playername):
-                player = await Player.get(name=playername)
-                if player.is_enabled():
-                    player_update: Player = await player.select_for_update().get(id=player.id)
-                    player_update.clan = clan
-                    await player_update.save()
-                    await ctx.send(
-                        f"Welcome @{playername} to the [{clan.tag}] {clan.name} Clan roster!"
-                    )
+                if await Season.active_seasons.all().exists():
+                    await ctx.send("Cannot move players between clans during an active season.")
                 else:
-                    player_update = await player.select_for_update().get(id=player.id)
-                    player_update.clan = clan
-                    player_update.enabled = True
-                    await player_update.save()
-                    await ctx.send(
-                        f"Welcome @{playername} to the [{clan.tag}] {clan.name} Clan roster!"
-                    )
+                    player = await Player.get(name=playername)
+                    if player.is_enabled():
+                        player_update: Player = await player.select_for_update().get(id=player.id)
+                        player_update.clan = clan
+                        await player_update.save()
+                        await ctx.send(
+                            f"Welcome @{playername} to the [{clan.tag}] {clan.name} Clan roster!"
+                        )
+                    else:
+                        player_update = await player.select_for_update().get(id=player.id)
+                        player_update.clan = clan
+                        player_update.enabled = True
+                        await player_update.save()
+                        await ctx.send(
+                            f"Welcome @{playername} to the [{clan.tag}] {clan.name} Clan roster!"
+                        )
             else:
                 await Player.create(name=playername, clan=clan, enabled=True)
                 await ctx.send(
