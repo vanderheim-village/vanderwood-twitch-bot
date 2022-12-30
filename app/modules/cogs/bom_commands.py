@@ -210,7 +210,7 @@ class BomCommandsCog(commands.Cog):
                     f"The current season started on {start_date} but doesn't have an end date yet."
                 )
             else:
-                end_date = season.end_date.strftime("%d/%m/%Y")
+                end_date = season.info_end_date.strftime("%d/%m/%Y")
                 await ctx.send(
                     f"The current season started on {start_date} and ends on {end_date}."
                 )
