@@ -5,6 +5,7 @@ import sys
 import traceback
 from typing import Any, Dict, List
 
+import twitchio
 import yaml
 from aiohttp import ClientSession
 from aiohttp.web_runner import GracefulExit
@@ -12,6 +13,7 @@ from tortoise import Tortoise
 from twitchio.ext import commands, eventsub
 
 from app import settings
+from app.models import EventSubscriptions, Subscriptions, Player, Season, Points
 
 
 # Define function to process yaml config file
@@ -77,12 +79,90 @@ if __name__ == "__main__":
         client_secret=conf_options["APP"]["CLIENT_SECRET"],
     )
 
-    # @eventsubbot.event()
-    # async def event_eventsub_notification_follow(payload: eventsub.ChannelFollowData) -> None:
-    #    """
-    #    Reacts to receicing a new channel follow event. It will respond in chat thanking the follower and giving them the discord link.
-    #    """
-    #    print(payload.data.id)
+    @eventsubbot.event()
+    async def event_eventsub_notification_subscription(payload: eventsub.ChannelSubscribeData) -> None:
+        """
+        Reacts to receicing a new channel subscription event.
+        """
+        subscribed_user = payload.user
+        subscription_tier = payload.tier
+
+        match subscription_tier:
+            case 1:
+                points_to_add = conf_options["APP"]["POINTS"]["TIER_1"]
+            case 2:
+                points_to_add = conf_options["APP"]["POINTS"]["TIER_2"]
+            case 3:
+                points_to_add = conf_options["APP"]["POINTS"]["TIER_3"]
+
+        if await Player.get_or_none(name=subscribed_user.name):
+            player = await Player.get(name=subscribed_user.name)
+            if await Subscriptions.get_or_none(player=player):
+                subscription = await Subscriptions.get(player=player)
+                subscription.months_subscribed += 1
+                subscription.currently_subscribed = True
+                await subscription.save()
+            else:
+                await Subscriptions.create(
+                    player=player,
+                    months_subscribed=1,
+                    currently_subscribed=True,
+                )
+            if await Season.active_seasons.all().exists():
+                season = await Season.active_seasons.first()
+                if player.is_enabled() and player.clan:
+                    clan = await player.clan.get()
+                    if await Points.get_or_none(player=player, season=season):
+                        points = await Points.get(player=player, season=season)
+                        points.points += points_to_add
+                        await points.save()
+                    else:
+                        assert player.clan is not None
+                        await Points.create(
+                            player_id=player.id,
+                            season_id=season.id,
+                            points=points_to_add,
+                            clan_id=clan.id,
+                        )
+                else:
+                    pass
+            else:
+                pass
+        else:
+            pass
+    
+    @eventsubbot.event()
+    async def event_eventsub_notification_channel_points_custom_reward_redemption(payload: eventsub.CustomRewardRedemptionAddUpdateData) -> None:
+        """
+        Reacts to receiving a new channel points redemption event.
+        """
+        user = payload.user
+        reward = payload.reward.cost
+
+        if await Player.get_or_none(name=user.name):
+            player = await Player.get(name=user.name)
+            if await Season.active_seasons.all().exists():
+                season = await Season.active_seasons.first()
+                if player.is_enabled() and player.clan:
+                    clan = await player.clan.get()
+                    if await Points.get_or_none(player=player, season=season):
+                        points = await Points.get(player=player, season=season)
+                        points.points += reward.cost
+                        await points.save()
+                    else:
+                        assert player.clan is not None
+                        await Points.create(
+                            player_id=player.id,
+                            season_id=season.id,
+                            points=reward.cost,
+                            clan_id=clan.id,
+                        )
+                else:
+                    pass
+            else:
+                pass
+        else:
+            pass
 
     eventsub_client = eventsub.EventSubClient(
         eventsubbot,
@@ -90,23 +170,44 @@ if __name__ == "__main__":
         conf_options["APP"]["CALLBACK_URL"],
     )
 
-    # async def subscribe_follows(channel_id: int) -> None:
-    #    """
-    #    Subscribes to new channel follow events.
-    #    """
-    #    try:
-    #        await eventsub_client.subscribe_channel_follows(channel_id)
-    #    except twitchio.HTTPException as err:
-    #        if err.status == 409:
-    #            pass
-    #        else:
-    #            raise
+    async def subscribe_channel_subscriptions(channel_id: int, channel_name: str) -> None:
+        """
+        Subscribes to new channel subscription events.
+        """
+        try:
+            if await EventSubscriptions.filter(channel_name=channel_name, event_type="channel.subscribe").exists():
+                pass
+            else:
+                await eventsub_client.subscribe_channel_subscriptions(channel_id)
+                await EventSubscriptions.create(channel_name=channel_name, event_type="channel.subscribe", subscribed=True)
+        except twitchio.HTTPException as err:
+            if err.status == 409:
+                await EventSubscriptions.create(channel_name=channel_name, event_type="channel.subscribe", subscribed=True)
+            else:
+                raise
+    
+    async def subscribe_channel_points_redeemed(channel_id: int, channel_name: str) -> None:
+        """
+        Subscribes to new channel points redeemed events.
+        """
+        try:
+            if await EventSubscriptions.filter(channel_name=channel_name, event_type="channel.channel_points_custom_reward_redemption.add").exists():
+                pass
+            else:
+                await eventsub_client.subscribe_channel_points_redeemed(channel_id)
+                await EventSubscriptions.create(channel_name=channel_name, event_type="channel.channel_points_custom_reward_redemption.add", subscribed=True)
+        except twitchio.HTTPException as err:
+            if err.status == 409:
+                await EventSubscriptions.create(channel_name=channel_name, event_type="channel.channel_points_custom_reward_redemption.add", subscribed=True)
+            else:
+                raise
 
     bot.loop.create_task(eventsub_client.listen(port=conf_options["APP"]["PORT"]))
     bot.loop.create_task(bot.tinit())
     bot.loop.create_task(bot.connect())
     for channel in conf_options["APP"]["ACCOUNTS"]:
-        # eventsubbot.loop.create_task(subscribe_follows(channel["id"]))
+        eventsubbot.loop.create_task(subscribe_channel_subscriptions(channel_id=channel["id"], channel_name=channel['name']))
+        eventsubbot.loop.create_task(subscribe_channel_points_redeemed(channel_id=channel["id"], channel_name=channel['name']))
         pass
     try:
         bot.loop.run_forever()
