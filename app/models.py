@@ -109,11 +109,13 @@ class Points(Model):
     clan: ForeignKeyRelation[Clan] = fields.ForeignKeyField("models.Clan", related_name="points")
     points = fields.IntField(default=0)
 
+
 class EventSubscriptions(Model):
     id = fields.IntField(pk=True)
     channel_name = fields.CharField(max_length=255)
     event_type = fields.CharField(max_length=255)
     subscribed = fields.BooleanField()
+
 
 class Subscriptions(Model):
     id = fields.IntField(pk=True)

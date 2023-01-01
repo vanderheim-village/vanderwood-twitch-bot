@@ -27,17 +27,14 @@ class BomModCommandsCog(commands.Cog):
                 else:
                     player = await Player.get(name=playername)
                     if player.is_enabled():
-                        player_update: Player = await player.select_for_update().get(id=player.id)
-                        player_update.clan = clan
-                        await player_update.save()
+                        player.clan = clan
+                        await player.save()
                         await ctx.send(
                             f"Welcome @{playername} to the [{clan.tag}] {clan.name} Clan roster!"
                         )
                     else:
-                        player_update = await player.select_for_update().get(id=player.id)
-                        player_update.clan = clan
-                        player_update.enabled = True
-                        await player_update.save()
+                        player.clan = clan
+                        await player.save()
                         await ctx.send(
                             f"Welcome @{playername} to the [{clan.tag}] {clan.name} Clan roster!"
                         )
