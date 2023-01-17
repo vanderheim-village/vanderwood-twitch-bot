@@ -53,6 +53,42 @@ class Bot(commands.Bot):
     async def stop(self) -> None:
         await self.session.close()
         await Tortoise.close_connections()
+    
+    async def event_message(self, message: twitchio.Message) -> None:
+        if message.echo:
+            return
+        else:
+            if "msg-id" in message.tags:
+                if message.tags["msg-id"] == "highlighted-message":
+                    if await Player.get_or_none(name=message.author.name.lower()):
+                        player = await Player.get(name=message.author.name.lower())
+                        if await Season.active_seasons.all().exists():
+                            season = await Season.active_seasons.first()
+                            if player.is_enabled() and player.clan:
+                                clan = await player.clan.get()
+                                if await Points.get_or_none(player=player, season=season):
+                                    points = await Points.get(player=player, season=season)
+                                    points.points += self.conf_options["APP"]["HIGHLIGHTED_MESSAGE_POINTS"]
+                                    await points.save()
+                                else:
+                                    assert player.clan is not None
+                                    await Points.create(
+                                        player_id=player.id,
+                                        season_id=season.id,
+                                        points=self.conf_options["APP"]["HIGHLIGHTED_MESSAGE_POINTS"],
+                                        clan_id=clan.id,
+                                    )
+                            else:
+                                pass
+                        else:
+                            pass
+                    else:
+                        pass
+                else:
+                    pass
+            else:
+                pass
+            await self.handle_commands(message)
 
 
 if __name__ == "__main__":
