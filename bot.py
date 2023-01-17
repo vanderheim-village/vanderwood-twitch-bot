@@ -87,8 +87,8 @@ if __name__ == "__main__":
         """
         Reacts to receicing a new channel subscription event.
         """
-        subscribed_user = payload.user
-        subscription_tier = payload.tier
+        subscribed_user: PartialUser = payload.data.user
+        subscription_tier: int = payload.data.tier
 
         match subscription_tier:
             case 1:
@@ -98,8 +98,8 @@ if __name__ == "__main__":
             case 3:
                 points_to_add = conf_options["APP"]["POINTS"]["TIER_3"]
 
-        if await Player.get_or_none(name=subscribed_user.name):
-            player = await Player.get(name=subscribed_user.name)
+        if await Player.get_or_none(name=subscribed_user.name.lower()):
+            player = await Player.get(name=subscribed_user.name.lower())
             if await Subscriptions.get_or_none(player=player):
                 subscription = await Subscriptions.get(player=player)
                 subscription.months_subscribed += 1

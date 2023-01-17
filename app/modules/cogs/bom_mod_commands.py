@@ -21,27 +21,27 @@ class BomModCommandsCog(commands.Cog):
         """
         if await Clan.get_or_none(tag=clantag):
             clan = await Clan.get(tag=clantag)
-            if await Player.get_or_none(name=playername):
+            if await Player.get_or_none(name=playername.lower()):
                 if await Season.active_seasons.all().exists():
                     await ctx.send("Cannot move players between clans during an active season.")
                 else:
-                    player = await Player.get(name=playername)
+                    player = await Player.get(name=playername.lower())
                     if player.is_enabled():
                         player.clan = clan
                         await player.save()
                         await ctx.send(
-                            f"Welcome @{playername} to the [{clan.tag}] {clan.name} Clan roster!"
+                            f"Welcome @{playername.lower()} to the [{clan.tag}] {clan.name} Clan roster!"
                         )
                     else:
                         player.clan = clan
                         await player.save()
                         await ctx.send(
-                            f"Welcome @{playername} to the [{clan.tag}] {clan.name} Clan roster!"
+                            f"Welcome @{playername.lower()} to the [{clan.tag}] {clan.name} Clan roster!"
                         )
             else:
-                await Player.create(name=playername, clan=clan, enabled=True)
+                await Player.create(name=playername.lower(), clan=clan, enabled=True)
                 await ctx.send(
-                    f"Welcome @{playername} to the [{clan.tag}] {clan.name} Clan roster!"
+                    f"Welcome @{playername.lower()} to the [{clan.tag}] {clan.name} Clan roster!"
                 )
         else:
             await ctx.send(f"Clan {clantag} does not exist.")
@@ -51,17 +51,17 @@ class BomModCommandsCog(commands.Cog):
         """
         !remove command
         """
-        if await Player.get_or_none(name=playername):
-            player = await Player.get(name=playername)
+        if await Player.get_or_none(name=playername.lower()):
+            player = await Player.get(name=playername.lower())
             if player.is_enabled():
                 player.clan = None
                 player.enabled = False
                 await player.save()
-                await ctx.send(f"Removed @{playername} from their clan!")
+                await ctx.send(f"Removed @{playername.lower()} from their clan!")
             else:
-                await ctx.send(f"@{playername} is not in a Clan roster!")
+                await ctx.send(f"@{playername.lower()} is not in a Clan roster!")
         else:
-            await ctx.send(f"@{playername} does not currently exist!")
+            await ctx.send(f"@{playername.lower()} does not currently exist!")
 
     @commands.command()
     async def addpoints(self, ctx: commands.Context, playername: str, newpoints: int) -> None:
@@ -70,8 +70,8 @@ class BomModCommandsCog(commands.Cog):
         """
         if await Season.active_seasons.all().exists():
             season: Season = await Season.active_seasons.all().first()
-            if await Player.get_or_none(name=playername):
-                player = await Player.get(name=playername)
+            if await Player.get_or_none(name=playername.lower()):
+                player = await Player.get(name=playername.lower())
                 if player.is_enabled() and player.clan:
                     clan = await player.clan.get()
                     if await Points.get_or_none(player=player, season=season):
@@ -79,7 +79,7 @@ class BomModCommandsCog(commands.Cog):
                         points.points += newpoints
                         await points.save()
                         await ctx.send(
-                            f"Added {newpoints} points to @{playername} for the {season.name} season!"
+                            f"Added {newpoints} points to @{playername.lower()} for the {season.name} season!"
                         )
                     else:
                         assert player.clan is not None
@@ -90,12 +90,12 @@ class BomModCommandsCog(commands.Cog):
                             clan_id=clan.id,
                         )
                         await ctx.send(
-                            f"Added {newpoints} points to @{playername} for the {season.name} season!"
+                            f"Added {newpoints} points to @{playername.lower()} for the {season.name} season!"
                         )
                 else:
-                    await ctx.send(f"@{playername} is not in a Clan roster!")
+                    await ctx.send(f"@{playername.lower()} is not in a Clan roster!")
             else:
-                await ctx.send(f"@{playername} is not in a Clan roster!")
+                await ctx.send(f"@{playername.lower()} is not in a Clan roster!")
         else:
             await ctx.send("No active seasons!")
 
@@ -106,8 +106,8 @@ class BomModCommandsCog(commands.Cog):
         """
         if await Season.active_seasons.all().exists():
             season: Season = await Season.active_seasons.all().first()
-            if await Player.get_or_none(name=playername):
-                player = await Player.get(name=playername)
+            if await Player.get_or_none(name=playername.lower()):
+                player = await Player.get(name=playername.lower())
                 if player.is_enabled() and player.clan:
                     if await Points.get_or_none(player=player, season=season):
                         points = await Points.get(player=player, season=season)
@@ -118,14 +118,14 @@ class BomModCommandsCog(commands.Cog):
                             points.points -= losepoints
                         await points.save()
                         await ctx.send(
-                            f"Removed {losepoints} points from @{playername} for the {season.name} season!"
+                            f"Removed {losepoints} points from @{playername.lower()} for the {season.name} season!"
                         )
                     else:
-                        await ctx.send(f"@{playername} has no points for the {season.name} season!")
+                        await ctx.send(f"@{playername.lower()} has no points for the {season.name} season!")
                 else:
-                    await ctx.send(f"@{playername} is not in a Clan roster!")
+                    await ctx.send(f"@{playername.lower()} is not in a Clan roster!")
             else:
-                await ctx.send(f"@{playername} is not in a Clan roster!")
+                await ctx.send(f"@{playername.lower()} is not in a Clan roster!")
         else:
             await ctx.send("No active seasons!")
 

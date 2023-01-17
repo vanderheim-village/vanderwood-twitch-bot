@@ -22,7 +22,7 @@ class BomSubCommandsCog(commands.Cog):
         if await Clan.all().count() == 0:
             await ctx.send("No clans have been created yet.")
         else:
-            if await Player.filter(name=ctx.author.name).exists():
+            if await Player.filter(name=ctx.author.name.lower()).exists():
                 await ctx.send("You have already joined a clan.")
             else:
                 clan_totals = (
@@ -35,11 +35,11 @@ class BomSubCommandsCog(commands.Cog):
                     clan["id"] for clan in clan_totals if clan["count"] == min_total["count"]
                 ]
                 new_clan = random.choice(clans_to_choose_from)
-                await Player.create(name=ctx.author.name, clan_id=new_clan)
+                await Player.create(name=ctx.author.name.lower(), clan_id=new_clan)
                 clan_details = next(clan for clan in clan_totals if clan["id"] == new_clan)
                 print(clan_details)
                 await ctx.send(
-                    f"Welcome @{ctx.author.name} to the [{clan_details['tag']}] {clan_details['name']} Clan roster!"
+                    f"Welcome @{ctx.author.name.lower()} to the [{clan_details['tag']}] {clan_details['name']} Clan roster!"
                 )
 
 
