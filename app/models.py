@@ -6,10 +6,15 @@ from tortoise.models import Model
 from tortoise.queryset import QuerySet
 
 
+class Channel(Model):
+    id = fields.IntField(pk=True)
+    name = fields.CharField(max_length=255, unique=True)
+
 class Clan(Model):
     id = fields.IntField(pk=True)
     name = fields.CharField(max_length=255, unique=True)
     tag = fields.CharField(max_length=4, unique=True)
+    channel = fields.ForeignKeyField("models.Channel", related_name="clans")
 
 
 class StatusManager(Manager):
@@ -23,6 +28,7 @@ class Player(Model):
     clan: ForeignKeyNullableRelation[Clan] = fields.ForeignKeyField(
         "models.Clan", related_name="players", null=True
     )
+    channel = fields.ForeignKeyField("models.Channel", related_name="players")
     enabled = fields.BooleanField(default=True)
 
     enabled_players = StatusManager()
@@ -59,6 +65,7 @@ class Season(Model):
     start_date = fields.DatetimeField(auto_now_add=True)
     end_date = fields.DatetimeField(null=True)
     info_end_date = fields.DatetimeField(null=True)
+    channel = fields.ForeignKeyField("models.Channel", related_name="seasons")
 
     active_seasons = SeasonActiveManager()
     previous_seasons = PreviousSeasonsManager()
@@ -84,6 +91,7 @@ class Session(Model):
     )
     start_time = fields.DatetimeField(auto_now_add=True)
     end_time = fields.DatetimeField(null=True)
+    channel = fields.ForeignKeyField("models.Channel", related_name="sessions")
 
     active_session = SessionActiveManager()
 
@@ -96,6 +104,7 @@ class Checkin(Model):
     player: ForeignKeyRelation[Player] = fields.ForeignKeyField(
         "models.Player", related_name="checkins"
     )
+    channel = fields.ForeignKeyField("models.Channel", related_name="checkins")
 
 
 class Points(Model):
@@ -107,6 +116,7 @@ class Points(Model):
         "models.Season", related_name="points"
     )
     clan: ForeignKeyRelation[Clan] = fields.ForeignKeyField("models.Clan", related_name="points")
+    channel = fields.ForeignKeyField("models.Channel", related_name="points")
     points = fields.IntField(default=0)
 
 
@@ -122,5 +132,6 @@ class Subscriptions(Model):
     player: ForeignKeyRelation[Player] = fields.OneToOneField(
         "models.Player", related_name="subscriptions"
     )
+    channel = fields.ForeignKeyField("models.Channel", related_name="subscriptions")
     months_subscribed = fields.IntField(default=1)
     currently_subscribed = fields.BooleanField()
