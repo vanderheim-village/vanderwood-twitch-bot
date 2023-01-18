@@ -16,7 +16,7 @@ from tortoise.functions import Count
 from twitchio.models import PartialUser
 
 from app import settings
-from app.models import EventSubscriptions, Player, Points, Season, Subscriptions, Clan
+from app.models import EventSubscriptions, Player, Points, Season, Subscriptions, Clan, Channel
 
 
 # Define function to process yaml config file
@@ -58,26 +58,31 @@ class Bot(commands.Bot):
         if message.echo:
             return
         else:
-            if "msg-id" in message.tags:
-                if message.tags["msg-id"] == "highlighted-message":
-                    if await Player.get_or_none(name=message.author.name.lower()):
-                        player = await Player.get(name=message.author.name.lower())
-                        if await Season.active_seasons.all().exists():
-                            season = await Season.active_seasons.first()
-                            if player.is_enabled() and player.clan:
-                                clan = await player.clan.get()
-                                if await Points.get_or_none(player=player, season=season):
-                                    points = await Points.get(player=player, season=season)
-                                    points.points += self.conf_options["APP"]["HIGHLIGHTED_MESSAGE_POINTS"]
-                                    await points.save()
+            if await Channel.get_or_none(name=message.channel.name):
+                channel = await Channel.get(name=message.channel.name)
+                if "msg-id" in message.tags:
+                    if message.tags["msg-id"] == "highlighted-message":
+                        if await Player.get_or_none(name=message.author.name.lower(), channel=channel):
+                            player = await Player.get(name=message.author.name.lower(), channel=channel)
+                            if await Season.active_seasons.all().filter(channel=channel).exists():
+                                season = await Season.active_seasons.filter(channel=channel).first()
+                                if player.is_enabled() and player.clan:
+                                    clan = await player.clan.get()
+                                    if await Points.get_or_none(player=player, season=season, channel=channel):
+                                        points = await Points.get(player=player, season=season, channel=channel)
+                                        points.points += self.conf_options["APP"]["HIGHLIGHTED_MESSAGE_POINTS"]
+                                        await points.save()
+                                    else:
+                                        assert player.clan is not None
+                                        await Points.create(
+                                            player_id=player.id,
+                                            season_id=season.id,
+                                            points=self.conf_options["APP"]["HIGHLIGHTED_MESSAGE_POINTS"],
+                                            clan_id=clan.id,
+                                            chanel=channel,
+                                        )
                                 else:
-                                    assert player.clan is not None
-                                    await Points.create(
-                                        player_id=player.id,
-                                        season_id=season.id,
-                                        points=self.conf_options["APP"]["HIGHLIGHTED_MESSAGE_POINTS"],
-                                        clan_id=clan.id,
-                                    )
+                                    pass
                             else:
                                 pass
                         else:
@@ -128,95 +133,104 @@ if __name__ == "__main__":
         subscribed_user: PartialUser = payload.data.user
         subscription_tier: int = payload.data.tier
 
-        match subscription_tier:
-            case 1:
-                points_to_add = conf_options["APP"]["POINTS"]["TIER_1"]
-            case 2:
-                points_to_add = conf_options["APP"]["POINTS"]["TIER_2"]
-            case 3:
-                points_to_add = conf_options["APP"]["POINTS"]["TIER_3"]
+        if await Channel.get_or_none(name=payload.data.broadcaster.name):
+            channel = await Channel.get(name=payload.data.broadcaster.name)
+            match subscription_tier:
+                case 1:
+                    points_to_add = conf_options["APP"]["POINTS"]["TIER_1"]
+                case 2:
+                    points_to_add = conf_options["APP"]["POINTS"]["TIER_2"]
+                case 3:
+                    points_to_add = conf_options["APP"]["POINTS"]["TIER_3"]
 
-        if await Player.get_or_none(name=subscribed_user.name.lower()):
-            player = await Player.get(name=subscribed_user.name.lower())
-            if await Subscriptions.get_or_none(player=player):
-                subscription = await Subscriptions.get(player=player)
-                subscription.months_subscribed += 1
-                subscription.currently_subscribed = True
-                await subscription.save()
-            else:
-                await Subscriptions.create(
-                    player=player,
-                    months_subscribed=1,
-                    currently_subscribed=True,
-                )
-            if await Season.active_seasons.all().exists():
-                season = await Season.active_seasons.first()
-                if player.is_enabled() and player.clan:
-                    clan = await player.clan.get()
-                    if await Points.get_or_none(player=player, season=season):
-                        points = await Points.get(player=player, season=season)
-                        points.points += points_to_add
-                        await points.save()
-                    else:
-                        assert player.clan is not None
-                        await Points.create(
-                            player_id=player.id,
-                            season_id=season.id,
-                            points=points_to_add,
-                            clan_id=clan.id,
-                        )
+            if await Player.get_or_none(name=subscribed_user.name.lower(), channel=channel):
+                player = await Player.get(name=subscribed_user.name.lower(), channel=channel)
+                if await Subscriptions.get_or_none(player=player, channel=channel):
+                    subscription = await Subscriptions.get(player=player, channel=channel)
+                    subscription.months_subscribed += 1
+                    subscription.currently_subscribed = True
+                    await subscription.save()
                 else:
-                    "Player is not enabled or does not have a clan"
+                    await Subscriptions.create(
+                        player=player,
+                        months_subscribed=1,
+                        currently_subscribed=True,
+                        channel=channel,
+                    )
+                if await Season.active_seasons.all().filter(channel=channel).exists():
+                    season = await Season.active_seasons.filter(channel=channel).first()
+                    if player.is_enabled() and player.clan:
+                        clan = await player.clan.get()
+                        if await Points.get_or_none(player=player, season=season, channel=channel):
+                            points = await Points.get(player=player, season=season, channel=channel)
+                            points.points += points_to_add
+                            await points.save()
+                        else:
+                            assert player.clan is not None
+                            await Points.create(
+                                player_id=player.id,
+                                season_id=season.id,
+                                points=points_to_add,
+                                clan_id=clan.id,
+                                channel=channel,
+                            )
+                    else:
+                        "Player is not enabled or does not have a clan"
+                        pass
+                else:
+                    "No active seasons"
                     pass
             else:
-                "No active seasons"
-                pass
+                clan_totals = (
+                    await Clan.all()
+                    .filter(channel=channel)
+                    .annotate(count=Count("players", distinct=True))
+                    .values("id", "name", "tag", "count")
+                )
+                min_total = min(clan_totals, key=lambda x: x["count"])
+                clans_to_choose_from = [
+                    clan["id"] for clan in clan_totals if clan["count"] == min_total["count"]
+                ]
+                new_clan = random.choice(clans_to_choose_from)
+                await Player.create(name=subscribed_user.name.lower(), clan_id=new_clan, channel=channel)
+                player = await Player.get(name=subscribed_user.name.lower(), channel=channel)
+                if await Subscriptions.get_or_none(player=player, channel=channel):
+                    subscription = await Subscriptions.get(player=player, channel=channel)
+                    subscription.months_subscribed += 1
+                    subscription.currently_subscribed = True
+                    await subscription.save()
+                else:
+                    await Subscriptions.create(
+                        player=player,
+                        months_subscribed=1,
+                        currently_subscribed=True,
+                        channel=channel,
+                    )
+                if await Season.active_seasons.all().filter(channel=channel).exists():
+                    season = await Season.active_seasons.filter(channel=channel).first()
+                    if player.is_enabled() and player.clan:
+                        clan = await player.clan.get()
+                        if await Points.get_or_none(player=player, season=season, channel=channel):
+                            points = await Points.get(player=player, season=season, channel=channel)
+                            points.points += points_to_add
+                            await points.save()
+                        else:
+                            assert player.clan is not None
+                            await Points.create(
+                                player_id=player.id,
+                                season_id=season.id,
+                                points=points_to_add,
+                                clan_id=clan.id,
+                                channel=channel,
+                            )
+                    else:
+                        "Player is not enabled or does not have a clan"
+                        pass
+                else:
+                    "No active seasons"
+                    pass
         else:
-            clan_totals = (
-                await Clan.all()
-                .annotate(count=Count("players", distinct=True))
-                .values("id", "name", "tag", "count")
-            )
-            min_total = min(clan_totals, key=lambda x: x["count"])
-            clans_to_choose_from = [
-                clan["id"] for clan in clan_totals if clan["count"] == min_total["count"]
-            ]
-            new_clan = random.choice(clans_to_choose_from)
-            await Player.create(name=subscribed_user.name.lower(), clan_id=new_clan)
-            player = await Player.get(name=subscribed_user.name.lower())
-            if await Subscriptions.get_or_none(player=player):
-                subscription = await Subscriptions.get(player=player)
-                subscription.months_subscribed += 1
-                subscription.currently_subscribed = True
-                await subscription.save()
-            else:
-                await Subscriptions.create(
-                    player=player,
-                    months_subscribed=1,
-                    currently_subscribed=True,
-                )
-            if await Season.active_seasons.all().exists():
-                season = await Season.active_seasons.first()
-                if player.is_enabled() and player.clan:
-                    clan = await player.clan.get()
-                    if await Points.get_or_none(player=player, season=season):
-                        points = await Points.get(player=player, season=season)
-                        points.points += points_to_add
-                        await points.save()
-                    else:
-                        assert player.clan is not None
-                        await Points.create(
-                            player_id=player.id,
-                            season_id=season.id,
-                            points=points_to_add,
-                            clan_id=clan.id,
-                        )
-                else:
-                    "Player is not enabled or does not have a clan"
-                    pass
-            else:
-                "No active seasons"
-                pass
+            pass
 
     @eventsubbot.event()
     async def event_eventsub_notification_channel_reward_redeem(
@@ -228,24 +242,29 @@ if __name__ == "__main__":
         user: PartialUser = payload.data.user
         reward: eventsub.CustomReward = payload.data.reward
 
-        if await Player.get_or_none(name=user.name.lower()):
-            player = await Player.get(name=user.name.lower())
-            if await Season.active_seasons.all().exists():
-                season = await Season.active_seasons.first()
-                if player.is_enabled() and player.clan:
-                    clan = await player.clan.get()
-                    if await Points.get_or_none(player=player, season=season):
-                        points = await Points.get(player=player, season=season)
-                        points.points += reward.cost
-                        await points.save()
+        if await Channel.get_or_none(name=payload.data.broadcaster.name):
+            channel = await Channel.get(name=payload.data.broadcaster.name)
+            if await Player.get_or_none(name=user.name.lower(), channel=channel):
+                player = await Player.get(name=user.name.lower(), channel=channel)
+                if await Season.active_seasons.all().filter(channel=channel).exists():
+                    season = await Season.active_seasons.filter(channel=channel).first()
+                    if player.is_enabled() and player.clan:
+                        clan = await player.clan.get()
+                        if await Points.get_or_none(player=player, season=season, channel=channel):
+                            points = await Points.get(player=player, season=season, channel=channel)
+                            points.points += reward.cost
+                            await points.save()
+                        else:
+                            assert player.clan is not None
+                            await Points.create(
+                                player_id=player.id,
+                                season_id=season.id,
+                                points=reward.cost,
+                                clan_id=clan.id,
+                                channel=channel,
+                            )
                     else:
-                        assert player.clan is not None
-                        await Points.create(
-                            player_id=player.id,
-                            season_id=season.id,
-                            points=reward.cost,
-                            clan_id=clan.id,
-                        )
+                        pass
                 else:
                     pass
             else:
