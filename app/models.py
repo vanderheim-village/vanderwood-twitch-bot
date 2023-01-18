@@ -12,8 +12,8 @@ class Channel(Model):
 
 class Clan(Model):
     id = fields.IntField(pk=True)
-    name = fields.CharField(max_length=255, unique=True)
-    tag = fields.CharField(max_length=4, unique=True)
+    name = fields.CharField(max_length=255, unique=False)
+    tag = fields.CharField(max_length=4, unique=False)
     channel = fields.ForeignKeyField("models.Channel", related_name="clans")
 
 
@@ -24,7 +24,7 @@ class StatusManager(Manager):
 
 class Player(Model):
     id = fields.IntField(pk=True)
-    name = fields.CharField(max_length=255, unique=True)
+    name = fields.CharField(max_length=255, unique=False)
     clan: ForeignKeyNullableRelation[Clan] = fields.ForeignKeyField(
         "models.Clan", related_name="players", null=True
     )
@@ -61,7 +61,7 @@ class PreviousSeasonsManager(Manager):
 
 class Season(Model):
     id = fields.IntField(pk=True)
-    name = fields.CharField(max_length=255, unique=True)
+    name = fields.CharField(max_length=255, unique=False)
     start_date = fields.DatetimeField(auto_now_add=True)
     end_date = fields.DatetimeField(null=True)
     info_end_date = fields.DatetimeField(null=True)
