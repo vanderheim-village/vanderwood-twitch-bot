@@ -11,89 +11,71 @@
 
 1. Clone or download the repository.
 
-2. Create a Python virtual environment and install the dependencies.
+1. Create a Python virtual environment and install the dependencies.
 
-    ```bash
-    python3 -m venv venv
+    <pre><code class="language-bash">python3 -m venv venv
     source venv/bin/activate
     pip install -r requirements.txt
-    ```
+    </code></pre>
 
-3. Create a PostgreSQL database and user.
+1. Create a PostgreSQL database and user.
 
-    ```bash
-    sudo -u postgres psql
+    <pre><code class="language-bash">sudo -u postgres psql
     CREATE DATABASE battleofmidgard;
     CREATE USER battleofmidgard WITH PASSWORD 'password';
     GRANT ALL PRIVILEGES ON DATABASE battleofmidgard TO battleofmidgard;
-    ```
+    </code></pre>
 
-4. Make a copy of config.yml.example and rename it to config.yml.
+1. Make a copy of config.yml.example and rename it to config.yml.
 
-    ```bash
-    cp config.yml.example config.yml
-    ```
+    <pre><code class="language-bash">cp config.yml.example config.yml</code></pre>
 
-5. Edit config.yml and add in the database credentials and details.
+1. Edit config.yml and add in the database credentials and details.
 
-6. Edit config.yml and enter the twitch access token, client id and client secret.
+1. Edit config.yml and enter the twitch access token, client id and client secret.
 
-7. Edit config.yml and enter the twitch channel name and id to connect to.
+1. Edit config.yml and enter the twitch channel name and id to connect to.
 
-9. Edit config.yml and enter your callback URL.
+1. Edit config.yml and enter your callback URL.
 
-8. Edit config.yml and fill out the other details.
+1. Edit config.yml and fill out the other details.
 
-9. Configure Nginx to proxy this application using the `example-nginx-virtualhost.conf` file.
+1. Configure Nginx to proxy this application using the `example-nginx-virtualhost.conf` file.
 
-10. Run the database migrations.
+1. Run the database migrations.
 
-    ```bash
-    aerich upgrade
-    ```
+    <pre><code class="language-bash">aerich upgrade</code></pre>
 
-11. Run the application.
+1. Run the application.
 
-    ```bash
-    python3 bot.py
-    ```
+    <pre><code class="language-bash">python3 bot.py</code></pre>
 
 ## Enabling as a Systemd Service
 
 1. Copy the `vanderwood-twitch-bot.service` file to `/etc/systemd/system/`.
 
-2. Edit the file and change the `WorkingDirectory` and `ExecStart` paths to match your installation.
+1. Edit the file and change the `WorkingDirectory` and `ExecStart` paths to match your installation.
 
-3. Reload the systemd daemon.
+1. Reload the systemd daemon.
 
-    ```bash
-    sudo systemctl daemon-reload
-    ```
+    <pre><code class="language-bash">sudo systemctl daemon-reload</code></pre>
 
-4. Enable the service.
+1. Enable the service.
 
-    ```bash
-    sudo systemctl enable vanderwood-twitch-bot.service
-    ```
+    <pre><code class="language-bash">sudo systemctl enable vanderwood-twitch-bot.service</code></pre>
 
-5. Start the service.
+1. Start the service.
 
-    ```bash
-    sudo systemctl start vanderwood-twitch-bot.service
-    ```
+    <pre><code class="language-bash">sudo systemctl start vanderwood-twitch-bot.service</code></pre>
 
 ## Updating
 
 1. Pull the latest changes from the repository.
 
-2. Run the database migrations.
+1. Run the database migrations.
 
-    ```bash
-    aerich upgrade
-    ```
+    <pre><code class="language-bash">aerich upgrade</code></pre>
 
-3. Restart the application.
+1. Restart the application.
 
-    ```bash
-    sudo systemctl restart vanderwood-twitch-bot.service
-    ```
+    <pre><code class="language-bash">sudo systemctl restart vanderwood-twitch-bot.service</code></pre>
