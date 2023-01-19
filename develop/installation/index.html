@@ -998,26 +998,24 @@
 </li>
 <li>
 <p>Create a Python virtual environment and install the dependencies.</p>
-</li>
-</ol>
-<pre><code class="language-bash">python3 -m venv venv
+<p><code>bash
+python3 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
-</code></pre>
-<ol>
-<li>Create a PostgreSQL database and user.</li>
-</ol>
-<pre><code class="language-bash">sudo -u postgres psql
+pip install -r requirements.txt</code></p>
+</li>
+<li>
+<p>Create a PostgreSQL database and user.</p>
+<p><code>bash
+sudo -u postgres psql
 CREATE DATABASE battleofmidgard;
 CREATE USER battleofmidgard WITH PASSWORD 'password';
-GRANT ALL PRIVILEGES ON DATABASE battleofmidgard TO battleofmidgard;
-</code></pre>
-<ol>
-<li>Make a copy of config.yml.example and rename it to config.yml.</li>
-</ol>
-<pre><code class="language-bash">cp config.yml.example config.yml
-</code></pre>
-<ol>
+GRANT ALL PRIVILEGES ON DATABASE battleofmidgard TO battleofmidgard;</code></p>
+</li>
+<li>
+<p>Make a copy of config.yml.example and rename it to config.yml.</p>
+<p><code>bash
+cp config.yml.example config.yml</code></p>
+</li>
 <li>
 <p>Edit config.yml and add in the database credentials and details.</p>
 </li>
@@ -1038,15 +1036,15 @@ GRANT ALL PRIVILEGES ON DATABASE battleofmidgard TO battleofmidgard;
 </li>
 <li>
 <p>Run the database migrations.</p>
+<p><code>bash
+aerich upgrade</code></p>
+</li>
+<li>
+<p>Run the application.</p>
+<p><code>bash
+python3 bot.py</code></p>
 </li>
 </ol>
-<pre><code class="language-bash">aerich upgrade
-</code></pre>
-<ol>
-<li>Run the application.</li>
-</ol>
-<pre><code class="language-bash">python3 bot.py
-</code></pre>
 <h2 id="enabling-as-a-systemd-service">Enabling as a Systemd Service</h2>
 <ol>
 <li>
@@ -1057,20 +1055,20 @@ GRANT ALL PRIVILEGES ON DATABASE battleofmidgard TO battleofmidgard;
 </li>
 <li>
 <p>Reload the systemd daemon.</p>
+<p><code>bash
+sudo systemctl daemon-reload</code></p>
+</li>
+<li>
+<p>Enable the service.</p>
+<p><code>bash
+sudo systemctl enable vanderwood-twitch-bot.service</code></p>
+</li>
+<li>
+<p>Start the service.</p>
+<p><code>bash
+sudo systemctl start vanderwood-twitch-bot.service</code></p>
 </li>
 </ol>
-<pre><code class="language-bash">sudo systemctl daemon-reload
-</code></pre>
-<ol>
-<li>Enable the service.</li>
-</ol>
-<pre><code class="language-bash">sudo systemctl enable vanderwood-twitch-bot.service
-</code></pre>
-<ol>
-<li>Start the service.</li>
-</ol>
-<pre><code class="language-bash">sudo systemctl start vanderwood-twitch-bot.service
-</code></pre>
 <h2 id="updating">Updating</h2>
 <ol>
 <li>
@@ -1078,15 +1076,15 @@ GRANT ALL PRIVILEGES ON DATABASE battleofmidgard TO battleofmidgard;
 </li>
 <li>
 <p>Run the database migrations.</p>
+<p><code>bash
+aerich upgrade</code></p>
+</li>
+<li>
+<p>Restart the application.</p>
+<p><code>bash
+sudo systemctl restart vanderwood-twitch-bot.service</code></p>
 </li>
 </ol>
-<pre><code class="language-bash">aerich upgrade
-</code></pre>
-<ol>
-<li>Restart the application.</li>
-</ol>
-<pre><code class="language-bash">sudo systemctl restart vanderwood-twitch-bot.service
-</code></pre>
 
 
 
