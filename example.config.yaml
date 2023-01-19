@@ -1,0 +1,33 @@
+APP:
+  MODE: TEST # PROD/TEST
+  DEBUG: True # True/False
+  BOT_COMMANDS_LINK: https://docs.example.co.uk/latest/
+  ACCESS_TOKEN: "" ## Get from https://twitchtokengenerator.com
+  CLIENT_SECRET: "" ## App Client Secret from https://dev.twitch.tv
+  CLIENT_ID: "" ## App Client ID from https://dev.twitch.tv
+  SECRET_STRING: "" # Set to any long random secret string, can not be changed thereafter.
+  CALLBACK_URL: "https://example.co.uk/callback" # URL that Nginx proxy's to the bot.
+  PORT: 4000 # Port that Nginx proxys too.
+  DATABASE:
+    DBUSER: "databaseuser"
+    DBNAME: "databasename"
+    DBHOST: "127.0.0.1"
+    DBPASS: "password"
+    DBPORT: 5432 # Postgres Port
+  TEST_DATABASE:
+    DBUSER: "databaseuser"
+    DBNAME: "testdatabasename"
+    DBHOST: "127.0.0.1"
+    DBPASS: "password"
+    DBPORT: 5432 # Postgres Port
+  POINTS:
+    TIER_1: 1000
+    TIER_2: 2000
+    TIER_3: 6000
+  HIGHLIGHTED_MESSAGE_POINTS: 10
+  ACCOUNTS: [
+    {
+      name: channelname, # Channel Name
+      id: 111111111 # Channel ID
+    }
+  ]
