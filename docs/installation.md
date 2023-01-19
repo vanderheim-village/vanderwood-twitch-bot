@@ -13,26 +13,26 @@
 
 2. Create a Python virtual environment and install the dependencies.
 
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install -r requirements.txt
+    ```
 
 3. Create a PostgreSQL database and user.
 
-```bash
-sudo -u postgres psql
-CREATE DATABASE battleofmidgard;
-CREATE USER battleofmidgard WITH PASSWORD 'password';
-GRANT ALL PRIVILEGES ON DATABASE battleofmidgard TO battleofmidgard;
-```
+    ```bash
+    sudo -u postgres psql
+    CREATE DATABASE battleofmidgard;
+    CREATE USER battleofmidgard WITH PASSWORD 'password';
+    GRANT ALL PRIVILEGES ON DATABASE battleofmidgard TO battleofmidgard;
+    ```
 
 4. Make a copy of config.yml.example and rename it to config.yml.
 
-```bash
-cp config.yml.example config.yml
-```
+    ```bash
+    cp config.yml.example config.yml
+    ```
 
 5. Edit config.yml and add in the database credentials and details.
 
@@ -48,15 +48,15 @@ cp config.yml.example config.yml
 
 10. Run the database migrations.
 
-```bash
-aerich upgrade
-```
+    ```bash
+    aerich upgrade
+    ```
 
 11. Run the application.
 
-```bash
-python3 bot.py
-```
+    ```bash
+    python3 bot.py
+    ```
 
 ## Enabling as a Systemd Service
 
@@ -66,21 +66,21 @@ python3 bot.py
 
 3. Reload the systemd daemon.
 
-```bash
-sudo systemctl daemon-reload
-```
+    ```bash
+    sudo systemctl daemon-reload
+    ```
 
 4. Enable the service.
 
-```bash
-sudo systemctl enable vanderwood-twitch-bot.service
-```
+    ```bash
+    sudo systemctl enable vanderwood-twitch-bot.service
+    ```
 
 5. Start the service.
 
-```bash
-sudo systemctl start vanderwood-twitch-bot.service
-```
+    ```bash
+    sudo systemctl start vanderwood-twitch-bot.service
+    ```
 
 ## Updating
 
@@ -88,12 +88,12 @@ sudo systemctl start vanderwood-twitch-bot.service
 
 2. Run the database migrations.
 
-```bash
-aerich upgrade
-```
+    ```bash
+    aerich upgrade
+    ```
 
 3. Restart the application.
 
-```bash
-sudo systemctl restart vanderwood-twitch-bot.service
-```
+    ```bash
+    sudo systemctl restart vanderwood-twitch-bot.service
+    ```
