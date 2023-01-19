@@ -998,22 +998,23 @@
 </li>
 <li>
 <p>Create a Python virtual environment and install the dependencies.</p>
-<p><pre><code class="language-bash">python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-</code></pre></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">source</span><span class="w"> </span>venv/bin/activate
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</code></pre></div>
 </li>
 <li>
 <p>Create a PostgreSQL database and user.</p>
-<p><pre><code class="language-bash">sudo -u postgres psql
-CREATE DATABASE battleofmidgard;
-CREATE USER battleofmidgard WITH PASSWORD 'password';
-GRANT ALL PRIVILEGES ON DATABASE battleofmidgard TO battleofmidgard;
-</code></pre></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>sudo<span class="w"> </span>-u<span class="w"> </span>postgres<span class="w"> </span>psql
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>CREATE<span class="w"> </span>DATABASE<span class="w"> </span>battleofmidgard<span class="p">;</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>CREATE<span class="w"> </span>USER<span class="w"> </span>battleofmidgard<span class="w"> </span>WITH<span class="w"> </span>PASSWORD<span class="w"> </span><span class="s1">&#39;password&#39;</span><span class="p">;</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>GRANT<span class="w"> </span>ALL<span class="w"> </span>PRIVILEGES<span class="w"> </span>ON<span class="w"> </span>DATABASE<span class="w"> </span>battleofmidgard<span class="w"> </span>TO<span class="w"> </span>battleofmidgard<span class="p">;</span>
+</code></pre></div>
 </li>
 <li>
 <p>Make a copy of config.yml.example and rename it to config.yml.</p>
-<p><pre><code class="language-bash">cp config.yml.example config.yml</code></pre></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>cp<span class="w"> </span>config.yml.example<span class="w"> </span>config.yml
+</code></pre></div>
 </li>
 <li>
 <p>Edit config.yml and add in the database credentials and details.</p>
@@ -1035,11 +1036,13 @@ GRANT ALL PRIVILEGES ON DATABASE battleofmidgard TO battleofmidgard;
 </li>
 <li>
 <p>Run the database migrations.</p>
-<p><pre><code class="language-bash">aerich upgrade</code></pre></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>aerich<span class="w"> </span>upgrade
+</code></pre></div>
 </li>
 <li>
 <p>Run the application.</p>
-<p><pre><code class="language-bash">python3 bot.py</code></pre></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>python3<span class="w"> </span>bot.py
+</code></pre></div>
 </li>
 </ol>
 <h2 id="enabling-as-a-systemd-service">Enabling as a Systemd Service</h2>
@@ -1052,15 +1055,18 @@ GRANT ALL PRIVILEGES ON DATABASE battleofmidgard TO battleofmidgard;
 </li>
 <li>
 <p>Reload the systemd daemon.</p>
-<p><pre><code class="language-bash">sudo systemctl daemon-reload</code></pre></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
+</code></pre></div>
 </li>
 <li>
 <p>Enable the service.</p>
-<p><pre><code class="language-bash">sudo systemctl enable vanderwood-twitch-bot.service</code></pre></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>vanderwood-twitch-bot.service
+</code></pre></div>
 </li>
 <li>
 <p>Start the service.</p>
-<p><pre><code class="language-bash">sudo systemctl start vanderwood-twitch-bot.service</code></pre></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>vanderwood-twitch-bot.service
+</code></pre></div>
 </li>
 </ol>
 <h2 id="updating">Updating</h2>
@@ -1070,11 +1076,13 @@ GRANT ALL PRIVILEGES ON DATABASE battleofmidgard TO battleofmidgard;
 </li>
 <li>
 <p>Run the database migrations.</p>
-<p><pre><code class="language-bash">aerich upgrade</code></pre></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>aerich<span class="w"> </span>upgrade
+</code></pre></div>
 </li>
 <li>
 <p>Restart the application.</p>
-<p><pre><code class="language-bash">sudo systemctl restart vanderwood-twitch-bot.service</code></pre></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>vanderwood-twitch-bot.service
+</code></pre></div>
 </li>
 </ol>
 
