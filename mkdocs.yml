@@ -28,3 +28,9 @@ plugins:
       lang: en
   - social:
       cards: true
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
