@@ -31,18 +31,18 @@
 1. Make a copy of config.yml.example and rename it to config.yml.
 
     ``` bash
-    cp config.yml.example config.yml
+    cp example.config.yaml config.yaml
     ```
 
-1. Edit config.yml and add in the database credentials and details.
+1. Edit config.yaml and add in the database credentials and details.
 
-1. Edit config.yml and enter the twitch access token, client id and client secret.
+1. Edit config.yaml and enter the twitch access token, client id and client secret.
 
-1. Edit config.yml and enter the twitch channel name and id to connect to.
+1. Edit config.yaml and enter the twitch channel name and id to connect to.
 
-1. Edit config.yml and enter your callback URL.
+1. Edit config.yaml and enter your callback URL.
 
-1. Edit config.yml and fill out the other details.
+1. Edit config.yaml and fill out the other details.
 
 1. Configure Nginx to proxy this application using the `example-nginx-virtualhost.conf` file.
 
