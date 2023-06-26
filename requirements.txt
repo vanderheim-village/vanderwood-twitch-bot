@@ -4,7 +4,7 @@ twitchio==2.6.0
 pyyaml==6.0
 tortoise-orm[asyncpg]==0.19.3
 aerich==0.7.1
-mkdocs-material==9.1.8
+mkdocs-material==9.1.17
 cairosvg==2.7.0
 pillow==9.5.0
 mike==1.1.2
