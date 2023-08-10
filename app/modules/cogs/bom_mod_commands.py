@@ -4,7 +4,7 @@ from tortoise import timezone
 from twitchio.ext import commands
 
 from app.helpers import date_validate
-from app.models import Clan, Player, Points, Season, Session, Channel
+from app.models import Clan, Player, Points, Season, Session, Channel, RewardLevel
 
 
 class BomModCommandsCog(commands.Cog):
@@ -265,7 +265,52 @@ class BomModCommandsCog(commands.Cog):
                 await ctx.send("No active seasons!")
         else:
             pass
-
+    
+    @commands.command()
+    async def addrewardlevel(self, ctx: commands.Context, level: int, *, reward: str) -> None:
+        """
+        !addrewardlevel command
+        """
+        if await Channel.get_or_none(name=ctx.channel.name):
+            channel = await Channel.get(name=ctx.channel.name)
+            if await RewardLevel.get_or_none(level=level, channel=channel):
+                await ctx.send(f"Reward level {level} already exists.")
+            else:
+                await RewardLevel.create(level=level, reward=reward, channel=channel)
+                await ctx.send(f"Reward level {level} has been created.")
+        else:
+            pass
+    
+    @commands.command()
+    async def editrewardlevel(self, ctx: commands.Context, level: int, *, reward: str) -> None:
+        """
+        !editrewardlevel command
+        """
+        if await Channel.get_or_none(name=ctx.channel.name):
+            channel = await Channel.get(name=ctx.channel.name)
+            if await RewardLevel.get_or_none(level=level, channel=channel):
+                await RewardLevel.get(level=level, channel=channel).update(reward=reward)
+                await ctx.send(f"Reward level {level} has been updated.")
+            else:
+                await ctx.send(f"Reward level {level} does not exist.")
+        else:
+            pass
+    
+    @commands.command()
+    async def removerewardlevel(self, ctx: commands.Context, level: int) -> None:
+        """
+        !removerewardlevel command
+        """
+        if await Channel.get_or_none(name=ctx.channel.name):
+            channel = await Channel.get(name=ctx.channel.name)
+            if await RewardLevel.get_or_none(level=level, channel=channel):
+                await RewardLevel.get(level=level, channel=channel).delete()
+                await ctx.send(f"Reward level {level} has been deleted.")
+            else:
+                await ctx.send(f"Reward level {level} does not exist.")
+        else:
+            pass
+        
 
 def prepare(bot: commands.Bot) -> None:
     bot.add_cog(BomModCommandsCog(bot))
