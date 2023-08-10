@@ -29,7 +29,7 @@ The bot has a number of commands that are available to the streamer, moderators,
 * **[!startsession](commands/moderator-commands/startsession.md)** - Starts a new session of the Battle of Midgard game.
 * **[!endsession](commands/moderator-commands/endsession.md)** - Ends the current session of the Battle of Midgard game.
 * **[!setdate](commands/moderator-commands/setdate.md)** - Sets the end date of the current season of the Battle of Midgard game.
-* **[!addpoints](commands/moderator-commands/addpoints.md)** - Adds points to the viewer for the current season of the Battle of Midgard game.
+* **[!addvp](commands/moderator-commands/addvp.md)** - Adds valor points to the viewer for the current season of the Battle of Midgard game.
 * **[!removepoints](commands/moderator-commands/removepoints.md)** - Removes points from the viewer for the current season of the Battle of Midgard game.
 
 ### Subscriber Commands
