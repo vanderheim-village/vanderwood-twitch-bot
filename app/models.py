@@ -135,3 +135,10 @@ class Subscriptions(Model):
     channel = fields.ForeignKeyField("models.Channel", related_name="subscriptions")
     months_subscribed = fields.IntField(default=1)
     currently_subscribed = fields.BooleanField()
+
+
+class RewardLevel(Model):
+    id = fields.IntField(pk=True)
+    channel = fields.ForeignKeyField("models.Channel", related_name="reward_levels")
+    level = fields.IntField(unique=True)
+    reward = fields.CharField(max_length=255)
