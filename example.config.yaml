@@ -7,6 +7,7 @@ APP:
   CLIENT_ID: "" ## App Client ID from https://dev.twitch.tv
   SECRET_STRING: "" # Set to any long random secret string, can not be changed thereafter.
   CALLBACK_URL: "https://example.co.uk/callback" # URL that Nginx proxy's to the bot.
+  DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/xxxxxxxxxxxxxxxxxxxxx/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" # Discord Webhook URL to send level alerts to.
   PORT: 4000 # Port that Nginx proxys too.
   DATABASE:
     DBUSER: "databaseuser"
