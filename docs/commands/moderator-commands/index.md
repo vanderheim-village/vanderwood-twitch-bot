@@ -10,5 +10,8 @@ The following commands are available to the streamer and moderators only:
 * **[!startsession](startsession.md)** - Starts a new session of the Battle of Midgard game.
 * **[!endsession](endsession.md)** - Ends the current session of the Battle of Midgard game.
 * **[!setdate](setdate.md)** - Sets the end date of the current season of the Battle of Midgard game.
-* **[!addpoints](addpoints.md)** - Adds points to the viewer for the current season of the Battle of Midgard game.
-* **[!removepoints](removepoints.md)** - Removes points from the viewer for the current season of the Battle of Midgard game.
+* **[!addvp](addvp.md)** - Adds valor points to the viewer for the current season of the Battle of Midgard game.
+* **[!removevp](removevp.md)** - Removes valor points from the viewer for the current season of the Battle of Midgard game.
+* **[!addrewardlevel](addrewardlevel.md)** - Adds a reward level to the Battle of Midgard game.
+* **[!editrewardlevel](editrewardlevel.md)** - Edits a reward level in the Battle of Midgard game.
+* **[!removerewardlevel](removerewardlevel.md)** - Removes a reward level from the Battle of Midgard game.

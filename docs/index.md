@@ -31,6 +31,9 @@ The bot has a number of commands that are available to the streamer, moderators,
 * **[!setdate](commands/moderator-commands/setdate.md)** - Sets the end date of the current season of the Battle of Midgard game.
 * **[!addvp](commands/moderator-commands/addvp.md)** - Adds valor points to the viewer for the current season of the Battle of Midgard game.
 * **[!removevp](commands/moderator-commands/removevp.md)** - Removes valor points from the viewer for the current season of the Battle of Midgard game.
+* **[!addrewardlevel](commands/moderator-commands/addrewardlevel.md)** - Adds a reward level to the Battle of Midgard game.
+* **[!editrewardlevel](commands/moderator-commands/editrewardlevel.md)** - Edits a reward level in the Battle of Midgard game.
+* **[!removerewardlevel](commands/moderator-commands/removerewardlevel.md)** - Removes a reward level from the Battle of Midgard game.
 
 ### Subscriber Commands
 
