@@ -306,20 +306,6 @@ class BomCommandsCog(commands.Cog):
         else:
             pass
 
-    @commands.command()
-    async def myrewards(self, ctx: commands.Context) -> None:
-        """
-        !myrewards command
-        """
-        await ctx.send(f"Rewards for {ctx.author.name}.")
-
-    @commands.command()
-    async def clanchampions(self, ctx: commands.Context) -> None:
-        """
-        !clanchampions command
-        """
-        await ctx.send("Clan champions for each clan")
-
 
 def prepare(bot: commands.Bot) -> None:
     bot.add_cog(BomCommandsCog(bot))
