@@ -113,9 +113,9 @@ class BomModCommandsCog(commands.Cog):
             pass
 
     @commands.command()
-    async def removepoints(self, ctx: commands.Context, playername: str, losepoints: int) -> None:
+    async def removevp(self, ctx: commands.Context, playername: str, losepoints: int) -> None:
         """
-        !removepoints command
+        !removevp command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
@@ -133,10 +133,10 @@ class BomModCommandsCog(commands.Cog):
                                 points.points -= losepoints
                             await points.save()
                             await ctx.send(
-                                f"Removed {losepoints} points from @{playername.lower()} for the {season.name} season!"
+                                f"Removed {losepoints} valor points from @{playername.lower()} for the {season.name} season!"
                             )
                         else:
-                            await ctx.send(f"@{playername.lower()} has no points for the {season.name} season!")
+                            await ctx.send(f"@{playername.lower()} has no valor points for the {season.name} season!")
                     else:
                         await ctx.send(f"@{playername.lower()} is not in a Clan roster!")
                 else:
