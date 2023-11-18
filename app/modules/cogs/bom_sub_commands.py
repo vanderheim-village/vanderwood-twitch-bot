@@ -24,7 +24,17 @@ class BomSubCommandsCog(commands.Cog):
                 await ctx.send("No clans have been created yet.")
             else:
                 if await Player.filter(name=ctx.author.name.lower(), channel=channel).exists():
-                    await ctx.send("You have already joined a clan.")
+                    player = await Player.get(name=ctx.author.name.lower(), channel=channel)
+                    if player.is_enabled():
+                        clan = await Clan.get(id=player.clan_id)
+                        clan_details = await Clan.get(id=clan.id)
+                        await ctx.send(
+                            f"Welcome @{ctx.author.name.lower()} to the [{clan_details.tag}] {clan_details.name} Clan roster!"
+                        )
+                    else:
+                        await ctx.send(
+                            f"@{ctx.author.name.lower()} you are currently disabled, please contact a moderator to enable you."
+                        )
                 else:
                     clan_totals = (
                         await Clan.all()

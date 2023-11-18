@@ -139,7 +139,7 @@ class BomCommandsCog(commands.Cog):
                         await ctx.send("You are not in a clan.")
                     else:
                         clan = await player.clan.get()
-                        if Points.get_or_none(player=player, season=active_season, channel=channel):
+                        if await Points.get_or_none(player=player, season=active_season, channel=channel):
                             current_season_points = (
                                 await Points.get(player=player, season=active_season, channel=channel)
                             ).points
@@ -155,7 +155,7 @@ class BomCommandsCog(commands.Cog):
                         else:
                             lifetime_points = 0
 
-                        if Points.get_or_none(player=player, season=active_season, channel=channel):
+                        if await Points.get_or_none(player=player, season=active_season, channel=channel):
                             standings: List[PlayerStandings] = []
                             for points_row in await Points.filter(season=active_season, channel=channel):
                                 player = await points_row.player.get()
@@ -178,7 +178,7 @@ class BomCommandsCog(commands.Cog):
                         else:
                             current_season_overall_rank = 0
 
-                        if Points.get_or_none(player=player, season=active_season, channel=channel):
+                        if await Points.get_or_none(player=player, season=active_season, channel=channel):
                             clan_standings: List[PlayerStandings] = []
                             for points_row in await Points.filter(season=active_season, clan=clan, channel=channel):
                                 player = await points_row.player.get()
@@ -223,7 +223,7 @@ class BomCommandsCog(commands.Cog):
             if await Season.active_seasons.all().filter(channel=channel).exists():
                 season = await Season.active_seasons.all().filter(channel=channel).first()
                 start_date = season.start_date.strftime("%d/%m/%Y")
-                if season.end_date == None:
+                if season.info_end_date == None:
                     await ctx.send(
                         f"The current season started on {start_date} but doesn't have an end date yet."
                     )
