@@ -4,8 +4,8 @@ After=multi-user.target
 
 [Service]
 Type=simple
-WorkingDirectory=/project/vanderwood-twitch-bot/
-ExecStart=/project/vanderwood-twitch-bot/venv/bin/python3  /project/vanderwood-twitch-bot/bot.py
+WorkingDirectory=/project/bombot/
+ExecStart=/project/bombot/venv/bin/python3  /project/bombot/bot.py
 Restart=on-failure
 
 [Install]
