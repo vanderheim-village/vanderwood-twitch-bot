@@ -28,7 +28,7 @@ def process_config_file() -> Any:
 
 
 # Define Bot class
-class Bot(commands.Bot):
+class TwitchBot(commands.Bot):
     def __init__(
         self,
         access_token: str,
@@ -104,7 +104,7 @@ if __name__ == "__main__":
     channel_names = []
     for channel in conf_options["APP"]["ACCOUNTS"]:
         channel_names.append("#" + channel["name"])
-    bot = Bot(
+    twitch_bot = TwitchBot(
         access_token=conf_options["APP"]["ACCESS_TOKEN"],
         prefix="?",
         initial_channels=channel_names,
@@ -114,17 +114,17 @@ if __name__ == "__main__":
     for filename in os.listdir("./app/modules/cogs/"):
         if filename.endswith(".py"):
             try:
-                bot.load_module(f"app.modules.cogs.{filename.strip('.py')}")
+                twitch_bot.load_module(f"app.modules.cogs.{filename.strip('.py')}")
             except Exception:
                 print(f"Failed to load extension modules.cogs.{filename}.", file=sys.stderr)
                 traceback.print_exc()
 
-    eventsubbot = Bot.from_client_credentials(
+    twitch_eventsubbot = TwitchBot.from_client_credentials(
         client_id=conf_options["APP"]["CLIENT_ID"],
         client_secret=conf_options["APP"]["CLIENT_SECRET"],
     )
 
-    @eventsubbot.event()
+    @twitch_eventsubbot.event()
     async def event_eventsub_notification_subscription(
         payload: eventsub.ChannelSubscribeData,
     ) -> None:
@@ -242,7 +242,7 @@ if __name__ == "__main__":
         else:
             pass
     
-    @eventsubbot.event()
+    @twitch_eventsubbot.event()
     async def event_eventsub_notification_subscription_gift(
         payload: eventsub.ChannelSubscriptionGiftData,
     ) -> None:
@@ -344,7 +344,7 @@ if __name__ == "__main__":
                     pass
 
     
-    @eventsubbot.event()
+    @twitch_eventsubbot.event()
     async def event_eventsub_notification_subscription_message(
         payload: eventsub.ChannelSubscribeData,
     ) -> None:
@@ -465,7 +465,7 @@ if __name__ == "__main__":
             pass
 
 
-    @eventsubbot.event()
+    @twitch_eventsubbot.event()
     async def event_eventsub_notification_channel_reward_redeem(
         payload: eventsub.CustomRewardRedemptionAddUpdateData,
     ) -> None:
@@ -516,7 +516,7 @@ if __name__ == "__main__":
             pass
 
     eventsub_client = eventsub.EventSubClient(
-        eventsubbot,
+        twitch_eventsubbot,
         conf_options["APP"]["SECRET_STRING"],
         conf_options["APP"]["CALLBACK_URL"],
     )
@@ -614,30 +614,30 @@ if __name__ == "__main__":
             else:
                 raise
 
-    bot.loop.create_task(eventsub_client.listen(port=conf_options["APP"]["PORT"]))
-    bot.loop.create_task(bot.tinit())
-    bot.loop.create_task(bot.connect())
+    twitch_bot.loop.create_task(eventsub_client.listen(port=conf_options["APP"]["PORT"]))
+    twitch_bot.loop.create_task(twitch_bot.tinit())
+    twitch_bot.loop.create_task(twitch_bot.connect())
     for channel in conf_options["APP"]["ACCOUNTS"]:
-        eventsubbot.loop.create_task(
+        twitch_eventsubbot.loop.create_task(
             subscribe_channel_subscriptions(channel_id=channel["id"], channel_name=channel["name"])
         )
-        eventsubbot.loop.create_task(
+        twitch_eventsubbot.loop.create_task(
             subscribe_channel_points_redeemed(
                 channel_id=channel["id"], channel_name=channel["name"]
             )
         )
-        eventsubbot.loop.create_task(
+        twitch_eventsubbot.loop.create_task(
             subscribe_channel_subscription_messages(
                 channel_id=channel["id"], channel_name=channel["name"]
             )
         )
-        eventsubbot.loop.create_task(
+        twitch_eventsubbot.loop.create_task(
             subscribe_channel_subscription_gifts(channel_id=channel["id"], channel_name=channel["name"])
         )
         pass
     try:
-        bot.loop.run_forever()
-        bot.loop.run_until_complete(bot.stop())
+        twitch_bot.loop.run_forever()
+        twitch_bot.loop.run_until_complete(twitch_bot.stop())
     except GracefulExit:
-        bot.loop.run_until_complete(bot.stop())
+        twitch_bot.loop.run_until_complete(twitch_bot.stop())
         sys.exit(0)
