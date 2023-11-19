@@ -1,4 +1,5 @@
 # Import libraries
+import importlib
 import logging
 import os
 import random
@@ -10,6 +11,8 @@ import twitchio
 import yaml
 from aiohttp import ClientSession
 from aiohttp.web_runner import GracefulExit
+import discord
+from discord.ext import commands as discord_commands
 from tortoise import Tortoise
 from twitchio.ext import commands, eventsub
 from tortoise.functions import Count
@@ -25,6 +28,20 @@ def process_config_file() -> Any:
         config_options = yaml.safe_load(stream)
 
     return config_options
+
+
+class DiscordBot(discord_commands.Bot):
+    def __init__(self, *args, **kwargs):
+        self.conf_options = kwargs.pop("conf_options")
+        super().__init__(*args, **kwargs)
+    
+    async def on_ready(self) -> None:
+        logging.debug(f"Logged in as {self.user}")
+        await self.change_presence(activity=discord.Game(name="!help"))
+        self.log_channel = self.get_channel(self.conf_options["APP"]["DISCORD_LOG_CHANNEL"])
+    
+    async def log_message(self, message: str) -> None:
+        await self.log_channel.send(message)
 
 
 # Define Bot class
@@ -111,10 +128,22 @@ if __name__ == "__main__":
         conf_options=conf_options,
     )
 
+    intents = discord.Intents.default()
+    intents.guilds = True
+
+    discord_bot = DiscordBot(
+        command_prefix="!",
+        conf_options=conf_options,
+        intents=intents,
+    )
+
     for filename in os.listdir("./app/modules/cogs/"):
         if filename.endswith(".py"):
             try:
-                twitch_bot.load_module(f"app.modules.cogs.{filename.strip('.py')}")
+                module = importlib.import_module(f"app.modules.cogs.{filename.strip('.py')}")
+
+                if hasattr(module, "prepare"):
+                    module.prepare(twitch_bot, discord_bot)
             except Exception:
                 print(f"Failed to load extension modules.cogs.{filename}.", file=sys.stderr)
                 traceback.print_exc()
@@ -615,6 +644,7 @@ if __name__ == "__main__":
                 raise
 
     twitch_bot.loop.create_task(eventsub_client.listen(port=conf_options["APP"]["PORT"]))
+    twitch_bot.loop.create_task(discord_bot.start(conf_options["APP"]["DISCORD_TOKEN"]))
     twitch_bot.loop.create_task(twitch_bot.tinit())
     twitch_bot.loop.create_task(twitch_bot.connect())
     for channel in conf_options["APP"]["ACCOUNTS"]:
