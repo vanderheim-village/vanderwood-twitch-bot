@@ -2,6 +2,7 @@ from typing import List, TypedDict
 
 from tortoise.functions import Sum
 from twitchio.ext import commands
+from discord.ext import commands as discord_commands
 
 from app.models import Checkin, Clan, Player, Points, Season, Session, Channel
 
@@ -19,8 +20,9 @@ class PlayerStandings(TypedDict):
 
 
 class BomCommandsCog(commands.Cog):
-    def __init__(self, bot: commands.Cog) -> None:
-        self.bot = bot
+    def __init__(self, twitch_bot: commands.Cog, discord_bot: discord_commands.Bot) -> None:
+        self.twitch_bot = twitch_bot
+        self.discord_bot = discord_bot
 
     @commands.command()
     async def rank(self, ctx: commands.Context, clanname: str) -> None:
@@ -307,5 +309,5 @@ class BomCommandsCog(commands.Cog):
             pass
 
 
-def prepare(bot: commands.Bot) -> None:
-    bot.add_cog(BomCommandsCog(bot))
+def prepare(twitch_bot: commands.Bot, discord_bot: discord_commands.Bot) -> None:
+    twitch_bot.add_cog(BomCommandsCog(twitch_bot, discord_bot))
