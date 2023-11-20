@@ -1,6 +1,17 @@
 # Import libraries
 import importlib
 import logging
+from app.logger import CustomFormatter
+# Set up logging
+
+discord_logger = logging.getLogger("discord_bot")
+twitch_logger = logging.getLogger("twitch_bot")
+
+log_handler = logging.StreamHandler()
+log_handler.setFormatter(CustomFormatter())
+
+logging.basicConfig(level=logging.INFO, handlers=[log_handler])
+
 import os
 import random
 import sys
@@ -20,15 +31,7 @@ from twitchio.models import PartialUser
 
 from app import settings
 from app.models import EventSubscriptions, Player, Points, Season, Subscriptions, Clan, Channel
-from app.logger import CustomFormatter
 
-# Set up logging
-
-discord_logger = logging.getLogger("discord_bot")
-twitch_logger = logging.getLogger("twitch_bot")
-
-log_handler = logging.StreamHandler()
-log_handler.setFormatter(CustomFormatter())
 
 # Define function to process yaml config file
 def process_config_file() -> Any:
@@ -45,7 +48,7 @@ class DiscordBot(discord_commands.Bot):
     
     async def on_ready(self) -> None:
         discord_logger.info(f"Logged in as {self.user.name}")
-        await self.change_presence(activity=discord.Game(name="!help"))
+        await self.change_presence(activity=discord.Game(name="/help"))
         self.log_channel = self.get_channel(self.conf_options["APP"]["DISCORD_LOG_CHANNEL"])
     
     async def setup_hook(self) -> None:

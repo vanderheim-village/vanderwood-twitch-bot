@@ -291,7 +291,7 @@ class BomModCommandsCog(commands.Cog):
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
             if await RewardLevel.get_or_none(level=level, channel=channel):
-                await RewardLevel.get(level=level, channel=channel).update(reward=reward)
+                await (await RewardLevel.get(level=level, channel=channel)).update(reward=reward)
                 await ctx.send(f"Reward level {level} has been updated.")
             else:
                 await ctx.send(f"Reward level {level} does not exist.")
@@ -306,7 +306,7 @@ class BomModCommandsCog(commands.Cog):
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
             if await RewardLevel.get_or_none(level=level, channel=channel):
-                await RewardLevel.get(level=level, channel=channel).delete()
+                await (await RewardLevel.get(level=level, channel=channel)).delete()
                 await ctx.send(f"Reward level {level} has been deleted.")
             else:
                 await ctx.send(f"Reward level {level} does not exist.")

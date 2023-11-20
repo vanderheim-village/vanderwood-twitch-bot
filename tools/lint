@@ -69,13 +69,13 @@ def run():
         or re.fullmatch(r"\d+ file? left unchanged\.\n", line) is not None,
     )
 
-    linter_config.external_linter(
-        "prettier",
-        ["node_modules/.bin/prettier", "--check", "--loglevel=warn"],
-        ["json", "yaml", "yml"],
-        fix_arg=["--write"],
-        description="Formats Json, YAML",
-    )
+    # linter_config.external_linter(
+    #     "prettier",
+    #     ["node_modules/.bin/prettier", "--check", "--loglevel=warn"],
+    #     ["json", "yaml", "yml"],
+    #     fix_arg=["--write"],
+    #     description="Formats Json, YAML",
+    # )
 
     linter_config.external_linter(
         "shellcheck",
