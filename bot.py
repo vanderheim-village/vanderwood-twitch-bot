@@ -48,6 +48,16 @@ class DiscordBot(discord_commands.Bot):
         await self.change_presence(activity=discord.Game(name="!help"))
         self.log_channel = self.get_channel(self.conf_options["APP"]["DISCORD_LOG_CHANNEL"])
     
+    async def setup_hook(self) -> None:
+        for filename in os.listdir("./app/modules/discord_cogs/"):
+            if filename.endswith(".py") and not filename.startswith("__init__"):
+                try:
+                    await discord_bot.load_extension(f"app.modules.discord_cogs.{filename}".strip(".py"))
+                    discord_logger.info(f"Loaded extension app.modules.discord_cogs.{filename}.")
+                except Exception:
+                    discord_logger.error(f"Failed to load extension app.modules.discord_cogs.{filename}.")
+                    traceback.print_exc()
+    
     async def log_message(self, message: str) -> None:
         await self.log_channel.send(message)
 
@@ -141,9 +151,10 @@ if __name__ == "__main__":
     intents.message_content = True
 
     discord_bot = DiscordBot(
-        command_prefix="!",
+        command_prefix="?",
         conf_options=conf_options,
         intents=intents,
+        owner_id=conf_options["APP"]["DISCORD_OWNER_ID"],
     )
 
     twitch_bot = TwitchBot(
@@ -155,15 +166,15 @@ if __name__ == "__main__":
     )
 
     for filename in os.listdir("./app/modules/cogs/"):
-        if filename.endswith(".py"):
+        if filename.endswith(".py") and not filename.startswith("__init__"):
             try:
                 module = importlib.import_module(f"app.modules.cogs.{filename.strip('.py')}")
 
                 if hasattr(module, "prepare"):
                     module.prepare(twitch_bot, discord_bot)
-                    twitch_logger.info(f"Loaded extension modules.cogs.{filename}.")
+                    twitch_logger.info(f"Loaded extension app.modules.cogs.{filename}.")
             except Exception:
-                twitch_logger.error(f"Failed to load extension modules.cogs.{filename}.")
+                twitch_logger.error(f"Failed to load extension app.modules.cogs.{filename}.")
                 traceback.print_exc()
 
     twitch_eventsubbot = TwitchBot.from_client_credentials(
