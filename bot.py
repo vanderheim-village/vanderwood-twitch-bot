@@ -20,7 +20,15 @@ from twitchio.models import PartialUser
 
 from app import settings
 from app.models import EventSubscriptions, Player, Points, Season, Subscriptions, Clan, Channel
+from app.logger import CustomFormatter
 
+# Set up logging
+
+discord_logger = logging.getLogger("discord_bot")
+twitch_logger = logging.getLogger("twitch_bot")
+
+log_handler = logging.StreamHandler()
+log_handler.setFormatter(CustomFormatter())
 
 # Define function to process yaml config file
 def process_config_file() -> Any:
@@ -36,7 +44,7 @@ class DiscordBot(discord_commands.Bot):
         super().__init__(*args, **kwargs)
     
     async def on_ready(self) -> None:
-        logging.debug(f"Logged in as {self.user}")
+        discord_logger.info(f"Logged in as {self.user.name}")
         await self.change_presence(activity=discord.Game(name="!help"))
         self.log_channel = self.get_channel(self.conf_options["APP"]["DISCORD_LOG_CHANNEL"])
     
@@ -52,11 +60,13 @@ class TwitchBot(commands.Bot):
         prefix: str,
         initial_channels: List[str],
         conf_options: Dict[str, Any],
+        discord_bot: discord_commands.Bot,
     ):
         """
         Tells the Bot class which token it should use, channels to connect to and prefix to use.
         """
         self.conf_options = conf_options
+        self.discord_bot = discord_bot
         super().__init__(token=access_token, prefix=prefix, initial_channels=initial_channels)
 
     async def tinit(self) -> None:
@@ -80,6 +90,7 @@ class TwitchBot(commands.Bot):
                 if "msg-id" in message.tags:
                     if message.tags["msg-id"] == "highlighted-message":
                         logging.debug("Received a highlighted message event.")
+                        await self.discord_bot.log_message("Received a highlighted message event.")
                         if await Player.get_or_none(name=message.author.name.lower(), channel=channel):
                             player = await Player.get(name=message.author.name.lower(), channel=channel)
                             if await Season.active_seasons.all().filter(channel=channel).exists():
@@ -111,30 +122,36 @@ class TwitchBot(commands.Bot):
                     pass
             else:
                 pass
+            twitch_logger.info(f"{message.author.name}: {message.content}")
             await self.handle_commands(message)
 
 
 if __name__ == "__main__":
     conf_options = process_config_file()
     if conf_options["APP"]["DEBUG"] == True:
-        logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(handlers=[log_handler], level=logging.DEBUG)
+    elif conf_options["APP"]["DEBUG"] == False:
+        logging.basicConfig(handlers=[log_handler], level=logging.INFO)
     channel_names = []
     for channel in conf_options["APP"]["ACCOUNTS"]:
         channel_names.append("#" + channel["name"])
-    twitch_bot = TwitchBot(
-        access_token=conf_options["APP"]["ACCESS_TOKEN"],
-        prefix="?",
-        initial_channels=channel_names,
-        conf_options=conf_options,
-    )
-
+    
     intents = discord.Intents.default()
     intents.guilds = True
+    intents.message_content = True
 
     discord_bot = DiscordBot(
         command_prefix="!",
         conf_options=conf_options,
         intents=intents,
+    )
+
+    twitch_bot = TwitchBot(
+        access_token=conf_options["APP"]["ACCESS_TOKEN"],
+        prefix="?",
+        initial_channels=channel_names,
+        conf_options=conf_options,
+        discord_bot=discord_bot,
     )
 
     for filename in os.listdir("./app/modules/cogs/"):
@@ -144,8 +161,9 @@ if __name__ == "__main__":
 
                 if hasattr(module, "prepare"):
                     module.prepare(twitch_bot, discord_bot)
+                    twitch_logger.info(f"Loaded extension modules.cogs.{filename}.")
             except Exception:
-                print(f"Failed to load extension modules.cogs.{filename}.", file=sys.stderr)
+                twitch_logger.error(f"Failed to load extension modules.cogs.{filename}.")
                 traceback.print_exc()
 
     twitch_eventsubbot = TwitchBot.from_client_credentials(
