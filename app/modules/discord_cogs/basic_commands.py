@@ -33,7 +33,7 @@ class BasicCommandsCog(commands.Cog):
             f"You can view the list of commands which this bot supports here: {self.bot.conf_options['APP']['BOT_COMMANDS_LINK']}."
         )
     
-    @app_commands.command(name="standings", description="Get the current standings for the current season.")
+    @app_commands.command(name="standings", description="Get the current clan standings for the current season of the Battle of Midgard.")
     async def standings(self, interaction: discord.Interaction) -> None:
         """
         /standings command
@@ -83,7 +83,52 @@ class BasicCommandsCog(commands.Cog):
             await interaction.response.send_message("This discord server has not been registered yet.")
     
 
-    @app_commands.command(name="leaderboard", description="Get the current individual leaderboard for the current season.")
+    @app_commands.command(name="lifetime-standings", description="Get the lifetime clan standings for the Battle of Midgard.")
+    async def lifetime_standings(self, interaction: discord.Interaction) -> None:
+        """
+        /lifetime-standings command
+        """
+        if await Channel.get_or_none(discord_server_id=interaction.guild.id):
+            channel = await Channel.get(discord_server_id=interaction.guild.id)
+            standings: List[Standings] = []
+            for clan in await Clan.all().filter(channel=channel):
+                clan_standings: Standings = {
+                    "points": 0,
+                    "name": clan.name,
+                    "tag": clan.tag,
+                }
+                for points in await Points.filter(clan=clan, channel=channel):
+                    clan_standings["points"] += points.points
+                standings.append(clan_standings)
+            sorted_standings = sorted(standings, key=lambda k: k["points"], reverse=True)
+
+            embed = discord.Embed(title=f"Battle of Midgard Lifetime Clan Standings:")
+            embed.timestamp = interaction.created_at
+            embed.set_footer(text=f"Requested by {interaction.user.name}", icon_url=interaction.user.avatar.url)
+            embed.color = discord.Color.green()
+
+            position_list = ""
+            names_list = ""
+            points_list = ""
+
+            count = 0
+            for result in sorted_standings:
+                count += 1
+                position_list += f"{count}\n"
+                names_list += f" {result['name'].title()}\n"
+                points_list += f"{result['points']}\n"
+                
+            embed.add_field(name="Position", value=position_list, inline=True)
+            embed.add_field(name="Clan", value=names_list, inline=True)
+            embed.add_field(name="Points", value=points_list, inline=True)
+            
+            await interaction.response.send_message(embed=embed)
+        else:
+            logger.info(f"This discord server ({interaction.guild.id}) has not been registered yet.")
+            await interaction.response.send_message("This discord server has not been registered yet.")
+    
+
+    @app_commands.command(name="leaderboard", description="Get the individual leaderboard for the current season of the Battle of Midgard.")
     async def leaderboard(self, interaction: discord.Interaction) -> None:
         """
         /leaderboard command
