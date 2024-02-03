@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from tortoise import timezone
+from tortoise.functions import Count
+import random
 
 from typing import Literal, Optional
 
@@ -157,6 +159,63 @@ class ModCommandsCog(commands.Cog):
                 await interaction.response.send_message(f"There is no active season.", ephemeral=True)
         else:
             await interaction.response.send_message(f"This discord server is not registered.", ephemeral=True)
+    
+    @app_commands.command(name="add-player", description="Add a player to the Battle of Midgard.")
+    @commands.guild_only()
+    @commands.has_any_role("Moderator", "Admin", "Admins", "Moderators")
+    async def add_player(self, interaction: discord.Interaction, player_name: str) -> None:
+        """
+        /add-player <player_name> <clan>
+        """
+        if await Channel.get_or_none(discord_server_id=interaction.guild.id):
+            channel = await Channel.get(discord_server_id=interaction.guild.id)
+            if await Player.all().filter(name=player_name, channel=channel).exists():
+                await interaction.response.send_message(f"Player {player_name} already exists.", ephemeral=True)
+            else:
+                clan_totals = (
+                    await Clan.all()
+                    .filter(channel=channel)
+                    .annotate(count=Count("players", distinct=True))
+                    .values("id", "name", "tag", "count")
+                )
+                min_total = min(clan_totals, key=lambda x: x["count"])
+                clans_to_choose_from = [
+                    clan["id"] for clan in clan_totals if clan["count"] == min_total["count"]
+                ]
+                new_clan = random.choice(clans_to_choose_from)
+                await Player.create(name=player_name.lower(), clan_id=new_clan, channel=channel)
+                logging.debug(f"Created player {player_name.lower()}.")
+                await interaction.response.send_message(f"Player {player_name} added to the Battle of Midgard.", ephemeral=True)
+        else:
+            await interaction.response.send_message(f"This discord server is not registered.", ephemeral=True)
+    
+    @app_commands.command(name="fix-missing-sub-points", description="Fix missing sub points for the current season of the Battle of Midgard.")
+    @commands.guild_only()
+    @commands.has_any_role("Moderator", "Admin", "Admins", "Moderators")
+    async def fix_missing_sub_points(self, interaction: discord.Interaction) -> None:
+        """
+        /fix-missing-sub-points
+        
+        If player has no lifetime points then add 1000 points for the current season.
+        """
+        if await Channel.get_or_none(discord_server_id=interaction.guild.id):
+            channel = await Channel.get(discord_server_id=interaction.guild.id)
+            if await Season.active_seasons.all().filter(channel=channel).exists():
+                season = await Season.active_seasons.all().filter(channel=channel).first()
+                players = await Player.all().filter(channel=channel)
+                for player in players:
+                    if not await Points.all().filter(player=player, channel=channel).exists():
+                        clan = await player.clan.get()
+                        await Points.create(player=player, season=season, channel=channel, clan=clan, points=1000)
+                        logging.debug(f"Added 1000 points to {player.name}.")
+                    else:
+                        if await Points.all().filter(player=player, season=season, channel=channel).exists():
+                            points = await Points.all().filter(player=player, season=season, channel=channel).first()
+                            if points.points == 0:
+                                points.points = 1000
+                                await points.save()
+                                logging.debug(f"Added 1000 points to {player.name}.")
+                await interaction.response.send_message(f"Fixed missing sub points.", ephemeral=True)
 
 
 async def setup(bot: commands.Bot) -> None:

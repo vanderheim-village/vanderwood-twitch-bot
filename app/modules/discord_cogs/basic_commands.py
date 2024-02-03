@@ -159,7 +159,7 @@ class BasicCommandsCog(commands.Cog):
                 points_list = ""
 
                 count = 0
-                for result in sorted_standings[:10]:
+                for result in sorted_standings[:100]:
                     count += 1
                     position_list += f"{count}\n"
                     names_list += f" {result['name'].title()}\n"
@@ -174,6 +174,73 @@ class BasicCommandsCog(commands.Cog):
                 await interaction.response.send_message("There are no active seasons.")
         else:
             await interaction.response.send_message("This discord server has not been registered yet.")
+    
+    @app_commands.command(name="get-clan-player-counts", description="Get the player counts for each clan in the Battle of Midgard.")
+    @commands.guild_only()
+    async def get_clan_player_counts(self, interaction: discord.Interaction) -> None:
+        """
+        /get-clan-player-counts command
+        """
+        if await Channel.get_or_none(discord_server_id=interaction.guild.id):
+            channel = await Channel.get(discord_server_id=interaction.guild.id)
+            clans = await Clan.all().filter(channel=channel)
+            embed = discord.Embed(title=f"Battle of Midgard Clan Player Counts:")
+            embed.timestamp = interaction.created_at
+            embed.set_footer(text=f"Requested by {interaction.user.name}", icon_url=interaction.user.avatar.url)
+            embed.color = discord.Color.green()
+
+            for clan in clans:
+                player_count = await Player.all().filter(clan=clan).count()
+                embed.add_field(name=f"{clan.name.title()}", value=f"{player_count} players", inline=True)
+            await interaction.response.send_message(embed=embed)
+        else:
+            await interaction.response.send_message("This discord server has not been registered yet.")
+    
+    @app_commands.command(name="get-clan-players", description="Get the players for a specific clan in the Battle of Midgard.")
+    @commands.guild_only()
+    async def get_clan_players(self, interaction: discord.Interaction, clantag: str) -> None:
+        """
+        /get-clan-players command
+        """
+        if await Channel.get_or_none(discord_server_id=interaction.guild.id):
+            channel = await Channel.get(discord_server_id=interaction.guild.id)
+            if await Clan.all().filter(channel=channel, tag=clantag).exists():
+                clan = await Clan.get(channel=channel, tag=clantag)
+                players = await Player.all().filter(clan=clan)
+                embed = discord.Embed(title=f"Battle of Midgard Players in {clan.name.title()}:")
+                embed.timestamp = interaction.created_at
+                embed.set_footer(text=f"Requested by {interaction.user.name}", icon_url=interaction.user.avatar.url)
+                embed.color = discord.Color.green()
+
+                names_list = ""
+
+                for player in players:
+                    names_list += f"{player.name.title()}\n"
+
+                embed.add_field(name="Player", value=names_list, inline=True)
+
+                await interaction.response.send_message(embed=embed)
+            else:
+                await interaction.response.send_message(f"Clan {clantag} does not exist.", ephemeral=True)
+        else:
+            await interaction.response.send_message("This discord server has not been registered yet.", ephemeral=True)
+    
+    @app_commands.command(name="check-player-clan", description="Check the clan of a specific player in the Battle of Midgard.")
+    @commands.guild_only()
+    async def check_player_clan(self, interaction: discord.Interaction, player_name: str) -> None:
+        """
+        /check-player-clan command
+        """
+        if await Channel.get_or_none(discord_server_id=interaction.guild.id):
+            channel = await Channel.get(discord_server_id=interaction.guild.id)
+            if await Player.all().filter(channel=channel, name=player_name).exists():
+                player = await Player.get(channel=channel, name=player_name)
+                clan = await player.clan.get()
+                await interaction.response.send_message(f"{player.name} is in {clan.name} [{clan.tag}].")
+            else:
+                await interaction.response.send_message(f"Player {player_name} does not exist.", ephemeral=True)
+        else:
+            await interaction.response.send_message("This discord server has not been registered yet.", ephemeral=True)
 
 
     @app_commands.command(name="lifetime-leaderboard", description="Get the lifetime individual leaderboard for the Battle of Midgard.")
@@ -214,7 +281,7 @@ class BasicCommandsCog(commands.Cog):
             points_list = ""
 
             count = 0
-            for result in sorted_standings[:10]:
+            for result in sorted_standings[:100]:
                 count += 1
                 position_list += f"{count}\n"
                 names_list += f" {result['name'].title()}\n"

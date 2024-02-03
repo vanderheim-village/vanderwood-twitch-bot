@@ -10,7 +10,7 @@ twitch_logger = logging.getLogger("twitch_bot")
 log_handler = logging.StreamHandler()
 log_handler.setFormatter(CustomFormatter())
 
-logging.basicConfig(level=logging.INFO, handlers=[log_handler])
+logging.basicConfig(level=logging.DEBUG, handlers=[log_handler])
 
 import os
 import random
