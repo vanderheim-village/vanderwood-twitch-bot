@@ -10,7 +10,7 @@ twitch_logger = logging.getLogger("twitch_bot")
 log_handler = logging.StreamHandler()
 log_handler.setFormatter(CustomFormatter())
 
-logging.basicConfig(level=logging.DEBUG, handlers=[log_handler])
+logging.basicConfig(level=logging.INFO, handlers=[log_handler])
 
 import os
 import random
@@ -102,7 +102,7 @@ class TwitchBot(commands.Bot):
                 channel = await Channel.get(name=message.channel.name)
                 if "msg-id" in message.tags:
                     if message.tags["msg-id"] == "highlighted-message":
-                        logging.debug("Received a highlighted message event.")
+                        logging.info("Received a highlighted message event.")
                         await self.discord_bot.log_message("Received a highlighted message event.")
                         if await Player.get_or_none(name=message.author.name.lower(), channel=channel):
                             player = await Player.get(name=message.author.name.lower(), channel=channel)
@@ -193,15 +193,15 @@ if __name__ == "__main__":
         Reacts to receicing a new channel subscription event.
         """
 
-        logging.debug(f"User: {payload.data.user.name}")
-        logging.debug(f"Tier: {payload.data.tier}")
+        logging.info(f"User: {payload.data.user.name}")
+        logging.info(f"Tier: {payload.data.tier}")
 
         subscribed_user: PartialUser = payload.data.user
         subscription_tier: int = payload.data.tier
         
-        logging.debug("Received a new subscription event.")
+        logging.info("Received a new subscription event.")
         if await Channel.get_or_none(name=payload.data.broadcaster.name.lower()):
-            logging.debug(f"Channel {payload.data.broadcaster.name} exists.")
+            logging.info(f"Channel {payload.data.broadcaster.name} exists.")
             channel = await Channel.get(name=payload.data.broadcaster.name.lower())
             match subscription_tier:
                 case 1000:
@@ -212,7 +212,7 @@ if __name__ == "__main__":
                     points_to_add = conf_options["APP"]["POINTS"]["TIER_3"]
 
             if await Player.get_or_none(name=subscribed_user.name.lower(), channel=channel):
-                logging.debug(f"Player {subscribed_user.name.lower()} exists.")
+                logging.info(f"Player {subscribed_user.name.lower()} exists.")
                 player = await Player.get(name=subscribed_user.name.lower(), channel=channel)
                 if await Subscriptions.get_or_none(player=player, channel=channel):
                     subscription = await Subscriptions.get(player=player, channel=channel)
@@ -250,7 +250,7 @@ if __name__ == "__main__":
                     "No active seasons"
                     pass
             else:
-                logging.debug(f"Player {subscribed_user.name.lower()} does not exist.")
+                logging.info(f"Player {subscribed_user.name.lower()} does not exist.")
                 clan_totals = (
                     await Clan.all()
                     .filter(channel=channel)
@@ -263,7 +263,7 @@ if __name__ == "__main__":
                 ]
                 new_clan = random.choice(clans_to_choose_from)
                 await Player.create(name=subscribed_user.name.lower(), clan_id=new_clan, channel=channel)
-                logging.debug(f"Created player {subscribed_user.name.lower()}.")
+                logging.info(f"Created player {subscribed_user.name.lower()}.")
                 player = await Player.get(name=subscribed_user.name.lower(), channel=channel)
                 if await Subscriptions.get_or_none(player=player, channel=channel):
                     subscription = await Subscriptions.get(player=player, channel=channel)
@@ -311,18 +311,18 @@ if __name__ == "__main__":
         Reacts to receiving a new channel subscription gift event.
         """
 
-        logging.debug(f"User: {payload.data.user.name}")
-        logging.debug(f"Tier: {payload.data.tier}")
+        logging.info(f"User: {payload.data.user.name}")
+        logging.info(f"Tier: {payload.data.tier}")
 
 
         gift_giver: PartialUser = payload.data.user
         subscription_tier: int = payload.data.tier
         is_anonymous: bool = payload.data.is_anonymous
 
-        logging.debug("Received a new subscription gift event.")
+        logging.info("Received a new subscription gift event.")
 
         if await Channel.get_or_none(name=payload.data.broadcaster.name.lower()):
-            logging.debug(f"Channel {payload.data.broadcaster.name} exists.")
+            logging.info(f"Channel {payload.data.broadcaster.name} exists.")
             channel = await Channel.get(name=payload.data.broadcaster.name.lower())
             match subscription_tier:
                 case 1000:
@@ -332,14 +332,14 @@ if __name__ == "__main__":
                 case 3000:
                     points_to_add = conf_options["APP"]["POINTS"]["TIER_3"]
             
-            logging.debug(f"Points to add: {points_to_add}")
+            logging.info(f"Points to add: {points_to_add}")
 
         if is_anonymous:
-            logging.debug("Gift was anonymous.")
+            logging.info("Gift was anonymous.")
             pass
         else:
             if await Player.get_or_none(name=gift_giver.name.lower(), channel=channel):
-                logging.debug(f"Player {gift_giver.name.lower()} exists.")
+                logging.info(f"Player gifter {gift_giver.name.lower()} exists.")
                 player = await Player.get(name=gift_giver.name.lower(), channel=channel)
                 if await Season.active_seasons.all().filter(channel=channel).exists():
                     season = await Season.active_seasons.filter(channel=channel).first()
@@ -359,13 +359,13 @@ if __name__ == "__main__":
                                 channel=channel,
                             )
                     else:
-                        logging.debug("Player is not enabled or does not have a clan")
+                        logging.info("Player is not enabled or does not have a clan")
                         pass
                 else:
-                    logging.debug("No active seasons")
+                    logging.info("No active seasons")
                     pass
             else:
-                logging.debug(f"Player {gift_giver.name.lower()} does not exist.")
+                logging.info(f"Player gifter {gift_giver.name.lower()} does not exist.")
                 clan_totals = (
                     await Clan.all()
                     .filter(channel=channel)
@@ -378,7 +378,7 @@ if __name__ == "__main__":
                 ]
                 new_clan = random.choice(clans_to_choose_from)
                 await Player.create(name=gift_giver.name.lower(), clan_id=new_clan, channel=channel)
-                logging.debug(f"Created player {gift_giver.name.lower()}.")
+                logging.info(f"Created player {gift_giver.name.lower()}.")
                 player = await Player.get(name=gift_giver.name.lower(), channel=channel)
                 if await Season.active_seasons.all().filter(channel=channel).exists():
                     season = await Season.active_seasons.filter(channel=channel).first()
@@ -398,10 +398,10 @@ if __name__ == "__main__":
                                 channel=channel,
                             )
                     else:
-                        logging.debug("Player is not enabled or does not have a clan")
+                        logging.info("Player is not enabled or does not have a clan")
                         pass
                 else:
-                    logging.debug("No active seasons")
+                    logging.info("No active seasons")
                     pass
 
     
@@ -413,15 +413,15 @@ if __name__ == "__main__":
         Reacts to receicing a new channel subscription event.
         """
 
-        logging.debug(f"User: {payload.data.user.name}")
-        logging.debug(f"Tier: {payload.data.tier}")
+        logging.info(f"User: {payload.data.user.name}")
+        logging.info(f"Tier: {payload.data.tier}")
 
         subscribed_user: PartialUser = payload.data.user
         subscription_tier: int = payload.data.tier
         
-        logging.debug("Received a new subscription event.")
+        logging.info("Received a new subscription event.")
         if await Channel.get_or_none(name=payload.data.broadcaster.name.lower()):
-            logging.debug(f"Channel {payload.data.broadcaster.name} exists.")
+            logging.info(f"Channel {payload.data.broadcaster.name} exists.")
             channel = await Channel.get(name=payload.data.broadcaster.name.lower())
             match subscription_tier:
                 case 1000:
@@ -431,10 +431,10 @@ if __name__ == "__main__":
                 case 3000:
                     points_to_add = conf_options["APP"]["POINTS"]["TIER_3"]
 
-            logging.debug(f"Points to add: {points_to_add}")
+            logging.info(f"Points to add: {points_to_add}")
 
             if await Player.get_or_none(name=subscribed_user.name.lower(), channel=channel):
-                logging.debug(f"Player {subscribed_user.name.lower()} exists.")
+                logging.info(f"Player {subscribed_user.name.lower()} exists.")
                 player = await Player.get(name=subscribed_user.name.lower(), channel=channel)
                 if await Subscriptions.get_or_none(player=player, channel=channel):
                     subscription = await Subscriptions.get(player=player, channel=channel)
@@ -472,7 +472,7 @@ if __name__ == "__main__":
                     "No active seasons"
                     pass
             else:
-                logging.debug(f"Player {subscribed_user.name.lower()} does not exist.")
+                logging.info(f"Player {subscribed_user.name.lower()} does not exist.")
                 clan_totals = (
                     await Clan.all()
                     .filter(channel=channel)
@@ -485,7 +485,7 @@ if __name__ == "__main__":
                 ]
                 new_clan = random.choice(clans_to_choose_from)
                 await Player.create(name=subscribed_user.name.lower(), clan_id=new_clan, channel=channel)
-                logging.debug(f"Created player {subscribed_user.name.lower()}.")
+                logging.info(f"Created player {subscribed_user.name.lower()}.")
                 player = await Player.get(name=subscribed_user.name.lower(), channel=channel)
                 if await Subscriptions.get_or_none(player=player, channel=channel):
                     subscription = await Subscriptions.get(player=player, channel=channel)
@@ -533,17 +533,17 @@ if __name__ == "__main__":
         """
         Reacts to receiving a new channel points redemption event.
         """
-        logging.debug(f"Parsed payload: {str(payload.data)}")
+        logging.info(f"Parsed payload: {str(payload.data)}")
 
         user: PartialUser = payload.data.user
         reward: eventsub.CustomReward = payload.data.reward
 
-        logging.debug("Received a new channel points redemption event.")
+        logging.info("Received a new channel points redemption event.")
         if await Channel.get_or_none(name=payload.data.broadcaster.name.lower()):
-            logging.debug(f"Channel {payload.data.broadcaster.name} exists.")
+            logging.info(f"Channel {payload.data.broadcaster.name} exists.")
             channel = await Channel.get(name=payload.data.broadcaster.name.lower())
             if await Player.get_or_none(name=user.name.lower(), channel=channel):
-                logging.debug(f"Player {user.name.lower()} exists.")
+                logging.info(f"Player {user.name.lower()} exists.")
                 player = await Player.get(name=user.name.lower(), channel=channel)
                 if await Season.active_seasons.all().filter(channel=channel).exists():
                     season = await Season.active_seasons.filter(channel=channel).first()
@@ -553,8 +553,8 @@ if __name__ == "__main__":
                             points = await Points.get(player=player, season=season, channel=channel)
                             points.points += reward.cost / 2
 
-                            logging.debug(f"Reward cost: {reward.cost}")
-                            logging.debug(f"Points to add: {reward.cost / 2}")
+                            logging.info(f"Reward cost: {reward.cost}")
+                            logging.info(f"Points to add: {reward.cost / 2}")
 
                             await points.save()
                         else:
@@ -571,7 +571,7 @@ if __name__ == "__main__":
                 else:
                     pass
             else:
-                logging.debug(f"Player {user.name.lower()} does not exist.")
+                logging.info(f"Player {user.name.lower()} does not exist.")
                 pass
         else:
             pass

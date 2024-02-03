@@ -184,7 +184,7 @@ class ModCommandsCog(commands.Cog):
                 ]
                 new_clan = random.choice(clans_to_choose_from)
                 await Player.create(name=player_name.lower(), clan_id=new_clan, channel=channel)
-                logging.debug(f"Created player {player_name.lower()}.")
+                logging.info(f"Created player {player_name.lower()}.")
                 await interaction.response.send_message(f"Player {player_name} added to the Battle of Midgard.", ephemeral=True)
         else:
             await interaction.response.send_message(f"This discord server is not registered.", ephemeral=True)
@@ -207,14 +207,14 @@ class ModCommandsCog(commands.Cog):
                     if not await Points.all().filter(player=player, channel=channel).exists():
                         clan = await player.clan.get()
                         await Points.create(player=player, season=season, channel=channel, clan=clan, points=1000)
-                        logging.debug(f"Added 1000 points to {player.name}.")
+                        logging.info(f"Added 1000 points to {player.name}.")
                     else:
                         if await Points.all().filter(player=player, season=season, channel=channel).exists():
                             points = await Points.all().filter(player=player, season=season, channel=channel).first()
                             if points.points == 0:
                                 points.points = 1000
                                 await points.save()
-                                logging.debug(f"Added 1000 points to {player.name}.")
+                                logging.info(f"Added 1000 points to {player.name}.")
                 await interaction.response.send_message(f"Fixed missing sub points.", ephemeral=True)
 
 
