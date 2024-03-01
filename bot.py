@@ -195,6 +195,7 @@ if __name__ == "__main__":
 
         logging.info(f"User: {payload.data.user.name}")
         logging.info(f"Tier: {payload.data.tier}")
+        logging.info(f"Payload: {payload.data}")
 
         subscribed_user: PartialUser = payload.data.user
         subscription_tier: int = payload.data.tier
@@ -313,6 +314,7 @@ if __name__ == "__main__":
 
         logging.info(f"User: {payload.data.user.name}")
         logging.info(f"Tier: {payload.data.tier}")
+        logging.info(f"Payload: {payload.data}")
 
 
         gift_giver: PartialUser = payload.data.user
@@ -415,6 +417,7 @@ if __name__ == "__main__":
 
         logging.info(f"User: {payload.data.user.name}")
         logging.info(f"Tier: {payload.data.tier}")
+        logging.info(f"Payload: {payload.data}")
 
         subscribed_user: PartialUser = payload.data.user
         subscription_tier: int = payload.data.tier
