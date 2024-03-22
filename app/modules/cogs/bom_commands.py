@@ -296,7 +296,7 @@ class BomCommandsCog(commands.Cog):
                                         clan_id=clan.id,
                                         channel=channel,
                                     )
-                                await ctx.send(f"@{ctx.author.name.lower()} has checked in!")
+                                await ctx.send(f"@{ctx.author.name.lower()} has checked in and earned 100 VP for the {clan.name.upper()}! HEIMDAL see's you watching!")
                         else:
                             await ctx.send(f"@{ctx.author.name.lower()} is not in a Clan roster!")
                     else:
