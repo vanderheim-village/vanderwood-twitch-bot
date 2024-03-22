@@ -4,7 +4,7 @@ from tortoise.functions import Sum
 from twitchio.ext import commands
 from discord.ext import commands as discord_commands
 
-from app.models import Checkin, Clan, Player, Points, Season, Session, Channel
+from app.models import Checkin, Clan, Player, Points, Season, Session, Channel, RaidSession, RaidCheckin
 
 
 class Standings(TypedDict):
@@ -297,6 +297,51 @@ class BomCommandsCog(commands.Cog):
                                         channel=channel,
                                     )
                                 await ctx.send(f"@{ctx.author.name.lower()} has checked in!")
+                        else:
+                            await ctx.send(f"@{ctx.author.name.lower()} is not in a Clan roster!")
+                    else:
+                        await ctx.send(f"@{ctx.author.name.lower()} is not in a clan roster!")
+                else:
+                    await ctx.send("No active session!")
+            else:
+                await ctx.send("No active seasons!")
+        else:
+            pass
+
+    
+    @commands.command()
+    async def raid(self, ctx: commands.Context) -> None:
+        """
+        ?raid command
+        """
+        if await Channel.get_or_none(name=ctx.channel.name):
+            channel = await Channel.get(name=ctx.channel.name)
+            if await Season.active_seasons.all().filter(channel=channel).exists():
+                season = await Season.active_seasons.filter(channel=channel).first()
+                if await RaidSession.active_session.all().filter(channel=channel).exists():
+                    session = await RaidSession.active_session.filter(channel=channel).first()
+                    if await Player.get_or_none(name=ctx.author.name.lower(), channel=channel):
+                        player = await Player.get(name=ctx.author.name.lower(), channel=channel)
+                        if player.is_enabled() and player.clan:
+                            if await RaidCheckin.get_or_none(player=player, session=session, channel=channel):
+                                await ctx.send(f"@{ctx.author.name.lower()} is already in the raid boat! vander60RAIDBOAT")
+                            else:
+                                await RaidCheckin.create(player=player, session=session, channel=channel)
+                                clan = await player.clan.get()
+                                if await Points.get_or_none(player=player, season=season, channel=channel):
+                                    points = await Points.get(player=player, season=season, channel=channel)
+                                    points.points += 100
+                                    await points.save()
+                                else:
+                                    assert player.clan is not None
+                                    await Points.create(
+                                        player_id=player.id,
+                                        season_id=season.id,
+                                        points=250,
+                                        clan_id=clan.id,
+                                        channel=channel,
+                                    )
+                                await ctx.send(f"vander60RAIDBOAT Hej @{ctx.author.name.lower()}, welcome aboard! vander60RAIDBOAT We set sail soon so sharpen your weapons and get ready to row! vander60RAIDBOAT")
                         else:
                             await ctx.send(f"@{ctx.author.name.lower()} is not in a Clan roster!")
                     else:
