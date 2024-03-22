@@ -289,9 +289,9 @@ class BomModCommandsCog(commands.Cog):
     
 
     @commands.command()
-    async def endsession(self, ctx: commands.Context) -> None:
+    async def endraid(self, ctx: commands.Context) -> None:
         """
-        !endsession command
+        !endraid command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
