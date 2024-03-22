@@ -5,7 +5,7 @@ from twitchio.ext import commands
 from discord.ext import commands as discord_commands
 
 from app.helpers import date_validate
-from app.models import Clan, Player, Points, Season, Session, Channel, RewardLevel
+from app.models import Clan, Player, Points, Season, Session, Channel, RewardLevel, RaidSession
 
 
 class BomModCommandsCog(commands.Cog):
@@ -251,6 +251,25 @@ class BomModCommandsCog(commands.Cog):
             pass
 
     @commands.command()
+    async def startraid(self, ctx: commands.Context) -> None:
+        """
+        !startraid command
+        """
+        if await Channel.get_or_none(name=ctx.channel.name):
+            channel = await Channel.get(name=ctx.channel.name)
+            if await Season.active_seasons.all().filter(channel=channel).exists():
+                active_season: Season = await Season.active_seasons.all().filter(channel=channel).first()
+                if await RaidSession.active_session.all().filter(channel=channel).exists():
+                    await ctx.send("A raid is already in progress.")
+                else:
+                    await RaidSession.create(season=active_season, channel=channel)
+                    await ctx.send("vander60RAIDBOAT The raiding party has begun! vander60RAIDBOAT Use ?raid to get in the boats and earn your Tag of Ægir! Get ready to row! 🚣🚣🚣")
+            else:
+                await ctx.send("No active seasons!")
+        else:
+            pass
+
+    @commands.command()
     async def endsession(self, ctx: commands.Context) -> None:
         """
         !endsession command
@@ -263,6 +282,25 @@ class BomModCommandsCog(commands.Cog):
                     await ctx.send("The current session has been ended.")
                 else:
                     await ctx.send("No session is currently in progress.")
+            else:
+                await ctx.send("No active seasons!")
+        else:
+            pass
+    
+
+    @commands.command()
+    async def endsession(self, ctx: commands.Context) -> None:
+        """
+        !endsession command
+        """
+        if await Channel.get_or_none(name=ctx.channel.name):
+            channel = await Channel.get(name=ctx.channel.name)
+            if await Season.active_seasons.all().filter(channel=channel).exists():
+                if await Session.active_session.all().filter(channel=channel).exists():
+                    await Session.active_session.all().filter(channel=channel).update(end_time=timezone.now())
+                    await ctx.send("The raiding party is over!")
+                else:
+                    await ctx.send("No raid is currently in progress.")
             else:
                 await ctx.send("No active seasons!")
         else:
