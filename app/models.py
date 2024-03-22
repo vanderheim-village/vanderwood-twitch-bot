@@ -85,6 +85,19 @@ class SessionActiveManager(Manager):
         )
 
 
+class RaidSessionActiveManager(Manager):
+    def get_queryset(self) -> QuerySet["RaidSession"]:
+        return (
+            super(RaidSessionActiveManager, self)
+            .get_queryset()
+            .filter(
+                Q(start_time__lte=timezone.now()),
+                Q(end_time__gte=timezone.now())
+                | Q(end_time__isnull=True) & Q(start_time__lte=timezone.now()),
+            )
+        )
+
+
 class Session(Model):
     id = fields.IntField(pk=True)
     season: ForeignKeyRelation[Season] = fields.ForeignKeyField(
@@ -106,6 +119,29 @@ class Checkin(Model):
         "models.Player", related_name="checkins"
     )
     channel = fields.ForeignKeyField("models.Channel", related_name="checkins")
+
+
+class RaidSession(Model):
+    id = fields.IntField(pk=True)
+    season: ForeignKeyRelation[Season] = fields.ForeignKeyField(
+        "models.Season", related_name="raid_sessions"
+    )
+    start_time = fields.DatetimeField(auto_now_add=True)
+    end_time = fields.DatetimeField(null=True)
+    channel = fields.ForeignKeyField("models.Channel", related_name="raid_sessions")
+
+    active_session = RaidSessionActiveManager()
+
+
+class RaidCheckin(Model):
+    id = fields.IntField(pk=True)
+    session: ForeignKeyRelation[Session] = fields.ForeignKeyField(
+        "models.RaidSession", related_name="raid_checkins"
+    )
+    player: ForeignKeyRelation[Player] = fields.ForeignKeyField(
+        "models.Player", related_name="raid_checkins"
+    )
+    channel = fields.ForeignKeyField("models.Channel", related_name="raid_checkins")
 
 
 class Points(Model):
