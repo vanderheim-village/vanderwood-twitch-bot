@@ -6,7 +6,7 @@ import logging
 
 from tortoise.functions import Sum
 
-from app.models import Clan, Player, Points, Season, Channel
+from app.models import Clan, Player, Points, Season, Channel, GiftedSubsLeaderboard
 
 logger = logging.getLogger(__name__)
 
@@ -81,6 +81,41 @@ class BasicCommandsCog(commands.Cog):
         else:
             logger.info(f"This discord server ({interaction.guild.id}) has not been registered yet.")
             await interaction.response.send_message("This discord server has not been registered yet.")
+
+
+    @app_commands.command(name="gifted-subs-leaderboard", description="Get the gifted subs leaderboard for the twitch channel.")
+    async def gifted_subs_leaderboard(self, interaction: discord.Interaction) -> None:
+        """
+        /gifted-subs-leaderboard command
+        """
+        if await GiftedSubsLeaderboard.all().exists():
+            leaderboard = await GiftedSubsLeaderboard.all()
+            embed = discord.Embed(title="Gifted Subs Leaderboard:")
+            embed.timestamp = interaction.created_at
+            embed.set_footer(text=f"Requested by {interaction.user.name}", icon_url=interaction.user.avatar.url)
+            embed.color = discord.Color.green()
+
+            position_list = ""
+            names_list = ""
+            gifted_subs_list = ""
+
+            count = 0
+            for result in leaderboard:
+                player = await result.player.get()
+
+                count += 1
+                position_list += f"{count}\n"
+                names_list += f" {player.name.title()}\n"
+                gifted_subs_list += f"{result.gifted_subs}\n"
+                
+            embed.add_field(name="Position", value=position_list, inline=True)
+            embed.add_field(name="Player", value=names_list, inline=True)
+            embed.add_field(name="Gifted Subs", value=gifted_subs_list, inline=True)
+            
+            await interaction.response.send_message(embed=embed)
+        else:
+            logger.info("There are no entries in the gifted subs leaderboard.")
+            await interaction.response.send_message("There are no entries in the gifted subs leaderboard.")
     
 
     @app_commands.command(name="lifetime-standings", description="Get the lifetime clan standings for the Battle of Midgard.")
