@@ -6,7 +6,7 @@ import logging
 
 from tortoise.functions import Sum
 
-from app.models import Checkin, Clan, Player, Points, Season, Session, Channel
+from app.models import Clan, Player, Points, Season, Channel
 
 logger = logging.getLogger(__name__)
 
