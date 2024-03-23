@@ -101,7 +101,7 @@ class BasicCommandsCog(commands.Cog):
             for player in await Player.all().filter(channel=channel):
                 no_of_checkins = await Checkin.all().filter(player=player).count()
 
-                if no_of_checkins is not None:
+                if no_of_checkins is not None and no_of_checkins > 0:
                     player_standings: CheckinsStandings = {
                         "points": no_of_checkins,
                         "name": player.name,
@@ -148,7 +148,7 @@ class BasicCommandsCog(commands.Cog):
             for player in await Player.all().filter(channel=channel):
                 no_of_checkins = await RaidCheckin.all().filter(player=player).count()
 
-                if no_of_checkins is not None:
+                if no_of_checkins is not None and no_of_checkins > 0:
                     player_standings: CheckinsStandings = {
                         "points": no_of_checkins,
                         "name": player.name,
