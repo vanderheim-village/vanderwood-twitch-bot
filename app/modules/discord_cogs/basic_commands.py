@@ -6,7 +6,7 @@ import logging
 
 from tortoise.functions import Sum
 
-from app.models import Clan, Player, Points, Season, Channel, GiftedSubsLeaderboard
+from app.models import Clan, Player, Points, Season, Channel, GiftedSubsLeaderboard, Checkin, RaidCheckin
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +19,10 @@ class PlayerStandings(TypedDict):
     name: str
     points: int
     clantag: str
+
+class CheckinsStandings(TypedDict):
+    name: str
+    checkins: int
 
 class BasicCommandsCog(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
@@ -80,6 +84,102 @@ class BasicCommandsCog(commands.Cog):
                 await interaction.response.send_message("There are no active seasons.")
         else:
             logger.info(f"This discord server ({interaction.guild.id}) has not been registered yet.")
+            await interaction.response.send_message("This discord server has not been registered yet.")
+    
+
+    @app_commands.command(name="checkin-leaderboard", description="Get the checkin leaderboard for the twitch channel.")
+    async def checkin_leaderboard(self, interaction: discord.Interaction) -> None:
+        """
+        /checkin-leaderboard command
+        """
+        
+        # Each checkin is a separate row in the database, so we need to sum the checkins for each player.
+        if await Channel.get_or_none(discord_server_id=interaction.guild.id):
+            channel = await Channel.get(discord_server_id=interaction.guild.id)
+            standings: List[CheckinsStandings] = []
+
+            for player in await Player.all().filter(channel=channel):
+                no_of_checkins = await Checkin.all().filter(player=player).count()
+
+                if no_of_checkins is not None:
+                    player_standings: CheckinsStandings = {
+                        "points": no_of_checkins,
+                        "name": player.name,
+                    }
+                    standings.append(player_standings)
+            
+            sorted_standings = sorted(standings, key=lambda k: k["points"], reverse=True)
+
+            embed = discord.Embed(title=f"Checkin Leaderboard:")
+            embed.timestamp = interaction.created_at
+            embed.set_footer(text=f"Requested by {interaction.user.name}", icon_url=interaction.user.avatar.url)
+            embed.color = discord.Color.green()
+
+            position_list = ""
+            names_list = ""
+            checkins_list = ""
+
+            count = 0
+            for result in sorted_standings:
+                count += 1
+                position_list += f"{count}\n"
+                names_list += f" {result['name'].title()}\n"
+                checkins_list += f"{result['points']}\n"
+                
+            embed.add_field(name="Position", value=position_list, inline=True)
+            embed.add_field(name="Player", value=names_list, inline=True)
+            embed.add_field(name="Checkins", value=checkins_list, inline=True)
+            
+            await interaction.response.send_message(embed=embed)
+        else:
+            logger.info("This discord server has not been registered yet.")
+            await interaction.response.send_message("This discord server has not been registered yet.")
+    
+
+    @app_commands.command(name="raid-checkin-leaderboard", description="Get the raid checkin leaderboard for the twitch channel.")
+    async def raid_checkin_leaderboard(self, interaction: discord.Interaction) -> None:
+        """
+        /raid-checkin-leaderboard command
+        """
+        if await Channel.get_or_none(discord_server_id=interaction.guild.id):
+            channel = await Channel.get(discord_server_id=interaction.guild.id)
+            standings: List[CheckinsStandings] = []
+
+            for player in await Player.all().filter(channel=channel):
+                no_of_checkins = await RaidCheckin.all().filter(player=player).count()
+
+                if no_of_checkins is not None:
+                    player_standings: CheckinsStandings = {
+                        "points": no_of_checkins,
+                        "name": player.name,
+                    }
+                    standings.append(player_standings)
+            
+            sorted_standings = sorted(standings, key=lambda k: k["points"], reverse=True)
+
+            embed = discord.Embed(title=f"Raid Checkin Leaderboard:")
+            embed.timestamp = interaction.created_at
+            embed.set_footer(text=f"Requested by {interaction.user.name}", icon_url=interaction.user.avatar.url)
+            embed.color = discord.Color.green()
+
+            position_list = ""
+            names_list = ""
+            checkins_list = ""
+
+            count = 0
+            for result in sorted_standings:
+                count += 1
+                position_list += f"{count}\n"
+                names_list += f" {result['name'].title()}\n"
+                checkins_list += f"{result['points']}\n"
+                
+            embed.add_field(name="Position", value=position_list, inline=True)
+            embed.add_field(name="Player", value=names_list, inline=True)
+            embed.add_field(name="Checkins", value=checkins_list, inline=True)
+            
+            await interaction.response.send_message(embed=embed)
+        else:
+            logger.info("This discord server has not been registered yet.")
             await interaction.response.send_message("This discord server has not been registered yet.")
 
 
