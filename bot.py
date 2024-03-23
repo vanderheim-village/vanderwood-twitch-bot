@@ -30,7 +30,7 @@ from tortoise.functions import Count
 from twitchio.models import PartialUser
 
 from app import settings
-from app.models import EventSubscriptions, Player, Points, Season, Subscriptions, Clan, Channel
+from app.models import EventSubscriptions, Player, Points, Season, Subscriptions, Clan, Channel, GiftedSubsLeaderboard
 
 
 # Define function to process yaml config file
@@ -364,7 +364,13 @@ if __name__ == "__main__":
                                 clan_id=clan.id,
                                 channel=channel,
                             )
-                    else:
+                        
+                        if GiftedSubsLeaderboard.all().filter(channel=channel, player=player).exists():
+                            gifted_sub = await GiftedSubsLeaderboard.get(channel=channel, player=player)
+                            gifted_sub.gifted_subs += 1
+                            await gifted_sub.save()
+                        else:
+                            await GiftedSubsLeaderboard.create(channel=channel, player=player, gifted_subs=1)
                         logging.info("Player is not enabled or does not have a clan")
                         pass
                 else:
@@ -403,6 +409,13 @@ if __name__ == "__main__":
                                 clan_id=clan.id,
                                 channel=channel,
                             )
+                        
+                        if GiftedSubsLeaderboard.all().filter(channel=channel, player=player).exists():
+                            gifted_sub = await GiftedSubsLeaderboard.get(channel=channel, player=player)
+                            gifted_sub.gifted_subs += 1
+                            await gifted_sub.save()
+                        else:
+                            await GiftedSubsLeaderboard.create(channel=channel, player=player, gifted_subs=1)
                         
                         await twitch_bot.get_channel(payload.data.broadcaster.name).send(
                             f"Hej, @{player.name.lower()}! Welcome to the VANDERWOOD FAMILY! Your clan, the {clan.name.upper()} has gained a new warrior. You can now forge your !shield for WALLHALLA and use ?checkin every live stream to earn ⬣100 VALOR POINTS for you and your clan! Skál! vander60skal"

@@ -174,6 +174,15 @@ class Subscriptions(Model):
     currently_subscribed = fields.BooleanField()
 
 
+class GiftedSubsLeaderboard(Model):
+    id = fields.IntField(pk=True)
+    player: ForeignKeyRelation[Player] = fields.ForeignKeyField(
+        "models.Player", related_name="gifted_subs_leaderboard"
+    )
+    channel = fields.ForeignKeyField("models.Channel", related_name="gifted_subs_leaderboard")
+    gifted_subs = fields.IntField(default=0)
+
+
 class RewardLevel(Model):
     id = fields.IntField(pk=True)
     channel = fields.ForeignKeyField("models.Channel", related_name="reward_levels")
