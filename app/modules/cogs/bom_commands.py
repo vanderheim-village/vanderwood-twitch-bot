@@ -4,7 +4,7 @@ from tortoise.functions import Sum
 from twitchio.ext import commands
 from discord.ext import commands as discord_commands
 
-from app.models import Checkin, Clan, Player, Points, Season, Session, Channel, RaidSession, RaidCheckin
+from app.models import Checkin, Clan, Player, Points, Season, Session, Channel, RaidSession, RaidCheckin, GiftedSubsLeaderboard
 
 
 class Standings(TypedDict):
@@ -19,10 +19,41 @@ class PlayerStandings(TypedDict):
     clantag: str
 
 
+class GiftedSubsLeaderboardStandings(TypedDict):
+    name: str
+    gifted_subs: int
+
+
 class BomCommandsCog(commands.Cog):
     def __init__(self, twitch_bot: commands.Cog, discord_bot: discord_commands.Bot) -> None:
         self.twitch_bot = twitch_bot
         self.discord_bot = discord_bot
+    
+    @commands.command()
+    async def giftedsubleaderboard(self, ctx: commands.Context) -> None:
+        """
+        ?giftsubleaderboard command
+
+        Display the top 10 leaderboard for gifted subs.
+        """
+        if await Channel.get_or_none(name=ctx.channel.name):
+            channel = await Channel.get(name=ctx.channel.name)
+            leaderboard: List[GiftedSubsLeaderboard] = []
+            for player_row in await GiftedSubsLeaderboard.filter(channel=channel):
+                player_object = await player_row.player.get()
+                leaderboard_entry: GiftedSubsLeaderboardStandings = {
+                    "name": player_object.name,
+                    "gifted_subs": player_row.gifted_subs,
+                }
+                leaderboard.append(leaderboard_entry)
+            sorted_leaderboard = sorted(leaderboard, key=lambda k: k["gifted_subs"], reverse=True)
+            await ctx.send(f"BOM | Gifted Subs Leaderboard:")
+            count = 0
+            for result in sorted_leaderboard[:10]:
+                count += 1
+                await ctx.send(f"{count}. {result['name']} - {result['gifted_subs']}")
+        else:
+            pass
 
     @commands.command()
     async def rank(self, ctx: commands.Context, clanname: str) -> None:
