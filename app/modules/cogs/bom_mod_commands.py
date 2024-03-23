@@ -296,8 +296,8 @@ class BomModCommandsCog(commands.Cog):
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
             if await Season.active_seasons.all().filter(channel=channel).exists():
-                if await Session.active_session.all().filter(channel=channel).exists():
-                    await Session.active_session.all().filter(channel=channel).update(end_time=timezone.now())
+                if await RaidSession.active_session.all().filter(channel=channel).exists():
+                    await RaidSession.active_session.all().filter(channel=channel).update(end_time=timezone.now())
                     await ctx.send("The raiding party is over!")
                 else:
                     await ctx.send("No raid is currently in progress.")
