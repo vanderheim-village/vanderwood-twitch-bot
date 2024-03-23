@@ -15,7 +15,7 @@ class BomBroadcasterCommandsCog(commands.Cog):
     @commands.command()
     async def registerchannel(self, ctx: commands.Context, discord_server_id: str) -> None:
         """
-        !registerchannel command
+        ?registerchannel command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             await ctx.send("This channel has already been registered.")
@@ -29,7 +29,7 @@ class BomBroadcasterCommandsCog(commands.Cog):
     @commands.command()
     async def registerdiscordserver(self, ctx: commands.Context, discord_server_id: str) -> None:
         """
-        !registerdiscordserver command
+        ?registerdiscordserver command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)

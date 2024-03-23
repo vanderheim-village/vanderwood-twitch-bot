@@ -19,7 +19,7 @@ class BomModCommandsCog(commands.Cog):
     @commands.command()
     async def add(self, ctx: commands.Context, clantag: str, playername: str) -> None:
         """
-        !add command
+        ?add command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
@@ -55,7 +55,7 @@ class BomModCommandsCog(commands.Cog):
     @commands.command()
     async def remove(self, ctx: commands.Context, playername: str) -> None:
         """
-        !remove command
+        ?remove command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
@@ -76,7 +76,7 @@ class BomModCommandsCog(commands.Cog):
     @commands.command()
     async def addvp(self, ctx: commands.Context, playername: str, newpoints: int) -> None:
         """
-        !addvp command
+        ?addvp command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
@@ -117,7 +117,7 @@ class BomModCommandsCog(commands.Cog):
     @commands.command()
     async def removevp(self, ctx: commands.Context, playername: str, losepoints: int) -> None:
         """
-        !removevp command
+        ?removevp command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
@@ -151,7 +151,7 @@ class BomModCommandsCog(commands.Cog):
     @commands.command()
     async def startseason(self, ctx: commands.Context, *, season_name: str) -> None:
         """
-        !startseason command
+        ?startseason command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
@@ -166,7 +166,7 @@ class BomModCommandsCog(commands.Cog):
     @commands.command()
     async def endseason(self, ctx: commands.Context) -> None:
         """
-        !endseason command
+        ?endseason command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
@@ -187,7 +187,7 @@ class BomModCommandsCog(commands.Cog):
     @commands.command()
     async def setdate(self, ctx: commands.Context, enddate: str) -> None:
         """
-        !setdate command
+        ?setdate command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
@@ -208,7 +208,7 @@ class BomModCommandsCog(commands.Cog):
     @commands.command()
     async def createclan(self, ctx: commands.Context, clantag: str, *, clanname: str) -> None:
         """
-        !createclan command
+        ?createclan command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
@@ -234,7 +234,7 @@ class BomModCommandsCog(commands.Cog):
     @commands.command()
     async def startsession(self, ctx: commands.Context) -> None:
         """
-        !startsession command
+        ?startsession command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
@@ -253,7 +253,7 @@ class BomModCommandsCog(commands.Cog):
     @commands.command()
     async def startraid(self, ctx: commands.Context) -> None:
         """
-        !startraid command
+        ?startraid command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
@@ -272,7 +272,7 @@ class BomModCommandsCog(commands.Cog):
     @commands.command()
     async def endsession(self, ctx: commands.Context) -> None:
         """
-        !endsession command
+        ?endsession command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
@@ -291,7 +291,7 @@ class BomModCommandsCog(commands.Cog):
     @commands.command()
     async def endraid(self, ctx: commands.Context) -> None:
         """
-        !endraid command
+        ?endraid command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
@@ -309,7 +309,7 @@ class BomModCommandsCog(commands.Cog):
     @commands.command()
     async def addrewardlevel(self, ctx: commands.Context, level: int, *, reward: str) -> None:
         """
-        !addrewardlevel command
+        ?addrewardlevel command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
@@ -324,7 +324,7 @@ class BomModCommandsCog(commands.Cog):
     @commands.command()
     async def editrewardlevel(self, ctx: commands.Context, level: int, *, reward: str) -> None:
         """
-        !editrewardlevel command
+        ?editrewardlevel command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
@@ -339,7 +339,7 @@ class BomModCommandsCog(commands.Cog):
     @commands.command()
     async def removerewardlevel(self, ctx: commands.Context, level: int) -> None:
         """
-        !removerewardlevel command
+        ?removerewardlevel command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)

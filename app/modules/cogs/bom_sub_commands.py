@@ -18,7 +18,7 @@ class BomSubCommandsCog(commands.Cog):
     @commands.command()
     async def join(self, ctx: commands.Context) -> None:
         """
-        !join command
+        ?join command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)

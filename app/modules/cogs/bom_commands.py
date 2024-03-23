@@ -58,7 +58,7 @@ class BomCommandsCog(commands.Cog):
     @commands.command()
     async def rank(self, ctx: commands.Context, clanname: str) -> None:
         """
-        !rank command
+        ?rank command
 
         Display the top 10 players in the clan for the current season.
         """
@@ -95,7 +95,7 @@ class BomCommandsCog(commands.Cog):
     @commands.command()
     async def standings(self, ctx: commands.Context) -> None:
         """
-        !standings command
+        ?standings command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
@@ -125,7 +125,7 @@ class BomCommandsCog(commands.Cog):
     @commands.command()
     async def overallrank(self, ctx: commands.Context) -> None:
         """
-        !overallrank command
+        ?overallrank command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
@@ -157,7 +157,7 @@ class BomCommandsCog(commands.Cog):
     @commands.command()
     async def myrank(self, ctx: commands.Context) -> None:
         """
-        !myrank command
+        ?myrank command
 
         Display current season points, lifetime points, current season rank in clan and overall rank for current season.
         """
@@ -249,7 +249,7 @@ class BomCommandsCog(commands.Cog):
     @commands.command()
     async def dates(self, ctx: commands.Context) -> None:
         """
-        !dates command
+        ?dates command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
@@ -273,7 +273,7 @@ class BomCommandsCog(commands.Cog):
     @commands.command()
     async def mvp(self, ctx: commands.Context) -> None:
         """
-        !mvp command
+        ?mvp command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
@@ -298,7 +298,7 @@ class BomCommandsCog(commands.Cog):
     @commands.command()
     async def checkin(self, ctx: commands.Context) -> None:
         """
-        !checkin command
+        ?checkin command
         """
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)

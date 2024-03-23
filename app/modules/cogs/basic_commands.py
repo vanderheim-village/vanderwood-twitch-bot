@@ -10,7 +10,7 @@ class BasicCommandsCog(commands.Cog):
     @commands.command(aliases=["commands"])
     async def help(self, ctx: commands.Context) -> None:
         """
-        !help (!commands) command
+        ?help (?commands) command
         """
         await self.discord_bot.log_message("The ?help command was used.")
         await ctx.send(
