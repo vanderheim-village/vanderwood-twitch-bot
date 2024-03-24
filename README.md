@@ -47,4 +47,5 @@ The bot has a number of commands that are available to the streamer, moderators,
 * **[?mvp](docs/commands/viewer-commands/mvp.md)** - Displays the MVP from the previous season of the Battle of Midgard game.
 * **[?checkin](docs/commands/viewer-commands/checkin.md)** - Checks the viewer into the current session of the Battle of Midgard game.
 * **[?raid](docs/commands/viewer-commands/raid.md)** - Checks the viewer into the current raid of the Battle of Midgard game.
+* **[?giftedsubleaderboard](commands/viewer-commands/giftedsubleaderboard.md)** - Displays the top 10 viewers who have gifted the most subs.
 * **[?help](docs/commands/viewer-commands/help.md)** - Displays a link to this documentation.

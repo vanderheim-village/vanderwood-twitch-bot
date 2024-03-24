@@ -10,4 +10,5 @@ The viewer commands are available to everyone:
 * **[?mvp](mvp.md)** - Displays the MVP from the previous season of the Battle of Midgard game.
 * **[?checkin](checkin.md)** - Checks the viewer into the current session of the Battle of Midgard game.
 * **[?raid](raid.md)** - Checks the viewer into the current raid of the Battle of Midgard game.
+* **[?giftedsubleaderboard](giftedsubleaderboard.md)** - Displays the top 10 viewers who have gifted the most subs.
 * **[?help](help.md)** - Displays a link to this documentation.
