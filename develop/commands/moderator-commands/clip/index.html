@@ -8,28 +8,28 @@
       
       
       
-        <link rel="canonical" href="https://adb-web-designs.github.io/vanderwood-twitch-bot/develop/commands/viewer-commands/">
+        <link rel="canonical" href="https://adb-web-designs.github.io/vanderwood-twitch-bot/develop/commands/moderator-commands/clip/">
       
       
-        <link rel="prev" href="../subscriber-commands/join/">
+        <link rel="prev" href="../addvp/">
       
       
-        <link rel="next" href="checkin/">
+        <link rel="next" href="../createclan/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
     
     
       
-        <title>Viewer Commands - Battle of Midgard Twitch Bot Documentation</title>
+        <title>Clip - Battle of Midgard Twitch Bot Documentation</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.7e359304.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -48,7 +48,7 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -57,11 +57,11 @@
       
         <meta  property="og:type"  content="website" >
       
-        <meta  property="og:title"  content="Viewer Commands - Battle of Midgard Twitch Bot Documentation" >
+        <meta  property="og:title"  content="Clip - Battle of Midgard Twitch Bot Documentation" >
       
         <meta  property="og:description"  content="None" >
       
-        <meta  property="og:image"  content="https://adb-web-designs.github.io/vanderwood-twitch-bot/develop/assets/images/social/commands/viewer-commands/index.png" >
+        <meta  property="og:image"  content="https://adb-web-designs.github.io/vanderwood-twitch-bot/develop/assets/images/social/commands/moderator-commands/clip.png" >
       
         <meta  property="og:image:type"  content="image/png" >
       
@@ -69,15 +69,15 @@
       
         <meta  property="og:image:height"  content="630" >
       
-        <meta  property="og:url"  content="https://adb-web-designs.github.io/vanderwood-twitch-bot/develop/commands/viewer-commands/" >
+        <meta  property="og:url"  content="https://adb-web-designs.github.io/vanderwood-twitch-bot/develop/commands/moderator-commands/clip/" >
       
         <meta  name="twitter:card"  content="summary_large_image" >
       
-        <meta  name="twitter:title"  content="Viewer Commands - Battle of Midgard Twitch Bot Documentation" >
+        <meta  name="twitter:title"  content="Clip - Battle of Midgard Twitch Bot Documentation" >
       
         <meta  name="twitter:description"  content="None" >
       
-        <meta  name="twitter:image"  content="https://adb-web-designs.github.io/vanderwood-twitch-bot/develop/assets/images/social/commands/viewer-commands/index.png" >
+        <meta  name="twitter:image"  content="https://adb-web-designs.github.io/vanderwood-twitch-bot/develop/assets/images/social/commands/moderator-commands/clip.png" >
       
     
     
@@ -98,7 +98,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#viewer-commands" class="md-skip">
+        <a href="#clip" class="md-skip">
           Skip to content
         </a>
       
@@ -113,7 +113,7 @@
             <div class="md-banner__inner md-grid md-typeset">
               
   You're either not viewing the latest version or you're visiting the development version.
-  <a href="../../.."> 
+  <a href="../../../.."> 
     <strong>Click here to go to latest stable version.</strong>
   </a>
 
@@ -130,7 +130,7 @@
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Battle of Midgard Twitch Bot Documentation" class="md-header__button md-logo" aria-label="Battle of Midgard Twitch Bot Documentation" data-md-component="logo">
+    <a href="../../.." title="Battle of Midgard Twitch Bot Documentation" class="md-header__button md-logo" aria-label="Battle of Midgard Twitch Bot Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -150,7 +150,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Viewer Commands
+              Clip
             
           </span>
         </div>
@@ -225,7 +225,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
     
@@ -242,7 +242,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../installation/" class="md-tabs__link">
+      <a href="../../../installation/" class="md-tabs__link">
         
   
     
@@ -263,7 +263,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../" class="md-tabs__link">
+        <a href="../../" class="md-tabs__link">
           
   
     
@@ -306,7 +306,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Battle of Midgard Twitch Bot Documentation" class="md-nav__button md-logo" aria-label="Battle of Midgard Twitch Bot Documentation" data-md-component="logo">
+    <a href="../../.." title="Battle of Midgard Twitch Bot Documentation" class="md-nav__button md-logo" aria-label="Battle of Midgard Twitch Bot Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -336,7 +336,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -356,7 +356,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/" class="md-nav__link">
+      <a href="../../../installation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -410,7 +410,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -440,6 +440,8 @@
                 
   
   
+    
+  
   
   
     
@@ -487,16 +489,16 @@
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" checked>
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../moderator-commands/" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -513,7 +515,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_2">
             <span class="md-nav__icon md-icon"></span>
             Moderator commands
@@ -529,7 +531,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../moderator-commands/add/" class="md-nav__link">
+      <a href="../add/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -550,7 +552,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../moderator-commands/addrewardlevel/" class="md-nav__link">
+      <a href="../addrewardlevel/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -571,7 +573,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../moderator-commands/addvp/" class="md-nav__link">
+      <a href="../addvp/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -589,10 +591,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../moderator-commands/clip/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Clip
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -601,6 +623,53 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Permissions
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -613,7 +682,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../moderator-commands/createclan/" class="md-nav__link">
+      <a href="../createclan/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -634,7 +703,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../moderator-commands/editrewardlevel/" class="md-nav__link">
+      <a href="../editrewardlevel/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -655,7 +724,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../moderator-commands/endraid/" class="md-nav__link">
+      <a href="../endraid/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -676,7 +745,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../moderator-commands/endseason/" class="md-nav__link">
+      <a href="../endseason/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -697,7 +766,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../moderator-commands/endsession/" class="md-nav__link">
+      <a href="../endsession/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -718,7 +787,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../moderator-commands/remove/" class="md-nav__link">
+      <a href="../remove/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -739,7 +808,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../moderator-commands/removerewardlevel/" class="md-nav__link">
+      <a href="../removerewardlevel/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -760,7 +829,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../moderator-commands/removevp/" class="md-nav__link">
+      <a href="../removevp/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -781,7 +850,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../moderator-commands/setdate/" class="md-nav__link">
+      <a href="../setdate/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -802,7 +871,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../moderator-commands/startraid/" class="md-nav__link">
+      <a href="../startraid/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -823,7 +892,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../moderator-commands/startseason/" class="md-nav__link">
+      <a href="../startseason/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -844,7 +913,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../moderator-commands/startsession/" class="md-nav__link">
+      <a href="../startsession/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -896,7 +965,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../streamer-commands/" class="md-nav__link ">
+            <a href="../../streamer-commands/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -929,7 +998,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../streamer-commands/registerchannel/" class="md-nav__link">
+      <a href="../../streamer-commands/registerchannel/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -981,7 +1050,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../subscriber-commands/" class="md-nav__link ">
+            <a href="../../subscriber-commands/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -1014,7 +1083,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../subscriber-commands/join/" class="md-nav__link">
+      <a href="../../subscriber-commands/join/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1040,8 +1109,6 @@
                 
   
   
-    
-  
   
   
     
@@ -1075,16 +1142,16 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="./" class="md-nav__link md-nav__link--active">
+            <a href="../../viewer-commands/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -1095,13 +1162,13 @@
             </a>
             
               
-              <label class="md-nav__link md-nav__link--active" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_5">
             <span class="md-nav__icon md-icon"></span>
             Viewer commands
@@ -1117,7 +1184,7 @@
   
   
     <li class="md-nav__item">
-      <a href="checkin/" class="md-nav__link">
+      <a href="../../viewer-commands/checkin/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1138,7 +1205,7 @@
   
   
     <li class="md-nav__item">
-      <a href="dates/" class="md-nav__link">
+      <a href="../../viewer-commands/dates/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1159,7 +1226,7 @@
   
   
     <li class="md-nav__item">
-      <a href="help/" class="md-nav__link">
+      <a href="../../viewer-commands/help/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1180,7 +1247,7 @@
   
   
     <li class="md-nav__item">
-      <a href="mvp/" class="md-nav__link">
+      <a href="../../viewer-commands/mvp/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1201,7 +1268,7 @@
   
   
     <li class="md-nav__item">
-      <a href="myrank/" class="md-nav__link">
+      <a href="../../viewer-commands/myrank/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1222,7 +1289,7 @@
   
   
     <li class="md-nav__item">
-      <a href="overallrank/" class="md-nav__link">
+      <a href="../../viewer-commands/overallrank/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1243,7 +1310,7 @@
   
   
     <li class="md-nav__item">
-      <a href="raid/" class="md-nav__link">
+      <a href="../../viewer-commands/raid/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1264,7 +1331,7 @@
   
   
     <li class="md-nav__item">
-      <a href="rank/" class="md-nav__link">
+      <a href="../../viewer-commands/rank/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1285,7 +1352,7 @@
   
   
     <li class="md-nav__item">
-      <a href="standings/" class="md-nav__link">
+      <a href="../../viewer-commands/standings/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1332,19 +1399,14 @@
   
 
 
-<h1 id="viewer-commands">Viewer Commands</h1>
-<p>The viewer commands are available to everyone:</p>
-<ul>
-<li><strong><a href="rank/">?rank</a></strong> - Displays the Top 10 players in the clan for the current season of the Battle of Midgard game.</li>
-<li><strong><a href="standings/">?standings</a></strong> - Displays the current clan standings for the current season of the Battle of Midgard game.</li>
-<li><strong><a href="overallrank/">?overallrank</a></strong> - Displays the top 10 players across all clans for the current season of the Battle of Midgard game.</li>
-<li><strong><a href="myrank/">?myrank</a></strong> - Displays the current season points, lifetime points, clan rank and overall rank for the viewer.</li>
-<li><strong><a href="dates/">?dates</a></strong> - Displays the start and end dates for the current season of the Battle of Midgard game.</li>
-<li><strong><a href="mvp/">?mvp</a></strong> - Displays the MVP from the previous season of the Battle of Midgard game.</li>
-<li><strong><a href="checkin/">?checkin</a></strong> - Checks the viewer into the current session of the Battle of Midgard game.</li>
-<li><strong><a href="raid/">?raid</a></strong> - Checks the viewer into the current raid of the Battle of Midgard game.</li>
-<li><strong><a href="help/">?help</a></strong> - Displays a link to this documentation.</li>
-</ul>
+<h1 id="clip">Clip</h1>
+<p>The <code>?clip</code> command is used to create a clip of the current stream.</p>
+<h2 id="usage">Usage</h2>
+<p><code>?clip</code></p>
+<h2 id="example">Example</h2>
+<p><code>?clip</code></p>
+<h2 id="permissions">Permissions</h2>
+<p>The <code>?clip</code> command can only be used by moderators or the streamer.</p>
 
 
 
@@ -1420,10 +1482,10 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.indexes", "navigation.instant", "navigation.tabs", "navigation.tabs.sticky", "toc.integrate", "navigation.top"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.indexes", "navigation.instant", "navigation.tabs", "navigation.tabs.sticky", "toc.integrate", "navigation.top"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
       
     
   </body>

@@ -36,6 +36,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://adb-web-designs.github.io/vanderwood-twitch-bot/develop/commands/moderator-commands/clip/</loc>
+         <lastmod>2024-03-24</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://adb-web-designs.github.io/vanderwood-twitch-bot/develop/commands/moderator-commands/createclan/</loc>
          <lastmod>2024-03-24</lastmod>
          <changefreq>daily</changefreq>
