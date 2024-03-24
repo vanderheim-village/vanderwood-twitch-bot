@@ -46,6 +46,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://adb-web-designs.github.io/vanderwood-twitch-bot/develop/commands/moderator-commands/endraid/</loc>
+         <lastmod>2024-03-24</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://adb-web-designs.github.io/vanderwood-twitch-bot/develop/commands/moderator-commands/endseason/</loc>
          <lastmod>2024-03-24</lastmod>
          <changefreq>daily</changefreq>
@@ -72,6 +77,11 @@
     </url>
     <url>
          <loc>https://adb-web-designs.github.io/vanderwood-twitch-bot/develop/commands/moderator-commands/setdate/</loc>
+         <lastmod>2024-03-24</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://adb-web-designs.github.io/vanderwood-twitch-bot/develop/commands/moderator-commands/startraid/</loc>
          <lastmod>2024-03-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -137,6 +147,11 @@
     </url>
     <url>
          <loc>https://adb-web-designs.github.io/vanderwood-twitch-bot/develop/commands/viewer-commands/overallrank/</loc>
+         <lastmod>2024-03-24</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://adb-web-designs.github.io/vanderwood-twitch-bot/develop/commands/viewer-commands/raid/</loc>
          <lastmod>2024-03-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
