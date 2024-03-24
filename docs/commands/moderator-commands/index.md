@@ -15,3 +15,6 @@ The following commands are available to the streamer and moderators only:
 * **[?addrewardlevel](addrewardlevel.md)** - Adds a reward level to the Battle of Midgard game.
 * **[?editrewardlevel](editrewardlevel.md)** - Edits a reward level in the Battle of Midgard game.
 * **[?removerewardlevel](removerewardlevel.md)** - Removes a reward level from the Battle of Midgard game.
+* **[?startraid](startraid.md)** - Starts a raid in the Battle of Midgard game.
+* **[?endraid](endraid.md)** - Ends a raid in the Battle of Midgard game.
+* **[?clip](clip.md)** - Creates a clip of the current stream.

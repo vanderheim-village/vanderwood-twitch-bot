@@ -31,6 +31,7 @@ The bot has a number of commands that are available to the streamer, moderators,
 * **[?removerewardlevel](docs/commands/moderator-commands/removerewardlevel.md)** - Removes a reward level from the Battle of Midgard game.
 * **[?startraid](docs/commands/moderator-commands/startraid.md)** - Starts a raid in the Battle of Midgard game.
 * **[?endraid](docs/commands/moderator-commands/endraid.md)** - Ends a raid in the Battle of Midgard game.
+* **[?clip](docs/commands/moderator-commands/clip.md)** - Creates a clip of the current stream.
 
 ### Subscriber Commands
 

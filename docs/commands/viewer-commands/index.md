@@ -9,4 +9,5 @@ The viewer commands are available to everyone:
 * **[?dates](dates.md)** - Displays the start and end dates for the current season of the Battle of Midgard game.
 * **[?mvp](mvp.md)** - Displays the MVP from the previous season of the Battle of Midgard game.
 * **[?checkin](checkin.md)** - Checks the viewer into the current session of the Battle of Midgard game.
+* **[?raid](raid.md)** - Checks the viewer into the current raid of the Battle of Midgard game.
 * **[?help](help.md)** - Displays a link to this documentation.
