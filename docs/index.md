@@ -37,6 +37,7 @@ The bot has a number of commands that are available to the streamer, moderators,
 * **[?startraid](commands/moderator-commands/startraid.md)** - Starts a raid in the Battle of Midgard game.
 * **[?endraid](commands/moderator-commands/endraid.md)** - Ends a raid in the Battle of Midgard game.
 * **[?clip](commands/moderator-commands/clip.md)** - Creates a clip of the current stream.
+* **[?lucky](commands/moderator-commands/lucky.md)** - Announces the winner of the Wheel of Hamingja in the discord server.
 
 ### Subscriber Commands
 

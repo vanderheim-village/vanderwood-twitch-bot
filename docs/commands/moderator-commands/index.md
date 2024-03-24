@@ -18,3 +18,4 @@ The following commands are available to the streamer and moderators only:
 * **[?startraid](startraid.md)** - Starts a raid in the Battle of Midgard game.
 * **[?endraid](endraid.md)** - Ends a raid in the Battle of Midgard game.
 * **[?clip](clip.md)** - Creates a clip of the current stream.
+* **[?lucky](lucky.md)** - Announces the winner of the Wheel of Hamingja in the discord server.
