@@ -7,6 +7,9 @@ from discord.ext import commands as discord_commands
 from app.helpers import date_validate
 from app.models import Clan, Player, Points, Season, Session, Channel, RewardLevel, RaidSession
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 class BomModCommandsCog(commands.Cog):
     def __init__(self, twitch_bot: commands.Cog, discord_bot: discord_commands.Bot) -> None:
@@ -348,6 +351,42 @@ class BomModCommandsCog(commands.Cog):
                 await ctx.send(f"Reward level {level} has been deleted.")
             else:
                 await ctx.send(f"Reward level {level} does not exist.")
+        else:
+            pass
+    
+    @commands.command()
+    async def lucky(self, ctx: commands.Context, playername: str) -> None:
+        """
+        ?lucky command
+        
+        This commands will post a message to the discord channel with the name of the winner of the wheel of hamingja.
+        """
+        if await Channel.get_or_none(name=ctx.channel.name):
+            channel = await Channel.get(name=ctx.channel.name)
+
+            logger.info(f"Channel: {channel}")
+            logger.info(f"Playername: {playername}")
+            logger.info(f"Discord server ID: {channel.discord_server_id}")
+
+            if self.discord_bot.get_guild(int(channel.discord_server_id)):
+                discord_server = self.discord_bot.get_guild(int(channel.discord_server_id))
+
+                logger.info(f"Discord server: {discord_server}")
+                
+                accounts: list[dict[str, any]] = self.twitch_bot.conf_options["APP"]["ACCOUNTS"]
+                for account in accounts:
+                    if account["name"] == ctx.channel.name.lower():
+                        channel_id = account["discord_wheel_of_hamingja_channel_id"]
+                        break
+                
+                if channel_id:
+                    logger.info(f"Discord channel ID: {channel_id}")
+                    discord_channel = discord_server.get_channel(int(channel_id))
+                    await discord_channel.send(f"Congratulations to @{playername} for winning the Wheel of Hamingja! Come and check in to the stream now before the next spin to claim your Tag of Hamingja for your shield. Otherwise it will be lost forever!")
+                else:
+                    pass
+            else:
+                pass
         else:
             pass
         
