@@ -101,7 +101,7 @@ class TwitchBot(commands.Bot):
                 logging.info("Received a clip message event.")
                 discord_server = self.discord_bot.get_guild(self.conf_options["APP"]["DISCORD_SERVER_ID"])
                 clip_channel = discord_server.get_channel(self.conf_options["APP"]["DISCORD_CLIP_CHANNEL"])
-                await clip_channel.send(f"{message.author.name} shared a clip: {msg}")
+                await clip_channel.send(f"RVNSBOT shared a clip: {msg}")
             else:
                 return
         else:
