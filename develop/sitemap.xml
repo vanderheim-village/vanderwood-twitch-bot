@@ -66,6 +66,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://adb-web-designs.github.io/vanderwood-twitch-bot/develop/commands/moderator-commands/lucky/</loc>
+         <lastmod>2024-03-24</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://adb-web-designs.github.io/vanderwood-twitch-bot/develop/commands/moderator-commands/remove/</loc>
          <lastmod>2024-03-24</lastmod>
          <changefreq>daily</changefreq>
@@ -132,6 +137,11 @@
     </url>
     <url>
          <loc>https://adb-web-designs.github.io/vanderwood-twitch-bot/develop/commands/viewer-commands/dates/</loc>
+         <lastmod>2024-03-24</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://adb-web-designs.github.io/vanderwood-twitch-bot/develop/commands/viewer-commands/giftedsubleaderboard/</loc>
          <lastmod>2024-03-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
