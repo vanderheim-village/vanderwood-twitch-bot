@@ -96,7 +96,14 @@ class TwitchBot(commands.Bot):
     
     async def event_message(self, message: twitchio.Message) -> None:
         if message.echo:
-            return
+            msg: str = message.content
+            if msg.startswith("https://clips.twitch.tv"):
+                logging.info("Received a clip message event.")
+                discord_server = self.discord_bot.get_guild(self.conf_options["APP"]["DISCORD_SERVER_ID"])
+                clip_channel = discord_server.get_channel(self.conf_options["APP"]["DISCORD_CLIP_CHANNEL"])
+                await clip_channel.send(f"{message.author.name} shared a clip: {msg}")
+            else:
+                return
         else:
             if await Channel.get_or_none(name=message.channel.name):
                 channel = await Channel.get(name=message.channel.name)
