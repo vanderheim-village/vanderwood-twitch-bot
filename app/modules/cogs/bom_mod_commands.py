@@ -28,7 +28,7 @@ class BomModCommandsCog(commands.Cog):
         """
         response = await self.twitch_bot.session.get(self.twitch_bot.conf_options["APP"]["CLIP_API_URL"])
 
-        time.sleep(1)
+        time.sleep(3)
 
         text = await response.text()
         
