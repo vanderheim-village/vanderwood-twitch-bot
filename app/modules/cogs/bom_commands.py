@@ -1,5 +1,4 @@
 from typing import List, TypedDict, TYPE_CHECKING
-import time
 
 from tortoise.functions import Sum
 from twitchio.ext import commands
@@ -31,20 +30,6 @@ class BomCommandsCog(commands.Cog):
     def __init__(self, twitch_bot: "TwitchBot", discord_bot: "DiscordBot") -> None:
         self.twitch_bot = twitch_bot
         self.discord_bot = discord_bot
-    
-    @commands.cooldown(rate=3, per=300, bucket=commands.Bucket.channel)
-    @commands.command()
-    async def clip(self, ctx: commands.Context) -> None:
-        """
-        ?clip command
-        """
-        response = await self.twitch_bot.session.get(self.twitch_bot.conf_options["APP"]["CLIP_API_URL"])
-
-        time.sleep(1)
-
-        text = await response.text()
-        
-        await ctx.send(text)
 
     
     @commands.command()

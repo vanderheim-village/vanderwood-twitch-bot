@@ -3,6 +3,7 @@ from datetime import datetime
 from tortoise import timezone
 from twitchio.ext import commands
 from discord.ext import commands as discord_commands
+import time
 
 from app.helpers import date_validate
 from app.models import Clan, Player, Points, Season, Session, Channel, RewardLevel, RaidSession
@@ -18,6 +19,20 @@ class BomModCommandsCog(commands.Cog):
 
     async def cog_check(self, ctx: commands.Context) -> bool:
         return ctx.author.is_mod
+    
+    @commands.cooldown(rate=3, per=300, bucket=commands.Bucket.channel)
+    @commands.command()
+    async def clip(self, ctx: commands.Context) -> None:
+        """
+        ?clip command
+        """
+        response = await self.twitch_bot.session.get(self.twitch_bot.conf_options["APP"]["CLIP_API_URL"])
+
+        time.sleep(1)
+
+        text = await response.text()
+        
+        await ctx.send(text)
 
     @commands.command()
     async def add(self, ctx: commands.Context, clantag: str, playername: str) -> None:
