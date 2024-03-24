@@ -1,4 +1,5 @@
-from typing import List, TypedDict
+from typing import List, TypedDict, TYPE_CHECKING
+import time
 
 from tortoise.functions import Sum
 from twitchio.ext import commands
@@ -6,6 +7,8 @@ from discord.ext import commands as discord_commands
 
 from app.models import Checkin, Clan, Player, Points, Season, Session, Channel, RaidSession, RaidCheckin, GiftedSubsLeaderboard
 
+if TYPE_CHECKING:
+    from bot import TwitchBot, DiscordBot
 
 class Standings(TypedDict):
     name: str
@@ -25,9 +28,24 @@ class GiftedSubsLeaderboardStandings(TypedDict):
 
 
 class BomCommandsCog(commands.Cog):
-    def __init__(self, twitch_bot: commands.Cog, discord_bot: discord_commands.Bot) -> None:
+    def __init__(self, twitch_bot: "TwitchBot", discord_bot: "DiscordBot") -> None:
         self.twitch_bot = twitch_bot
         self.discord_bot = discord_bot
+    
+    @commands.cooldown(rate=3, per=300, bucket=commands.Bucket.channel)
+    @commands.command()
+    async def clip(self, ctx: commands.Context) -> None:
+        """
+        ?clip command
+        """
+        response = await self.twitch_bot.session.get(self.twitch_bot.conf_options["APP"]["CLIP_API_URL"])
+
+        time.sleep(1)
+
+        text = await response.text()
+        
+        await ctx.send(text)
+
     
     @commands.command()
     async def giftedsubleaderboard(self, ctx: commands.Context) -> None:
