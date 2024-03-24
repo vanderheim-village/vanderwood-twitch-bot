@@ -1,7 +1,7 @@
-# Battle of Midgard Twitch Bot Documentation
+# Battle of Midgard Twitch & Discord Bot Documentation
 
-The Battle of Midgard Twitch Bot is a bot that has been built for the [VanderwoodTV](https://www.twitch.tv/vanderwoodtv) Twitch channel.
-The bot is built mainly using the [TwitchIO](https://github.com/TwitchIO/TwitchIO) and the [tortoise-orm](https://github.com/tortoise/tortoise-orm) libraries.
+The Battle of Midgard Twitch & Discord Bot is a bot that has been built for the [VanderwoodTV](https://www.twitch.tv/vanderwoodtv) Twitch channel.
+The bot is built mainly using the [TwitchIO](https://github.com/TwitchIO/TwitchIO), [discord.py](https://github.com/Rapptz/discord.py) and the [tortoise-orm](https://github.com/tortoise/tortoise-orm) libraries.
 
 The bot has been built and coded by [Adam Birds](https://github.com/adambirds/) of [ADB Web Designs](https://adbwebdesigns.co.uk/).
 
