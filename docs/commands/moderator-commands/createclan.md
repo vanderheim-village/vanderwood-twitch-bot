@@ -1,15 +1,15 @@
 # Create Clan
 
-The `!createclan` command is used to create a clan for the Battle of Midgard game.
+The `?createclan` command is used to create a clan for the Battle of Midgard game.
 
 ## Usage
 
-`!createclan <clan tag> <clan name>`
+`?createclan <clan tag> <clan name>`
 
 ## Example
 
-`!createclan THOR Thor's Army`
+`?createclan THOR Thor's Army`
 
 ## Permissions
 
-The `!createclan` command can only be used by moderators or the streamer.
+The `?createclan` command can only be used by moderators or the streamer.

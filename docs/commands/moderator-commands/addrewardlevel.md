@@ -1,6 +1,6 @@
 # Add Reward Level
 
-The `!addrewardlevel` command is used to add a reward level to the Battle of Midgard game.
+The `?addrewardlevel` command is used to add a reward level to the Battle of Midgard game.
 
 ## Usage
 
@@ -8,8 +8,8 @@ The `!addrewardlevel` command is used to add a reward level to the Battle of Mid
 
 ## Example
 
-`!addrewardlevel 1 10% off your next purchase!`
+`?addrewardlevel 1 10% off your next purchase!`
 
 ## Permissions
 
-The `!addrewardlevel` command can only be used by moderators or the streamer.
+The `?addrewardlevel` command can only be used by moderators or the streamer.

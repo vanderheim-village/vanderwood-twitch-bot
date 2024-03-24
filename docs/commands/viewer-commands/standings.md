@@ -1,15 +1,15 @@
 # Standings
 
-The `!standings` command is used to display the current clan standings for the current season of the Battle of Midgard game.
+The `?standings` command is used to display the current clan standings for the current season of the Battle of Midgard game.
 
 ## Usage
 
-`!standings`
+`?standings`
 
 ## Example
 
-`!standings`
+`?standings`
 
 ## Permissions
 
-The `!standings` command can be used by anyone.
+The `?standings` command can be used by anyone.

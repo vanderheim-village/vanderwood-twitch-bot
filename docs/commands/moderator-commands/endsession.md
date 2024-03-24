@@ -1,15 +1,15 @@
 # End Session
 
-The `!endsession` command is used to end the current session of the Battle of Midgard game.
+The `?endsession` command is used to end the current session of the Battle of Midgard game.
 
 ## Usage
 
-`!endsession`
+`?endsession`
 
 ## Example
 
-`!endsession`
+`?endsession`
 
 ## Permissions
 
-The `!endsession` command can only be used by moderators or the streamer.
+The `?endsession` command can only be used by moderators or the streamer.

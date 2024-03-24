@@ -1,6 +1,6 @@
 # Remove Reward Level
 
-The `!removerewardlevel` command is used to remove a reward level in the Battle of Midgard game.
+The `?removerewardlevel` command is used to remove a reward level in the Battle of Midgard game.
 
 ## Usage
 
@@ -8,8 +8,8 @@ The `!removerewardlevel` command is used to remove a reward level in the Battle 
 
 ## Example
 
-`!removerewardlevel 1`
+`?removerewardlevel 1`
 
 ## Permissions
 
-The `!removerewardlevel` command can only be used by moderators or the streamer.
+The `?removerewardlevel` command can only be used by moderators or the streamer.

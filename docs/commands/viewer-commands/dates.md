@@ -1,15 +1,15 @@
 # Dates
 
-The `!dates` command is used to display the start and end dates of the current season of the Battle of Midgard game.
+The `?dates` command is used to display the start and end dates of the current season of the Battle of Midgard game.
 
 ## Usage
 
-`!dates`
+`?dates`
 
 ## Example
 
-`!dates`
+`?dates`
 
 ## Permissions
 
-The `!dates` command can be use by anyone.
+The `?dates` command can be use by anyone.
