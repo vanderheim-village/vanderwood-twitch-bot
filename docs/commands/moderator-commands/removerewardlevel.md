@@ -4,7 +4,7 @@ The `?removerewardlevel` command is used to remove a reward level in the Battle 
 
 ## Usage
 
-`removerewardlevel <level>`
+`?removerewardlevel <level>`
 
 ## Example
 

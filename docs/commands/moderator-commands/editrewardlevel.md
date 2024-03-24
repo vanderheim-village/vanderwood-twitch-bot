@@ -4,7 +4,7 @@ The `?editrewardlevel` command is used to edit a reward level in the Battle of M
 
 ## Usage
 
-`editrewardlevel <level> <reward>`
+`?editrewardlevel <level> <reward>`
 
 ## Example
 

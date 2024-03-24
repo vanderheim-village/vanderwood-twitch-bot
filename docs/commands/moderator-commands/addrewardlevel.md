@@ -4,7 +4,7 @@ The `?addrewardlevel` command is used to add a reward level to the Battle of Mid
 
 ## Usage
 
-`addrewardlevel <level> <reward>`
+`?addrewardlevel <level> <reward>`
 
 ## Example
 
