@@ -26,6 +26,11 @@ The bot has a number of commands that are available to the streamer, moderators,
 * **[?setdate](docs/commands/moderator-commands/setdate.md)** - Sets the end date of the current season of the Battle of Midgard game.
 * **[?addvp](docs/commands/moderator-commands/addvp.md)** - Adds valor points to the viewer for the current season of the Battle of Midgard game.
 * **[?removevp](docs/commands/moderator-commands/removevp.md)** - Removes valor points from the viewer for the current season of the Battle of Midgard game.
+* **[?addrewardlevel](docs/commands/moderator-commands/addrewardlevel.md)** - Adds a reward level to the Battle of Midgard game.
+* **[?editrewardlevel](docs/commands/moderator-commands/editrewardlevel.md)** - Edits a reward level in the Battle of Midgard game.
+* **[?removerewardlevel](docs/commands/moderator-commands/removerewardlevel.md)** - Removes a reward level from the Battle of Midgard game.
+* **[?startraid](docs/commands/moderator-commands/startraid.md)** - Starts a raid in the Battle of Midgard game.
+* **[?endraid](docs/commands/moderator-commands/endraid.md)** - Ends a raid in the Battle of Midgard game.
 
 ### Subscriber Commands
 
@@ -40,4 +45,5 @@ The bot has a number of commands that are available to the streamer, moderators,
 * **[?dates](docs/commands/viewer-commands/dates.md)** - Displays the start and end dates for the current season of the Battle of Midgard game.
 * **[?mvp](docs/commands/viewer-commands/mvp.md)** - Displays the MVP from the previous season of the Battle of Midgard game.
 * **[?checkin](docs/commands/viewer-commands/checkin.md)** - Checks the viewer into the current session of the Battle of Midgard game.
+* **[?raid](docs/commands/viewer-commands/raid.md)** - Checks the viewer into the current raid of the Battle of Midgard game.
 * **[?help](docs/commands/viewer-commands/help.md)** - Displays a link to this documentation.
