@@ -311,6 +311,10 @@ if __name__ == "__main__":
                                 clan_id=clan.id,
                                 channel=channel,
                             )
+                        
+                        await twitch_bot.get_channel(payload.data.broadcaster.name).send(
+                            f"Hej, @{player.name.lower()}! Welcome to the VANDERWOOD FAMILY! Your clan, the {clan.name.upper()} has gained a new warrior. You can now forge your !shield for WALLHALLA and use ?checkin every live stream to earn ⬣100 VALOR POINTS for you and your clan! Skál! vander60SKAL"
+                        )
                     else:
                         "Player is not enabled or does not have a clan"
                         pass
