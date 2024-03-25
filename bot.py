@@ -602,6 +602,10 @@ if __name__ == "__main__":
                                 clan_id=clan.id,
                                 channel=channel,
                             )
+                        
+                        discord_server = discord_bot.get_guild(conf_options["APP"]["DISCORD_SERVER_ID"])
+                        discord_channel = discord_server.get_channel(conf_options["APP"]["DISCORD_LOG_CHANNEL"])
+                        await discord_channel.send(f"@{user.name.lower()} redeemed a reward: {reward.title}")
                     else:
                         pass
                 else:
