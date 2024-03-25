@@ -49,7 +49,7 @@ class DiscordBot(discord_commands.Bot):
     async def on_ready(self) -> None:
         discord_logger.info(f"Logged in as {self.user.name}")
         await self.change_presence(activity=discord.Game(name="/help"))
-        self.log_channel = self.get_channel(self.conf_options["APP"]["DISCORD_LOG_CHANNEL"])
+        self.alert_channel = self.get_channel(self.conf_options["APP"]["DISCORD_ALERT_CHANNEL"])
     
     async def setup_hook(self) -> None:
         for filename in os.listdir("./app/modules/discord_cogs/"):
@@ -62,7 +62,7 @@ class DiscordBot(discord_commands.Bot):
                     traceback.print_exc()
     
     async def log_message(self, message: str) -> None:
-        await self.log_channel.send(message)
+        await self.alert_channel.send(message)
 
 
 # Define Bot class
