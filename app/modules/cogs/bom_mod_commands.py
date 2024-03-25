@@ -394,10 +394,13 @@ class BomModCommandsCog(commands.Cog):
                         channel_id = account["discord_wheel_of_hamingja_channel_id"]
                         break
                 
+                playername = playername.strip("@")
+                
                 if channel_id:
                     logger.info(f"Discord channel ID: {channel_id}")
                     discord_channel = discord_server.get_channel(int(channel_id))
                     await discord_channel.send(f"Congratulations to @{playername} for winning the Wheel of Hamingja! Come and check in to the stream now before the next spin to claim your Tag of Hamingja for your shield. Otherwise it will be lost forever!")
+                    await ctx.send(f"The ravens have been sent to collect @{playername} to claim their Tag of Hamingja!")
                 else:
                     pass
             else:
