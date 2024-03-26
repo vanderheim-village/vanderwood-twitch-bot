@@ -20,6 +20,24 @@ class BomModCommandsCog(commands.Cog):
     async def cog_check(self, ctx: commands.Context) -> bool:
         return ctx.author.is_mod
 
+    @commands.command()
+    async def boatcheck(self, ctx: commands.Context) -> None:
+        """
+        ?boatcheck command
+        
+        Check how many people have checked in for the current raid session.
+        """
+        if await Channel.get_or_none(name=ctx.channel.name):
+            channel = await Channel.get(name=ctx.channel.name)
+            if await RaidSession.active_session.all().filter(channel=channel).exists():
+                raid_session = await RaidSession.active_session.all().filter(channel=channel).first()
+                checkins = await RaidCheckin.all().filter(session=raid_session)
+                await ctx.send(f"{len(checkins)} vikings have got in the boats for the raid! vander60RAIDBOAT Use ?raid to get in the boats and earn your Tag of Ægir! Get ready to row! 🚣🚣🚣")
+            else:
+                await ctx.send("No raid is currently in progress.")
+        else:
+            pass
+
     @commands.cooldown(rate=3, per=300, bucket=commands.Bucket.channel)
     @commands.command()
     async def clip(self, ctx: commands.Context) -> None:
