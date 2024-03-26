@@ -6,7 +6,7 @@ from discord.ext import commands as discord_commands
 import time
 
 from app.helpers import date_validate
-from app.models import Clan, Player, Points, Season, Session, Channel, RewardLevel, RaidSession
+from app.models import Clan, Player, Points, Season, Session, Channel, RewardLevel, RaidSession, RaidCheckin
 
 import logging
 
@@ -19,7 +19,7 @@ class BomModCommandsCog(commands.Cog):
 
     async def cog_check(self, ctx: commands.Context) -> bool:
         return ctx.author.is_mod
-    
+
     @commands.cooldown(rate=3, per=300, bucket=commands.Bucket.channel)
     @commands.command()
     async def clip(self, ctx: commands.Context) -> None:
@@ -407,7 +407,34 @@ class BomModCommandsCog(commands.Cog):
                 pass
         else:
             pass
-        
+
+    @commands.command()
+    async def skal(self, ctx: commands.Context) -> None:
+        """
+        ?skal command
+        """
+        await ctx.send("vander60SKAL vander60SKAL vander60SKAL vander60SKAL vander60SKAL vander60SKAL vander60SKAL vander60SKAL vander60SKAL vander60SKAL vander60SKAL vander60SKAL vander60SKAL vander60SKAL vander60SKAL vander60SKAL vander60SKAL vander60SKAL")
+    
+    @commands.command()
+    async def blades(self, ctx: commands.Context) -> None:
+        """
+        ?blades command
+        """
+        await ctx.send("vander60AXE vander60BOW vander60AXE vander60BOW vander60AXE vander60BOW vander60AXE vander60BOW vander60AXE vander60BOW vander60AXE vander60BOW vander60AXE vander60BOW vander60AXE vander60BOW vander60AXE vander60BOW vander60AXE vander60BOW")
+
+    @commands.command()
+    async def shields(self, ctx: commands.Context) -> None:
+        """
+        ?shields command
+        """
+        await ctx.send("vander60SHIELD01 vander60SHIELD02 vander60SHIELD01 vander60SHIELD02 vander60SHIELD01 vander60SHIELD02 vander60SHIELD01 vander60SHIELD02 vander60SHIELD01 vander60SHIELD02 vander60SHIELD01 vander60SHIELD02 vander60SHIELD01 vander60SHIELD02 vander60SHIELD01 vander60SHIELD02 vander60SHIELD01 vander60SHIELD02")
+
+    @commands.command()
+    async def boats(self, ctx: commands.Context) -> None:
+        """
+        ?boats command
+        """
+        await ctx.send("vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT")
 
 def prepare(twitch_bot: commands.Bot, discord_bot: discord_commands.Bot) -> None:
     twitch_bot.add_cog(BomModCommandsCog(twitch_bot, discord_bot))
