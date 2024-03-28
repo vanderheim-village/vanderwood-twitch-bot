@@ -387,6 +387,7 @@ if __name__ == "__main__":
                             await gifted_sub.save()
                         else:
                             await GiftedSubsLeaderboard.create(channel=channel, player=player, gifted_subs=1)
+                    else:
                         logging.info("Player is not enabled or does not have a clan")
                         pass
                 else:
