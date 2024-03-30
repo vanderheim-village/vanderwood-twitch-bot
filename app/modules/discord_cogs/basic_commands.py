@@ -199,6 +199,9 @@ class BasicCommandsCog(commands.Cog):
             names_list = ""
             gifted_subs_list = ""
 
+            # Sort the leaderboard by gifted subs
+            leaderboard = sorted(leaderboard, key=lambda k: k.gifted_subs, reverse=True)
+
             count = 0
             for result in leaderboard:
                 player = await result.player.get()
