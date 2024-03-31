@@ -57,6 +57,9 @@ class BomModCommandsCog(commands.Cog):
         """
         ?add command
         """
+
+        playername = playername.strip("@")
+
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
             if await Clan.get_or_none(tag=clantag, channel=channel):
@@ -93,6 +96,9 @@ class BomModCommandsCog(commands.Cog):
         """
         ?remove command
         """
+
+        playername = playername.strip("@")
+
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
             if await Player.get_or_none(name=playername.lower(), channel=channel):
@@ -114,6 +120,9 @@ class BomModCommandsCog(commands.Cog):
         """
         ?addvp command
         """
+
+        playername = playername.strip("@")
+
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
             if await Season.active_seasons.all().filter(channel=channel).exists():
@@ -155,6 +164,9 @@ class BomModCommandsCog(commands.Cog):
         """
         ?removevp command
         """
+
+        playername = playername.strip("@")
+
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
             if await Season.active_seasons.all().filter(channel=channel).exists():
