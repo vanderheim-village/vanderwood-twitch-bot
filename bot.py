@@ -620,7 +620,26 @@ if __name__ == "__main__":
                 pass
         else:
             pass
+    
+    @twitch_eventsubbot.event()
+    async def event_eventsub_notification_followV2(
+        payload: eventsub.ChannelFollowData,
+    ) -> None:
+        """
+        Reacts to receiving a new channel follow event.
+        """
+        logging.info(f"User: {payload.data.user.name}")
+        logging.info(f"Payload: {payload.data}")
 
+        player: PartialUser = payload.data.user
+
+        logging.info("Received a new follow event.")
+
+        await twitch_bot.get_channel(payload.data.broadcaster.name).send(
+            f"Hej @{player.name.lower()}, welcome to VANDERHEIM! Make yourself at home, grab yourself a drink and meet the rest of the VANDERWOOD FAMILY! vander60SKAL"
+        )
+
+        
     eventsub_client = eventsub.EventSubClient(
         twitch_eventsubbot,
         conf_options["APP"]["SECRET_STRING"],
@@ -669,6 +688,31 @@ if __name__ == "__main__":
                     channel_name=channel_name, event_type="channel.subscribe", subscribed=True
                 )
             else:
+                raise
+    
+    async def subscribe_channel_follows_v2(channel_id: int, channel_name: str, bot_user_id: str) -> None:
+        """
+        Subscribes to new channel follow events.
+        """
+        try:
+            if await EventSubscriptions.filter(
+                channel_name=channel_name, event_type="channel.follow"
+            ).exists():
+                pass
+            else:
+                await eventsub_client.subscribe_channel_follows_v2(channel_id, bot_user_id)
+                await EventSubscriptions.create(
+                    channel_name=channel_name, event_type="channel.follow", subscribed=True
+                )
+        except twitchio.HTTPException as err:
+            if err.status == 409:
+                await EventSubscriptions.create(
+                    channel_name=channel_name, event_type="channel.follow", subscribed=True
+                )
+            else:
+                logging.error(err.message)
+                logging.error(err.status)
+                logging.error(err.reason)
                 raise
     
     async def subscribe_channel_subscription_messages(channel_id: int, channel_name: str) -> None:
@@ -740,6 +784,9 @@ if __name__ == "__main__":
         )
         twitch_eventsubbot.loop.create_task(
             subscribe_channel_subscription_gifts(channel_id=channel["id"], channel_name=channel["name"])
+        )
+        twitch_eventsubbot.loop.create_task(
+            subscribe_channel_follows_v2(channel_id=channel["id"], channel_name=channel["name"], bot_user_id=conf_options["APP"]["BOT_USER_ID"])
         )
         pass
     try:
