@@ -297,7 +297,7 @@ class BasicCommandsCog(commands.Cog):
                 points_list = ""
 
                 count = 0
-                for result in sorted_standings[:100]:
+                for result in sorted_standings[:50]:
                     count += 1
                     position_list += f"{count}\n"
                     names_list += f" {result['name'].title()}\n"
@@ -419,7 +419,7 @@ class BasicCommandsCog(commands.Cog):
             points_list = ""
 
             count = 0
-            for result in sorted_standings[:100]:
+            for result in sorted_standings[:50]:
                 count += 1
                 position_list += f"{count}\n"
                 names_list += f" {result['name'].title()}\n"
