@@ -437,6 +437,49 @@ class BomModCommandsCog(commands.Cog):
                 pass
         else:
             pass
+    
+    @commands.command()
+    async def raidbonus(self, ctx: commands.Context, bonuspoints: int) -> None:
+        """
+        ?raidbonus command
+
+        Add the bonus points to everyone who is checked into the current raid session.
+        """
+        if await Channel.get_or_none(name=ctx.channel.name):
+            channel = await Channel.get(name=ctx.channel.name)
+            logging.info(f"Channel exists: {channel}")
+            if await Season.active_seasons.all().filter(channel=channel).exists():
+                season: Season = await Season.active_seasons.all().filter(channel=channel).first()
+                logging.info(f"Active season: {season}")
+                if await RaidSession.active_session.all().filter(channel=channel).exists():
+                    logging.info("Raid session exists.")
+                    raid_session = await RaidSession.active_session.all().filter(channel=channel).first()
+                    logging.info(f"Raid session: {raid_session}")
+                    checkins = await RaidCheckin.all().filter(session=raid_session)
+                    logging.info(f"Checkins: {checkins}")
+                    for checkin in checkins:
+                        player = await checkin.player
+                        if await Points.get_or_none(player=player, season=season, channel=channel):
+                            points = await Points.get(player=player, season=season, channel=channel)
+                            points.points += bonuspoints
+                            await points.save()
+                        else:
+                            await Points.create(
+                                player_id=player.id,
+                                season_id=season.id,
+                                points=bonuspoints,
+                                clan_id=player.clan.id,
+                                channel=channel,
+                            )
+                    await ctx.send(f"Congratulations Raiders! You've ALL earned a bonus {bonuspoints} VP for opening RAID CHESTS on RAID DAY! vander60SKAL")
+                else:
+                    logging.info("No raid session exists.")
+                    await ctx.send("No raid is currently in progress.")
+            else:
+                logging.info("No active seasons.")
+                await ctx.send("No active seasons!")
+        else:
+            pass
 
     @commands.command()
     async def skal(self, ctx: commands.Context) -> None:
