@@ -493,14 +493,14 @@ class BomModCommandsCog(commands.Cog):
         """
         ?blades command
         """
-        await ctx.send("vander60AXE vander60BOW vander60AXE vander60BOW vander60AXE vander60BOW vander60AXE vander60BOW vander60AXE vander60BOW vander60AXE vander60BOW vander60AXE vander60BOW vander60AXE vander60BOW vander60AXE vander60BOW vander60AXE vander60BOW")
+        await ctx.send("vander60AXE vander60AXE vander60AXE vander60AXE vander60AXE vander60AXE vander60AXE vander60AXE vander60AXE vander60AXE vander60AXE vander60AXE vander60AXE vander60AXE vander60AXE vander60AXE vander60AXE vander60AXE vander60AXE vander60AXE")
 
     @commands.command()
     async def shields(self, ctx: commands.Context) -> None:
         """
         ?shields command
         """
-        await ctx.send("vander60SHIELD01 vander60SHIELD02 vander60SHIELD01 vander60SHIELD02 vander60SHIELD01 vander60SHIELD02 vander60SHIELD01 vander60SHIELD02 vander60SHIELD01 vander60SHIELD02 vander60SHIELD01 vander60SHIELD02 vander60SHIELD01 vander60SHIELD02 vander60SHIELD01 vander60SHIELD02 vander60SHIELD01 vander60SHIELD02")
+        await ctx.send("vander60SHIELD vander60SHIELD vander60SHIELD vander60SHIELD vander60SHIELD vander60SHIELD vander60SHIELD vander60SHIELD vander60SHIELD vander60SHIELD vander60SHIELD vander60SHIELD vander60SHIELD vander60SHIELD vander60SHIELD vander60SHIELD vander60SHIELD vander60SHIELD")
 
     @commands.command()
     async def boats(self, ctx: commands.Context) -> None:
