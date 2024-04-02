@@ -381,7 +381,7 @@ if __name__ == "__main__":
                                 channel=channel,
                             )
                         
-                        if GiftedSubsLeaderboard.all().filter(channel=channel, player=player).exists():
+                        if await GiftedSubsLeaderboard.get_or_none(channel=channel, player=player):
                             gifted_sub = await GiftedSubsLeaderboard.get(channel=channel, player=player)
                             gifted_sub.gifted_subs += 1
                             await gifted_sub.save()
