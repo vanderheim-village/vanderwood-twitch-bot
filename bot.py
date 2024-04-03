@@ -70,6 +70,7 @@ class TwitchBot(commands.Bot):
     def __init__(
         self,
         access_token: str,
+        client_secret: str,
         prefix: str,
         initial_channels: List[str],
         conf_options: Dict[str, Any],
@@ -80,7 +81,7 @@ class TwitchBot(commands.Bot):
         """
         self.conf_options = conf_options
         self.discord_bot = discord_bot
-        super().__init__(token=access_token, prefix=prefix, initial_channels=initial_channels)
+        super().__init__(token=access_token, client_secret=client_secret, prefix=prefix, initial_channels=initial_channels)
 
     async def tinit(self) -> None:
         self.session = ClientSession()
@@ -174,6 +175,7 @@ if __name__ == "__main__":
 
     twitch_bot = TwitchBot(
         access_token=conf_options["APP"]["ACCESS_TOKEN"],
+        client_secret=conf_options["APP"]["CLIENT_SECRET"],
         prefix="?",
         initial_channels=channel_names,
         conf_options=conf_options,
