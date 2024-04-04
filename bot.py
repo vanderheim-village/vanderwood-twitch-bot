@@ -81,6 +81,9 @@ class TwitchBot(commands.Bot):
         """
         self.conf_options = conf_options
         self.discord_bot = discord_bot
+        self.refresh_token_url ="https://id.twitch.tv/oauth2/token"
+        self.client_id = conf_options["APP"]["CLIENT_ID"]
+        self.client_secret = client_secret
         super().__init__(token=access_token, client_secret=client_secret, prefix=prefix, initial_channels=initial_channels)
 
     async def tinit(self) -> None:
@@ -94,6 +97,33 @@ class TwitchBot(commands.Bot):
     async def stop(self) -> None:
         await self.session.close()
         await Tortoise.close_connections()
+    
+    async def event_token_expired(self) -> None:
+        """
+        Reacts to the bot's token expiring.
+        """
+        twitch_logger.info("Token expired.")
+        data = {
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "grant_type": "refresh_token",
+            "refresh_token": self.refresh_token,
+        }
+        async with self.session.post(self.refresh_token_url, data=data) as response:
+            response_data = await response.json()
+            self.token = response_data["access_token"]
+            self.refresh_token = response_data["refresh_token"]
+            twitch_logger.info("Token refreshed.")
+        
+        ## Save the new token and refresh to the config file
+        self.conf_options["APP"]["ACCESS_TOKEN"] = self.token
+        self.conf_options["APP"]["REFRESH_TOKEN"] = self.refresh_token
+        with open("config.yaml", "w") as stream:
+            yaml.dump(self.conf_options, stream)
+
+        twitch_logger.info("Token saved to config file.")
+
+        return self.token
     
     async def event_message(self, message: twitchio.Message) -> None:
         if message.echo:
