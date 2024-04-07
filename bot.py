@@ -1,6 +1,7 @@
 # Import libraries
 import importlib
 import logging
+import requests
 from app.logger import CustomFormatter
 # Set up logging
 
@@ -192,6 +193,20 @@ if __name__ == "__main__":
     for channel in conf_options["APP"]["ACCOUNTS"]:
         channel_names.append("#" + channel["name"])
     
+    data = {
+        "client_id": conf_options["APP"]["CLIENT_ID"],
+        "client_secret": conf_options["APP"]["CLIENT_SECRET"],
+        "grant_type": "refresh_token",
+        "refresh_token": conf_options["APP"]["REFRESH_TOKEN"],
+    }
+    response = requests.post("https://id.twitch.tv/oauth2/token", data=data)
+    response_data = response.json()
+    conf_options["APP"]["ACCESS_TOKEN"] = response_data["access_token"]
+    conf_options["APP"]["REFRESH_TOKEN"] = response_data["refresh_token"]
+
+    with open("config.yaml", "w") as stream:
+        yaml.dump(conf_options, stream)
+       
     intents = discord.Intents.default()
     intents.guilds = True
     intents.message_content = True
