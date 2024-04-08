@@ -6,6 +6,6 @@ tortoise-orm[asyncpg]==0.19.3
 aerich==0.7.2
 mkdocs-material==9.5.14
 cairosvg==2.7.0
-pillow==10.2.0
+pillow==10.3.0
 mike==2.0.0
 discord.py==2.3.2
