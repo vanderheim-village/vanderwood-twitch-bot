@@ -130,7 +130,7 @@ class TwitchBot(commands.Bot):
         if message.echo:
             msg: str = message.content
             if msg.startswith("https://clips.twitch.tv"):
-                logging.info("Received a clip message event.")
+                twitch_logger.info("Received a clip message event.")
                 discord_server = self.discord_bot.get_guild(self.conf_options["APP"]["DISCORD_SERVER_ID"])
                 clip_channel = discord_server.get_channel(self.conf_options["APP"]["DISCORD_CLIP_CHANNEL"])
                 await clip_channel.send(f"RVNSBOT shared a clip: {msg}")
@@ -141,7 +141,7 @@ class TwitchBot(commands.Bot):
                 channel = await Channel.get(name=message.channel.name)
                 if "msg-id" in message.tags:
                     if message.tags["msg-id"] == "highlighted-message":
-                        logging.info("Received a highlighted message event.")
+                        twitch_logger.info("Received a highlighted message event.")
                         await self.discord_bot.log_message("Received a highlighted message event.")
                         if await Player.get_or_none(name=message.author.name.lower(), channel=channel):
                             player = await Player.get(name=message.author.name.lower(), channel=channel)
@@ -173,7 +173,7 @@ class TwitchBot(commands.Bot):
                 else:
                     msg: str = message.content
                     if msg.startswith("https://clips.twitch.tv"):
-                        logging.info("Received a clip message event.")
+                        twitch_logger.info("Received a clip message event.")
                         discord_server = self.discord_bot.get_guild(self.conf_options["APP"]["DISCORD_SERVER_ID"])
                         clip_channel = discord_server.get_channel(self.conf_options["APP"]["DISCORD_CLIP_CHANNEL"])
                         await clip_channel.send(f"{message.author.name} shared a clip: {msg}")
@@ -252,16 +252,16 @@ if __name__ == "__main__":
         Reacts to receicing a new channel subscription event.
         """
 
-        logging.info(f"User: {payload.data.user.name}")
-        logging.info(f"Tier: {payload.data.tier}")
-        logging.info(f"Payload: {payload.data}")
+        twitch_logger.info(f"User: {payload.data.user.name}")
+        twitch_logger.info(f"Tier: {payload.data.tier}")
+        twitch_logger.info(f"Payload: {payload.data}")
 
         subscribed_user: PartialUser = payload.data.user
         subscription_tier: int = payload.data.tier
         
-        logging.info("Received a new subscription event.")
+        twitch_logger.info("Received a new subscription event.")
         if await Channel.get_or_none(name=payload.data.broadcaster.name.lower()):
-            logging.info(f"Channel {payload.data.broadcaster.name} exists.")
+            twitch_logger.info(f"Channel {payload.data.broadcaster.name} exists.")
             channel = await Channel.get(name=payload.data.broadcaster.name.lower())
             match subscription_tier:
                 case 1000:
@@ -272,7 +272,7 @@ if __name__ == "__main__":
                     points_to_add = conf_options["APP"]["POINTS"]["TIER_3"]
 
             if await Player.get_or_none(name=subscribed_user.name.lower(), channel=channel):
-                logging.info(f"Player {subscribed_user.name.lower()} exists.")
+                twitch_logger.info(f"Player {subscribed_user.name.lower()} exists.")
                 player = await Player.get(name=subscribed_user.name.lower(), channel=channel)
                 if await Subscriptions.get_or_none(player=player, channel=channel):
                     subscription = await Subscriptions.get(player=player, channel=channel)
@@ -314,7 +314,7 @@ if __name__ == "__main__":
                     "No active seasons"
                     pass
             else:
-                logging.info(f"Player {subscribed_user.name.lower()} does not exist.")
+                twitch_logger.info(f"Player {subscribed_user.name.lower()} does not exist.")
                 clan_totals = (
                     await Clan.all()
                     .filter(channel=channel)
@@ -327,7 +327,7 @@ if __name__ == "__main__":
                 ]
                 new_clan = random.choice(clans_to_choose_from)
                 await Player.create(name=subscribed_user.name.lower(), clan_id=new_clan, channel=channel)
-                logging.info(f"Created player {subscribed_user.name.lower()}.")
+                twitch_logger.info(f"Created player {subscribed_user.name.lower()}.")
                 player = await Player.get(name=subscribed_user.name.lower(), channel=channel)
                 if await Subscriptions.get_or_none(player=player, channel=channel):
                     subscription = await Subscriptions.get(player=player, channel=channel)
@@ -389,10 +389,10 @@ if __name__ == "__main__":
         subscription_tier: int = payload.data.tier
         is_anonymous: bool = payload.data.is_anonymous
 
-        logging.info("Received a new subscription gift event.")
+        twitch_logger.info("Received a new subscription gift event.")
 
         if await Channel.get_or_none(name=payload.data.broadcaster.name.lower()):
-            logging.info(f"Channel {payload.data.broadcaster.name} exists.")
+            twitch_logger.info(f"Channel {payload.data.broadcaster.name} exists.")
             channel = await Channel.get(name=payload.data.broadcaster.name.lower())
             match subscription_tier:
                 case 1000:
@@ -402,14 +402,14 @@ if __name__ == "__main__":
                 case 3000:
                     points_to_add = conf_options["APP"]["POINTS"]["TIER_3"] * payload.data.total
             
-            logging.info(f"Points to add: {points_to_add}")
+            twitch_logger.info(f"Points to add: {points_to_add}")
 
         if is_anonymous:
-            logging.info("Gift was anonymous.")
+            twitch_logger.info("Gift was anonymous.")
             pass
         else:
             if await Player.get_or_none(name=gift_giver.name.lower(), channel=channel):
-                logging.info(f"Player gifter {gift_giver.name.lower()} exists.")
+                twitch_logger.info(f"Player gifter {gift_giver.name.lower()} exists.")
                 player = await Player.get(name=gift_giver.name.lower(), channel=channel)
                 if await Season.active_seasons.all().filter(channel=channel).exists():
                     season = await Season.active_seasons.filter(channel=channel).first()
@@ -436,13 +436,13 @@ if __name__ == "__main__":
                         else:
                             await GiftedSubsLeaderboard.create(channel=channel, player=player, gifted_subs=1)
                     else:
-                        logging.info("Player is not enabled or does not have a clan")
+                        twitch_logger.info("Player is not enabled or does not have a clan")
                         pass
                 else:
-                    logging.info("No active seasons")
+                    twitch_logger.info("No active seasons")
                     pass
             else:
-                logging.info(f"Player gifter {gift_giver.name.lower()} does not exist.")
+                twitch_logger.info(f"Player gifter {gift_giver.name.lower()} does not exist.")
                 clan_totals = (
                     await Clan.all()
                     .filter(channel=channel)
@@ -455,7 +455,7 @@ if __name__ == "__main__":
                 ]
                 new_clan = random.choice(clans_to_choose_from)
                 await Player.create(name=gift_giver.name.lower(), clan_id=new_clan, channel=channel)
-                logging.info(f"Created player {gift_giver.name.lower()}.")
+                twitch_logger.info(f"Created player {gift_giver.name.lower()}.")
                 player = await Player.get(name=gift_giver.name.lower(), channel=channel)
                 if await Season.active_seasons.all().filter(channel=channel).exists():
                     season = await Season.active_seasons.filter(channel=channel).first()
@@ -486,10 +486,10 @@ if __name__ == "__main__":
                             f"Hej, @{player.name.lower()}! Welcome to the VANDERWOOD FAMILY! Your clan, the {clan.name.upper()} has gained a new warrior. You can now forge your !shield for WALLHALLA and use ?checkin every live stream to earn ⬣100 VALOR POINTS for you and your clan! Skál! vander60SKAL"
                         )
                     else:
-                        logging.info("Player is not enabled or does not have a clan")
+                        twitch_logger.info("Player is not enabled or does not have a clan")
                         pass
                 else:
-                    logging.info("No active seasons")
+                    twitch_logger.info("No active seasons")
                     pass
 
     
@@ -501,16 +501,16 @@ if __name__ == "__main__":
         Reacts to receicing a new channel subscription event.
         """
 
-        logging.info(f"User: {payload.data.user.name}")
-        logging.info(f"Tier: {payload.data.tier}")
-        logging.info(f"Payload: {payload.data}")
+        twitch_logger.info(f"User: {payload.data.user.name}")
+        twitch_logger.info(f"Tier: {payload.data.tier}")
+        twitch_logger.info(f"Payload: {payload.data}")
 
         subscribed_user: PartialUser = payload.data.user
         subscription_tier: int = payload.data.tier
         
-        logging.info("Received a new subscription event.")
+        twitch_logger.info("Received a new subscription event.")
         if await Channel.get_or_none(name=payload.data.broadcaster.name.lower()):
-            logging.info(f"Channel {payload.data.broadcaster.name} exists.")
+            twitch_logger.info(f"Channel {payload.data.broadcaster.name} exists.")
             channel = await Channel.get(name=payload.data.broadcaster.name.lower())
             match subscription_tier:
                 case 1000:
@@ -520,10 +520,10 @@ if __name__ == "__main__":
                 case 3000:
                     points_to_add = conf_options["APP"]["POINTS"]["TIER_3"]
 
-            logging.info(f"Points to add: {points_to_add}")
+            twitch_logger.info(f"Points to add: {points_to_add}")
 
             if await Player.get_or_none(name=subscribed_user.name.lower(), channel=channel):
-                logging.info(f"Player {subscribed_user.name.lower()} exists.")
+                twitch_logger.info(f"Player {subscribed_user.name.lower()} exists.")
                 player = await Player.get(name=subscribed_user.name.lower(), channel=channel)
                 if await Subscriptions.get_or_none(player=player, channel=channel):
                     subscription = await Subscriptions.get(player=player, channel=channel)
@@ -561,7 +561,7 @@ if __name__ == "__main__":
                     "No active seasons"
                     pass
             else:
-                logging.info(f"Player {subscribed_user.name.lower()} does not exist.")
+                twitch_logger.info(f"Player {subscribed_user.name.lower()} does not exist.")
                 clan_totals = (
                     await Clan.all()
                     .filter(channel=channel)
@@ -574,7 +574,7 @@ if __name__ == "__main__":
                 ]
                 new_clan = random.choice(clans_to_choose_from)
                 await Player.create(name=subscribed_user.name.lower(), clan_id=new_clan, channel=channel)
-                logging.info(f"Created player {subscribed_user.name.lower()}.")
+                twitch_logger.info(f"Created player {subscribed_user.name.lower()}.")
                 player = await Player.get(name=subscribed_user.name.lower(), channel=channel)
                 if await Subscriptions.get_or_none(player=player, channel=channel):
                     subscription = await Subscriptions.get(player=player, channel=channel)
@@ -622,17 +622,17 @@ if __name__ == "__main__":
         """
         Reacts to receiving a new channel points redemption event.
         """
-        logging.info(f"Parsed payload: {str(payload.data)}")
+        twitch_logger.info(f"Parsed payload: {str(payload.data)}")
 
         user: PartialUser = payload.data.user
         reward: eventsub.CustomReward = payload.data.reward
 
-        logging.info("Received a new channel points redemption event.")
+        twitch_logger.info("Received a new channel points redemption event.")
         if await Channel.get_or_none(name=payload.data.broadcaster.name.lower()):
-            logging.info(f"Channel {payload.data.broadcaster.name} exists.")
+            twitch_logger.info(f"Channel {payload.data.broadcaster.name} exists.")
             channel = await Channel.get(name=payload.data.broadcaster.name.lower())
             if await Player.get_or_none(name=user.name.lower(), channel=channel):
-                logging.info(f"Player {user.name.lower()} exists.")
+                twitch_logger.info(f"Player {user.name.lower()} exists.")
                 player = await Player.get(name=user.name.lower(), channel=channel)
                 if await Season.active_seasons.all().filter(channel=channel).exists():
                     season = await Season.active_seasons.filter(channel=channel).first()
@@ -642,8 +642,8 @@ if __name__ == "__main__":
                             points = await Points.get(player=player, season=season, channel=channel)
                             points.points += reward.cost / 2
 
-                            logging.info(f"Reward cost: {reward.cost}")
-                            logging.info(f"Points to add: {reward.cost / 2}")
+                            twitch_logger.info(f"Reward cost: {reward.cost}")
+                            twitch_logger.info(f"Points to add: {reward.cost / 2}")
 
                             await points.save()
                         else:
@@ -664,7 +664,7 @@ if __name__ == "__main__":
                 else:
                     pass
             else:
-                logging.info(f"Player {user.name.lower()} does not exist.")
+                twitch_logger.info(f"Player {user.name.lower()} does not exist.")
                 pass
         else:
             pass
@@ -676,12 +676,12 @@ if __name__ == "__main__":
         """
         Reacts to receiving a new channel follow event.
         """
-        logging.info(f"User: {payload.data.user.name}")
-        logging.info(f"Payload: {payload.data}")
+        twitch_logger.info(f"User: {payload.data.user.name}")
+        twitch_logger.info(f"Payload: {payload.data}")
 
         player: PartialUser = payload.data.user
 
-        logging.info("Received a new follow event.")
+        twitch_logger.info("Received a new follow event.")
 
         await twitch_bot.get_channel(payload.data.broadcaster.name).send(
             f"Hej @{player.name.lower()}, welcome to VANDERHEIM! Make yourself at home, grab yourself a drink and meet the rest of the VANDERWOOD FAMILY! vander60SKAL"
@@ -758,9 +758,9 @@ if __name__ == "__main__":
                     channel_name=channel_name, event_type="channel.follow", subscribed=True
                 )
             else:
-                logging.error(err.message)
-                logging.error(err.status)
-                logging.error(err.reason)
+                twitch_logger.error(err.message)
+                twitch_logger.error(err.status)
+                twitch_logger.error(err.reason)
                 raise
     
     async def subscribe_channel_subscription_messages(channel_id: int, channel_name: str) -> None:
