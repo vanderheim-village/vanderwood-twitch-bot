@@ -379,9 +379,10 @@ if __name__ == "__main__":
         Reacts to receiving a new channel subscription gift event.
         """
 
-        logging.info(f"User: {payload.data.user.name}")
-        logging.info(f"Tier: {payload.data.tier}")
-        logging.info(f"Payload: {payload.data}")
+        twitch_logger.info(f"User: {payload.data.user.name}")
+        twitch_logger.info(f"Tier: {payload.data.tier}")
+        twitch_logger.info(f"Total gifts: {payload.data.total}")
+        twitch_logger.info(f"Payload: {payload.data}")
 
 
         gift_giver: PartialUser = payload.data.user
@@ -395,11 +396,11 @@ if __name__ == "__main__":
             channel = await Channel.get(name=payload.data.broadcaster.name.lower())
             match subscription_tier:
                 case 1000:
-                    points_to_add = conf_options["APP"]["POINTS"]["TIER_1"]
+                    points_to_add = conf_options["APP"]["POINTS"]["TIER_1"] * payload.data.total
                 case 2000:
-                    points_to_add = conf_options["APP"]["POINTS"]["TIER_2"]
+                    points_to_add = conf_options["APP"]["POINTS"]["TIER_2"] * payload.data.total
                 case 3000:
-                    points_to_add = conf_options["APP"]["POINTS"]["TIER_3"]
+                    points_to_add = conf_options["APP"]["POINTS"]["TIER_3"] * payload.data.total
             
             logging.info(f"Points to add: {points_to_add}")
 
@@ -430,7 +431,7 @@ if __name__ == "__main__":
                         
                         if await GiftedSubsLeaderboard.get_or_none(channel=channel, player=player):
                             gifted_sub = await GiftedSubsLeaderboard.get(channel=channel, player=player)
-                            gifted_sub.gifted_subs += 1
+                            gifted_sub.gifted_subs += payload.data.total
                             await gifted_sub.save()
                         else:
                             await GiftedSubsLeaderboard.create(channel=channel, player=player, gifted_subs=1)
