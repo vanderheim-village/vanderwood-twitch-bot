@@ -1,4 +1,5 @@
 from typing import List, TypedDict, TYPE_CHECKING
+from datetime import datetime, timedelta, timezone
 
 from tortoise.functions import Sum
 from twitchio.ext import commands
@@ -317,23 +318,34 @@ class BomCommandsCog(commands.Cog):
                             else:
                                 await Checkin.create(player=player, session=session, channel=channel)
                                 clan = await player.clan.get()
+
+                                ## We need to check if the checkin is within the first 30 minutes of the session, if so double the points given, if not, give normal points.
+                                ## This is to encourage people to check in early and not just before the session ends.
+
+                                ## Compare timezone aware datetime objects
+
+                                if session.start_time + timedelta(minutes=30) > datetime.now(timezone.utc):
+                                    points_to_give = 200
+                                else:
+                                    points_to_give = 100
+                                
                                 if await Points.get_or_none(player=player, season=season, channel=channel):
                                     points = await Points.get(player=player, season=season, channel=channel)
-                                    points.points += 100
+                                    points.points += points_to_give
                                     await points.save()
                                 else:
                                     assert player.clan is not None
                                     await Points.create(
                                         player_id=player.id,
                                         season_id=season.id,
-                                        points=100,
+                                        points=points_to_give,
                                         clan_id=clan.id,
                                         channel=channel,
                                     )
                                 
                                 user_lifetime_checkins = await Checkin.filter(player=player, channel=channel).count()
 
-                                await ctx.send(f"@{ctx.author.name.lower()} has checked in and earned 100 VP for the {clan.name.upper()}! HEIMDALL see's you watching! Total lifetime check-ins: ({user_lifetime_checkins})")
+                                await ctx.send(f"@{ctx.author.name.lower()} has checked in and earned {points_to_give} VP for the {clan.name.upper()}! HEIMDALL see's you watching! Total lifetime check-ins: ({user_lifetime_checkins})")
                         else:
                             await ctx.send(f"@{ctx.author.name.lower()} is not in a Clan roster!")
                     else:
