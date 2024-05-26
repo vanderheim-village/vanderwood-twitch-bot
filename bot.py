@@ -304,6 +304,10 @@ if __name__ == "__main__":
                                 channel=channel,
                             )
                         
+                        discord_server = discord_bot.get_guild(conf_options["APP"]["DISCORD_SERVER_ID"])
+                        discord_channel = discord_server.get_channel(conf_options["APP"]["DISCORD_SUBS_LOG_CHANNEL"])
+                        await discord_channel.send(f"@{player.name.lower()} has subscribed to {channel.name} for {subscription.months_subscribed} months.")
+
                         await twitch_bot.get_channel(payload.data.broadcaster.name).send(
                             f"Hej, @{player.name.lower()}! Welcome to the VANDERWOOD FAMILY! Your clan, the {clan.name.upper()} has gained a new warrior. You can now forge your !shield for WALLHALLA and use ?checkin every live stream to earn ⬣100 VALOR POINTS for you and your clan! Skál! vander60SKAL"
                         )
@@ -358,6 +362,10 @@ if __name__ == "__main__":
                                 clan_id=clan.id,
                                 channel=channel,
                             )
+                        
+                        discord_server = discord_bot.get_guild(conf_options["APP"]["DISCORD_SERVER_ID"])
+                        discord_channel = discord_server.get_channel(conf_options["APP"]["DISCORD_SUBS_LOG_CHANNEL"])
+                        await discord_channel.send(f"@{player.name.lower()} has subscribed to {channel.name} for {subscription.months_subscribed} months.")
                         
                         await twitch_bot.get_channel(payload.data.broadcaster.name).send(
                             f"Hej, @{player.name.lower()}! Welcome to the VANDERWOOD FAMILY! Your clan, the {clan.name.upper()} has gained a new warrior. You can now forge your !shield for WALLHALLA and use ?checkin every live stream to earn ⬣100 VALOR POINTS for you and your clan! Skál! vander60SKAL"
@@ -435,6 +443,11 @@ if __name__ == "__main__":
                             await gifted_sub.save()
                         else:
                             await GiftedSubsLeaderboard.create(channel=channel, player=player, gifted_subs=1)
+                        
+
+                        discord_server = discord_bot.get_guild(conf_options["APP"]["DISCORD_SERVER_ID"])
+                        discord_channel = discord_server.get_channel(conf_options["APP"]["DISCORD_SUBS_LOG_CHANNEL"])
+                        await discord_channel.send(f"@{player.name.lower()} has gifted {payload.data.total} subs to {channel.name}.")
                     else:
                         twitch_logger.info("Player is not enabled or does not have a clan")
                         pass
@@ -482,6 +495,10 @@ if __name__ == "__main__":
                         else:
                             await GiftedSubsLeaderboard.create(channel=channel, player=player, gifted_subs=1)
                         
+                        discord_server = discord_bot.get_guild(conf_options["APP"]["DISCORD_SERVER_ID"])
+                        discord_channel = discord_server.get_channel(conf_options["APP"]["DISCORD_SUBS_LOG_CHANNEL"])
+                        await discord_channel.send(f"@{player.name.lower()} has gifted {payload.data.total} subs to {channel.name}.")
+
                         await twitch_bot.get_channel(payload.data.broadcaster.name).send(
                             f"Hej, @{player.name.lower()}! Welcome to the VANDERWOOD FAMILY! Your clan, the {clan.name.upper()} has gained a new warrior. You can now forge your !shield for WALLHALLA and use ?checkin every live stream to earn ⬣100 VALOR POINTS for you and your clan! Skál! vander60SKAL"
                         )
@@ -554,6 +571,11 @@ if __name__ == "__main__":
                                 clan_id=clan.id,
                                 channel=channel,
                             )
+                        
+
+                        discord_server = discord_bot.get_guild(conf_options["APP"]["DISCORD_SERVER_ID"])
+                        discord_channel = discord_server.get_channel(conf_options["APP"]["DISCORD_SUBS_LOG_CHANNEL"])
+                        await discord_channel.send(f"@{player.name.lower()} has subscribed to {channel.name} for {subscription.months_subscribed} months.")
                     else:
                         "Player is not enabled or does not have a clan"
                         pass
@@ -605,6 +627,10 @@ if __name__ == "__main__":
                                 clan_id=clan.id,
                                 channel=channel,
                             )
+                        
+                        discord_server = discord_bot.get_guild(conf_options["APP"]["DISCORD_SERVER_ID"])
+                        discord_channel = discord_server.get_channel(conf_options["APP"]["DISCORD_SUBS_LOG_CHANNEL"])
+                        await discord_channel.send(f"@{player.name.lower()} has subscribed to {channel.name} for {subscription.months_subscribed} months.")
                     else:
                         "Player is not enabled or does not have a clan"
                         pass
