@@ -26,6 +26,7 @@ class StatusManager(Manager):
 class Player(Model):
     id = fields.IntField(pk=True)
     name = fields.CharField(max_length=255, unique=False)
+    nickname = fields.CharField(max_length=20, null=True)
     clan: ForeignKeyNullableRelation[Clan] = fields.ForeignKeyField(
         "models.Clan", related_name="players", null=True
     )

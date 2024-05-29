@@ -17,6 +17,26 @@ logger = logging.getLogger(__name__)
 class ModCommandsCog(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
+    
+    @app_commands.command(name="set-nickname", description="Set a players nickname, used for triggerfyre if name too long.")
+    @commands.guild_only()
+    @commands.has_any_role("Moderator", "Admin", "Admins", "Moderators")
+    async def set_nickname(self, interaction: discord.Interaction, player: str, nickname: str) -> None:
+        """
+        /set-nickname <player> <nickname>
+        """
+        if await Channel.get_or_none(discord_server_id=interaction.guild.id):
+            channel = await Channel.get(discord_server_id=interaction.guild.id)
+            if await Player.get_or_none(name=player, channel=channel):
+                player_obj = await Player.get(name=player, channel=channel)
+                player_obj.nickname = nickname
+                await player_obj.save()
+
+                await interaction.response.send_message(f"Added the nickname {nickname} to the player {player}.")
+            else:
+                await interaction.response.send_message(f"The player {player} doesn't exist.")
+        else:
+            await interaction.response.send_message(f"This discord server is not registered.", ephemeral=True)
 
     @app_commands.command(name="add-points", description="Add points to a player for the current season of the Battle of Midgard.")
     @commands.guild_only()

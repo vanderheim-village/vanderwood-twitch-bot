@@ -344,8 +344,10 @@ class BomCommandsCog(commands.Cog):
                                     )
                                 
                                 user_lifetime_checkins = await Checkin.filter(player=player, channel=channel).count()
-
-                                await ctx.send(f"@{ctx.author.name.lower()} has checked in and earned {points_to_give} VP for the {clan.name.upper()}! HEIMDALL see's you watching! Total lifetime check-ins: ({user_lifetime_checkins})")
+                                if player.nickname:
+                                    await ctx.send(f"@{ctx.author.name.lower()} ({player.nickname}) has checked in and earned {points_to_give} VP for the {clan.name.upper()}! HEIMDALL see's you watching! Total lifetime check-ins: ({user_lifetime_checkins})")
+                                else:
+                                    await ctx.send(f"@{ctx.author.name.lower()} has checked in and earned {points_to_give} VP for the {clan.name.upper()}! HEIMDALL see's you watching! Total lifetime check-ins: ({user_lifetime_checkins})")
                         else:
                             await ctx.send(f"@{ctx.author.name.lower()} is not in a Clan roster!")
                     else:
