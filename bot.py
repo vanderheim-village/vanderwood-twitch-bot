@@ -280,7 +280,7 @@ if __name__ == "__main__":
                     subscription.currently_subscribed = True
                     await subscription.save()
                 else:
-                    await Subscriptions.create(
+                    subscription = await Subscriptions.create(
                         player=player,
                         months_subscribed=1,
                         currently_subscribed=True,
@@ -339,7 +339,7 @@ if __name__ == "__main__":
                     subscription.currently_subscribed = True
                     await subscription.save()
                 else:
-                    await Subscriptions.create(
+                    subscription = await Subscriptions.create(
                         player=player,
                         months_subscribed=1,
                         currently_subscribed=True,
