@@ -509,5 +509,12 @@ class BomModCommandsCog(commands.Cog):
         """
         await ctx.send("vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT vander60RAIDBOAT")
 
+    @commands.command()
+    async def raidshields(self, ctx: commands.Context) -> None:
+        """
+        ?raidshields command
+        """
+        await ctx.send("vander60RAIDCHAMP vander60RAIDCHAMP vander60RAIDCHAMP vander60RAIDCHAMP vander60RAIDCHAMP vander60RAIDCHAMP vander60RAIDCHAMP vander60RAIDCHAMP vander60RAIDCHAMP vander60RAIDCHAMP vander60RAIDCHAMP vander60RAIDCHAMP vander60RAIDCHAMP vander60RAIDCHAMP vander60RAIDCHAMP")
+
 def prepare(twitch_bot: commands.Bot, discord_bot: discord_commands.Bot) -> None:
     twitch_bot.add_cog(BomModCommandsCog(twitch_bot, discord_bot))
