@@ -710,7 +710,7 @@ if __name__ == "__main__":
         twitch_logger.info("Received a new follow event.")
 
         await twitch_bot.get_channel(payload.data.broadcaster.name).send(
-            f"Hej @{player.name.lower()}, welcome to VANDERHEIM! Make yourself at home, grab yourself a drink and meet the rest of the VANDERWOOD FAMILY! vander60SKAL"
+            f"🌲🌲🌲Who goes there!!? 👀 A weary traveller has emerged from the WOODLANDS. I need someone to ?search @{player.name} now before they enter VANDERHEIM!🌲🌲🌲"
         )
 
         
@@ -837,6 +837,56 @@ if __name__ == "__main__":
                 )
             else:
                 raise
+    
+    async def get_eventsub_subscriptions() -> None:
+        """
+        Gets all active eventsub subscriptions.
+        """
+        subscriptions = await eventsub_client.get_subscriptions()
+
+        for subscription in subscriptions:
+            twitch_logger.info(f"subscription Type: {subscription.type}, Status: {subscription.status}, Transport: {subscription.transport}, Transport Method: {subscription.transport_method}, Subscription ID: {subscription.id}, Subscription Cost: {subscription.cost}")
+        
+        # We need to check if the subscriptions returned match the ones in the database, if one in the database is not in the subscriptions, we need to delete the database entry and then resubscribe.
+        for subscription in await EventSubscriptions.all():
+            if subscription.event_type == "channel.subscribe":
+                if not any(
+                    sub.type == "channel.subscribe" and sub.status == "enabled"
+                    for sub in subscriptions
+                ):
+                    await EventSubscriptions.filter(event_type="channel.subscribe").delete()
+                    await subscribe_channel_subscriptions(subscription.channel_name)
+            elif subscription.event_type == "channel.subscription.gift":
+                if not any(
+                    sub.type == "channel.subscription.gift" and sub.status == "enabled"
+                    for sub in subscriptions
+                ):
+                    await EventSubscriptions.filter(event_type="channel.subscription.gift").delete()
+                    await subscribe_channel_subscription_gifts(subscription.channel_name)
+            elif subscription.event_type == "channel.subscription.message":
+                if not any(
+                    sub.type == "channel.subscription.message" and sub.status == "enabled"
+                    for sub in subscriptions
+                ):
+                    await EventSubscriptions.filter(event_type="channel.subscription.message").delete()
+                    await subscribe_channel_subscription_messages(subscription.channel_name)
+            elif subscription.event_type == "channel.channel_points_custom_reward_redemption.add":
+                if not any(
+                    sub.type == "channel.channel_points_custom_reward_redemption.add" and sub.status == "enabled"
+                    for sub in subscriptions
+                ):
+                    await EventSubscriptions.filter(event_type="channel.channel_points_custom_reward_redemption.add").delete()
+                    await subscribe_channel_points_redeemed(subscription.channel_name)
+            elif subscription.event_type == "channel.follow":
+                if not any(
+                    sub.type == "channel.follow" and sub.status == "enabled"
+                    for sub in subscriptions
+                ):
+                    channel = await Channel.get(name=subscription.channel_name)
+                    await EventSubscriptions.filter(event_type="channel.follow").delete()
+                    await subscribe_channel_follows_v2(channel_name=subscription.channel_name, bot_user_id=conf_options["APP"]["BOT_USER_ID"], channel_id=channel.twitch_channel_id)
+            else:
+                pass
 
     twitch_bot.loop.create_task(eventsub_client.listen(port=conf_options["APP"]["PORT"]))
     twitch_bot.loop.create_task(discord_bot.start(conf_options["APP"]["DISCORD_TOKEN"]))
@@ -863,6 +913,8 @@ if __name__ == "__main__":
             subscribe_channel_follows_v2(channel_id=channel["id"], channel_name=channel["name"], bot_user_id=conf_options["APP"]["BOT_USER_ID"])
         )
         pass
+
+        twitch_eventsubbot.loop.create_task(get_eventsub_subscriptions())
     try:
         twitch_bot.loop.run_forever()
         twitch_bot.loop.run_until_complete(twitch_bot.stop())
