@@ -9,6 +9,7 @@ from tortoise.queryset import QuerySet
 class Channel(Model):
     id = fields.IntField(pk=True)
     name = fields.CharField(max_length=255, unique=True)
+    twitch_channel_id = fields.CharField(max_length=255, unique=True, null=True)
     discord_server_id = fields.CharField(max_length=255, unique=True, null=True)
 
 class Clan(Model):
