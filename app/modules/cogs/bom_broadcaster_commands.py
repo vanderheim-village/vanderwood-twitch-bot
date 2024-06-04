@@ -20,10 +20,12 @@ class BomBroadcasterCommandsCog(commands.Cog):
         if await Channel.get_or_none(name=ctx.channel.name):
             await ctx.send("This channel has already been registered.")
         else:
+            channel = await ctx.channel.user()
+            channel_id = channel.id
             if discord_server_id == "":
-                await Channel.create(name=ctx.channel.name)
+                await Channel.create(name=ctx.channel.name, twitch_channel_id=channel_id)
             else:
-                await Channel.create(name=ctx.channel.name, discord_server_id=discord_server_id)
+                await Channel.create(name=ctx.channel.name, discord_server_id=discord_server_id, twitch_channel_id=channel_id)
             await ctx.send("This channel has been registered.")
     
     @commands.command()
