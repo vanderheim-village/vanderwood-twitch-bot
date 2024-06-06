@@ -190,3 +190,32 @@ class RewardLevel(Model):
     channel = fields.ForeignKeyField("models.Channel", related_name="reward_levels")
     level = fields.IntField(unique=True)
     reward = fields.CharField(max_length=255)
+
+
+class FollowerGiveaway(Model):
+    id = fields.IntField(pk=True)
+    channel = fields.ForeignKeyField("models.Channel", related_name="follower_giveaways")
+    start_time = fields.DatetimeField(auto_now_add=True)
+    end_time = fields.DatetimeField()
+    follower = fields.CharField(max_length=255)
+    winner: ForeignKeyNullableRelation[Player] = fields.ForeignKeyField(
+        "models.Player", related_name="follower_giveaways", null=True
+    )
+
+
+class FollowerGiveawayEntry(Model):
+    id = fields.IntField(pk=True)
+    giveaway: ForeignKeyRelation[FollowerGiveaway] = fields.ForeignKeyField(
+        "models.FollowerGiveaway", related_name="entries"
+    )
+    player: ForeignKeyRelation[Player] = fields.ForeignKeyField(
+        "models.Player", related_name="follower_giveaway_entries"
+    )
+    channel = fields.ForeignKeyField("models.Channel", related_name="follower_giveaway_entries")
+
+
+class FollowerGiveawayPrize(Model):
+    id = fields.IntField(pk=True)
+    message = fields.TextField()
+    vp_reward = fields.IntField()
+    channel = fields.ForeignKeyField("models.Channel", related_name="giveaway_prizes")
