@@ -5,7 +5,7 @@ from tortoise.functions import Sum
 from twitchio.ext import commands
 from discord.ext import commands as discord_commands
 
-from app.models import Checkin, Clan, Player, Points, Season, Session, Channel, RaidSession, RaidCheckin, GiftedSubsLeaderboard
+from app.models import Checkin, Clan, Player, Points, Season, Session, Channel, RaidSession, RaidCheckin, GiftedSubsLeaderboard, FollowerGiveaway, FollowerGiveawayEntry
 
 if TYPE_CHECKING:
     from bot import TwitchBot, DiscordBot
@@ -401,6 +401,42 @@ class BomCommandsCog(commands.Cog):
                     await ctx.send("No active session!")
             else:
                 await ctx.send("No active seasons!")
+        else:
+            pass
+    
+
+    @commands.command()
+    async def search(self, ctx: commands.Context, playername: str) -> None:
+        """
+        ?search command
+        """
+
+        ## This command should enter the follower giveaway for the user. Only one entry per user is allowed. If no playername is provided we will send an error message.
+
+        if playername == "":
+            await ctx.send(f"Type ?search @username in the chat to search new followers!")
+        else:
+            playername = playername.strip("@")
+
+        if await Channel.get_or_none(name=ctx.channel.name):
+            channel = await Channel.get(name=ctx.channel.name)
+            if await FollowerGiveaway.get_or_none(channel=channel, follower=playername):
+                follower_giveaway = await FollowerGiveaway.get(channel=channel, follower=playername)
+                # We need to check if the giveaway is still active by checking the end time.
+                if follower_giveaway.end_time > datetime.now(timezone.utc):
+                    if await Player.get_or_none(name=ctx.author.name.lower(), channel=channel):
+                        player = await Player.get(name=ctx.author.name.lower(), channel=channel)
+                        if await FollowerGiveawayEntry.get_or_none(giveaway=follower_giveaway, player=player, channel=channel):
+                            await ctx.send(f"You have already entered the giveaway.")
+                        else:
+                            await FollowerGiveawayEntry.create(giveaway=follower_giveaway, player=player, channel=channel)
+                            await ctx.send(f"You have entered the giveaway.")
+                    else:
+                        pass
+                else:
+                    await ctx.send(f"The giveaway has ended.")
+            else:
+                pass
         else:
             pass
 

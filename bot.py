@@ -29,9 +29,10 @@ from tortoise import Tortoise
 from twitchio.ext import commands, eventsub
 from tortoise.functions import Count
 from twitchio.models import PartialUser
+import datetime
 
 from app import settings
-from app.models import EventSubscriptions, Player, Points, Season, Subscriptions, Clan, Channel, GiftedSubsLeaderboard
+from app.models import EventSubscriptions, Player, Points, Season, Subscriptions, Clan, Channel, GiftedSubsLeaderboard, FollowerGiveaway
 
 
 # Define function to process yaml config file
@@ -94,6 +95,9 @@ class TwitchBot(commands.Bot):
         )
 
         await Tortoise.generate_schemas(safe=True)
+    
+    async def routines_init(self) -> None:
+        self.check_follower_giveaways.start()
 
     async def stop(self) -> None:
         await self.session.close()
@@ -709,6 +713,17 @@ if __name__ == "__main__":
 
         twitch_logger.info("Received a new follow event.")
 
+        ## Launch a giveaway for the new follower, the end time should be 30 seconds from now.
+        if await Channel.get_or_none(name=payload.data.broadcaster.name.lower()):
+            twitch_logger.info(f"Channel {payload.data.broadcaster.name} exists.")
+            channel = await Channel.get(name=payload.data.broadcaster.name.lower())
+            # We need to check if a giveaway exists for the new follower (they may have unfollowed and refollowed), so we need to delete the old giveaway and create a new one.
+            if await FollowerGiveaway.get_or_none(channel=channel, follower=player.name.lower()):
+                await FollowerGiveaway.get(channel=channel, follower=player.name.lower()).delete()
+            await FollowerGiveaway.create(channel=channel, end_time=datetime.datetime.now() + datetime.timedelta(seconds=30), follower=player.name.lower())
+        else:
+            pass
+
         await twitch_bot.get_channel(payload.data.broadcaster.name).send(
             f"🌲🌲🌲Who goes there!!? 👀 A weary traveller has emerged from the WOODLANDS. I need someone to ?search @{player.name} now before they enter VANDERHEIM!🌲🌲🌲"
         )
@@ -892,6 +907,8 @@ if __name__ == "__main__":
     twitch_bot.loop.create_task(discord_bot.start(conf_options["APP"]["DISCORD_TOKEN"]))
     twitch_bot.loop.create_task(twitch_bot.tinit())
     twitch_bot.loop.create_task(twitch_bot.connect())
+    twitch_bot.loop.create_task(twitch_bot.routines_init())
+
     for channel in conf_options["APP"]["ACCOUNTS"]:
         twitch_eventsubbot.loop.create_task(
             subscribe_channel_subscriptions(channel_id=channel["id"], channel_name=channel["name"])
