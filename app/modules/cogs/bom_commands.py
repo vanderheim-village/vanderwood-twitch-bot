@@ -427,14 +427,14 @@ class BomCommandsCog(commands.Cog):
                     if await Player.get_or_none(name=ctx.author.name.lower(), channel=channel):
                         player = await Player.get(name=ctx.author.name.lower(), channel=channel)
                         if await FollowerGiveawayEntry.get_or_none(giveaway=follower_giveaway, player=player, channel=channel):
-                            await ctx.send(f"You have already entered the giveaway.")
+                            pass
                         else:
                             await FollowerGiveawayEntry.create(giveaway=follower_giveaway, player=player, channel=channel)
-                            await ctx.send(f"You have entered the giveaway.")
+                            await ctx.send(f"@{ctx.author.name.lower()} is searching...")
                     else:
                         pass
                 else:
-                    await ctx.send(f"The giveaway has ended.")
+                    await ctx.send(f"The search has ended.")
             else:
                 pass
         else:
