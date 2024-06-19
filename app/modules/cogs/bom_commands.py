@@ -348,6 +348,11 @@ class BomCommandsCog(commands.Cog):
                                     await ctx.send(f"@{ctx.author.name.lower()} ({player.nickname}) has checked in and earned {points_to_give} VP for the {clan.name.upper()}! HEIMDALL see's you watching! Total lifetime check-ins: ({user_lifetime_checkins})")
                                 else:
                                     await ctx.send(f"@{ctx.author.name.lower()} has checked in and earned {points_to_give} VP for the {clan.name.upper()}! HEIMDALL see's you watching! Total lifetime check-ins: ({user_lifetime_checkins})")
+
+                                discord_server = self.discord_bot.get_guild(self.twitch_bot.conf_options["APP"]["DISCORD_SERVER_ID"])
+                                discord_channel = discord_server.get_channel(self.twitch_bot.conf_options["APP"]["DISCORD_CHECKINS_LOG_CHANNEL"])
+
+                                await discord_channel.send(f"{ctx.author.name.lower()} has checked in for the {clan.name.upper()}! HEIMDALL see's them watching! Total lifetime check-ins: ({user_lifetime_checkins})")
                         else:
                             await ctx.send(f"@{ctx.author.name.lower()} is not in a Clan roster!")
                     else:
