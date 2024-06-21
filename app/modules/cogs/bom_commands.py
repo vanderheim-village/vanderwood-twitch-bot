@@ -421,7 +421,7 @@ class BomCommandsCog(commands.Cog):
         if playername == "":
             await ctx.send(f"Type ?search @username in the chat to search new followers!")
         else:
-            playername = playername.strip("@")
+            playername = playername.strip("@").lower()
 
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
@@ -439,7 +439,7 @@ class BomCommandsCog(commands.Cog):
                     else:
                         pass
                 else:
-                    await ctx.send(f"The search has ended.")
+                    await ctx.send(f"The search is over!!")
             else:
                 pass
         else:
