@@ -293,6 +293,11 @@ class BomModCommandsCog(commands.Cog):
                 else:
                     await Session.create(season=active_season, channel=channel)
                     await ctx.send("A session has been created for the current season.")
+
+                    discord_server = self.discord_bot.get_guild(self.twitch_bot.conf_options["APP"]["DISCORD_SERVER_ID"])
+                    discord_channel = discord_server.get_channel(self.twitch_bot.conf_options["APP"]["DISCORD_CHECKINS_LOG_CHANNEL"])
+
+                    await discord_channel.send(f"A session has been started at {timezone.now().strftime('%d/%m/%Y %H:%M:%S')} for the {active_season.name} season.")
             else:
                 await ctx.send("No active seasons!")
         else:
@@ -325,9 +330,15 @@ class BomModCommandsCog(commands.Cog):
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
             if await Season.active_seasons.all().filter(channel=channel).exists():
+                active_season: Season = await Season.active_seasons.all().filter(channel=channel).first()
                 if await Session.active_session.all().filter(channel=channel).exists():
                     await Session.active_session.all().filter(channel=channel).update(end_time=timezone.now())
                     await ctx.send("The current session has been ended.")
+
+                    discord_server = self.discord_bot.get_guild(self.twitch_bot.conf_options["APP"]["DISCORD_SERVER_ID"])
+                    discord_channel = discord_server.get_channel(self.twitch_bot.conf_options["APP"]["DISCORD_CHECKINS_LOG_CHANNEL"])
+
+                    await discord_channel.send(f"A session has ended at {timezone.now().strftime('%d/%m/%Y %H:%M:%S')} for the {active_season.name} season.")
                 else:
                     await ctx.send("No session is currently in progress.")
             else:
