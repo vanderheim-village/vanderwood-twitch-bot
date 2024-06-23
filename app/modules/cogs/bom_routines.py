@@ -43,7 +43,7 @@ class BomRoutinesCog(commands.Cog):
                             await self.send_twitch_message(channel_object.name, message)
                         else:
                             await FollowerGiveaway.filter(id=giveaway.id).delete()
-                            message = f"The Follower Giveaway for {giveaway.follower} has ended. No one entered the giveaway."
+                            message = f"{giveaway.follower} is on the loose in VANDERHEIM!"
                             logger.info(f"Sending message to channel {channel_object.name}: {message}")
                             await self.send_twitch_message(channel_object.name, message)
                     else:
