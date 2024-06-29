@@ -476,7 +476,7 @@ class BomCommandsCog(commands.Cog):
                                         clan_id=0,
                                         channel=channel,
                                     )
-                                await ctx.send(f"Thank you, @{ctx.author.name.lower()} for your aid on the battlefield! ⚔️ You have earned ({session.points_reward}) Valor Points!")
+                                await ctx.send(f"Thank you, @{ctx.author.name.lower()} for your aid on the battlefield! ⚔️ You have claimed ({session.points_reward}) Valor Points!")
                         else:
                             pass
                     else:
