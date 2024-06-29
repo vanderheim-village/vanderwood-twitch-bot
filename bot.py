@@ -134,6 +134,9 @@ class TwitchBot(commands.Bot):
         if message.echo:
             msg: str = message.content
             if msg.startswith("https://clips.twitch.tv"):
+                if "custom-reward-id" in message.tags:
+                    if message.tags["custom-reward-id"] == conf_options["APP"]["BATTLE_CUT_REWARD_ID"]:
+                        return
                 twitch_logger.info("Received a clip message event.")
                 discord_server = self.discord_bot.get_guild(self.conf_options["APP"]["DISCORD_SERVER_ID"])
                 clip_channel = discord_server.get_channel(self.conf_options["APP"]["DISCORD_CLIP_CHANNEL"])
@@ -177,10 +180,19 @@ class TwitchBot(commands.Bot):
                 else:
                     msg: str = message.content
                     if msg.startswith("https://clips.twitch.tv"):
-                        twitch_logger.info("Received a clip message event.")
-                        discord_server = self.discord_bot.get_guild(self.conf_options["APP"]["DISCORD_SERVER_ID"])
-                        clip_channel = discord_server.get_channel(self.conf_options["APP"]["DISCORD_CLIP_CHANNEL"])
-                        await clip_channel.send(f"{message.author.name} shared a clip: {msg}")
+                        if "custom-reward-id" in message.tags:
+                            if message.tags["custom-reward-id"] == conf_options["APP"]["BATTLE_CUT_REWARD_ID"]:
+                                pass
+                            else:
+                                twitch_logger.info("Received a clip message event.")
+                                discord_server = self.discord_bot.get_guild(self.conf_options["APP"]["DISCORD_SERVER_ID"])
+                                clip_channel = discord_server.get_channel(self.conf_options["APP"]["DISCORD_CLIP_CHANNEL"])
+                                await clip_channel.send(f"{message.author.name} shared a clip: {msg}")
+                        else:
+                            twitch_logger.info("Received a clip message event.")
+                            discord_server = self.discord_bot.get_guild(self.conf_options["APP"]["DISCORD_SERVER_ID"])
+                            clip_channel = discord_server.get_channel(self.conf_options["APP"]["DISCORD_CLIP_CHANNEL"])
+                            await clip_channel.send(f"{message.author.name} shared a clip: {msg}")
             else:
                 pass
             twitch_logger.info(f"{message.author.name}: {message.content}")
@@ -656,6 +668,12 @@ if __name__ == "__main__":
 
         user: PartialUser = payload.data.user
         reward: eventsub.CustomReward = payload.data.reward
+        user_input: str = payload.data.input
+
+        twitch_logger.info(f"User: {user.name}")
+        twitch_logger.info(f"Reward: {reward.title}")
+        twitch_logger.info(f"Reward ID: {reward.id}")
+        twitch_logger.info(f"User input: {user_input}")
 
         twitch_logger.info("Received a new channel points redemption event.")
         if await Channel.get_or_none(name=payload.data.broadcaster.name.lower()):
@@ -689,6 +707,10 @@ if __name__ == "__main__":
                         discord_server = discord_bot.get_guild(conf_options["APP"]["DISCORD_SERVER_ID"])
                         discord_channel = discord_server.get_channel(conf_options["APP"]["DISCORD_LOG_CHANNEL"])
                         await discord_channel.send(f"@{user.name.lower()} redeemed a reward: {reward.title}")
+
+                        if reward.id == conf_options["APP"]["BATTLE_CUT_REWARD_ID"]:
+                            battle_cut_discord_channel = discord_server.get_channel(conf_options["APP"]["DISCORD_BATTLE_CUT_LOG_CHANNEL"])
+                            await battle_cut_discord_channel.send(f"@{user.name.lower()} has redeemed a battle cut reward, with the following clip: {user_input}")
                     else:
                         pass
                 else:
