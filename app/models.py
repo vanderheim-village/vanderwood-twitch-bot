@@ -100,6 +100,18 @@ class RaidSessionActiveManager(Manager):
         )
 
 
+class SpoilsSessionActiveManager(Manager):
+    def get_queryset(self) -> QuerySet["SpoilsSession"]:
+        return (
+            super(SpoilsSessionActiveManager, self)
+            .get_queryset()
+            .filter(
+                Q(start_time__lte=timezone.now()),
+                Q(end_time__gte=timezone.now())
+            )
+        )
+
+
 class Session(Model):
     id = fields.IntField(pk=True)
     season: ForeignKeyRelation[Season] = fields.ForeignKeyField(
@@ -219,3 +231,27 @@ class FollowerGiveawayPrize(Model):
     message = fields.TextField()
     vp_reward = fields.IntField()
     channel = fields.ForeignKeyField("models.Channel", related_name="giveaway_prizes")
+
+
+class SpoilsSession(Model):
+    id = fields.IntField(pk=True)
+    season: ForeignKeyRelation[Season] = fields.ForeignKeyField(
+        "models.Season", related_name="spoils_sessions"
+    )
+    start_time = fields.DatetimeField(auto_now_add=True)
+    end_time = fields.DatetimeField(null=True)
+    channel = fields.ForeignKeyField("models.Channel", related_name="spoils_sessions")
+    points_reward = fields.IntField(default=0)
+
+    active_session = SpoilsSessionActiveManager()
+
+
+class SpoilsClaim(Model):
+    id = fields.IntField(pk=True)
+    spoils_session: ForeignKeyRelation[SpoilsSession] = fields.ForeignKeyField(
+        "models.SpoilsSession", related_name="spoils_claims"
+    )
+    player: ForeignKeyRelation[Player] = fields.ForeignKeyField(
+        "models.Player", related_name="spoils_claims"
+    )
+    channel = fields.ForeignKeyField("models.Channel", related_name="spoils_claims")

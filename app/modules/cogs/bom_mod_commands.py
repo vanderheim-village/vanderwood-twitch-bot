@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from tortoise import timezone
 from twitchio.ext import commands
@@ -6,7 +6,7 @@ from discord.ext import commands as discord_commands
 import time
 
 from app.helpers import date_validate
-from app.models import Clan, Player, Points, Season, Session, Channel, RewardLevel, RaidSession, RaidCheckin
+from app.models import Clan, Player, Points, Season, Session, Channel, RewardLevel, RaidSession, RaidCheckin, SpoilsSession
 
 import logging
 
@@ -278,6 +278,30 @@ class BomModCommandsCog(commands.Cog):
                 await ctx.send(f"Clan tag {clantag} is too long. It should be max 4 characters.")
         else:
             pass
+    
+    @commands.command()
+    async def spoils(self, ctx: commands.Context, valor_points: int) -> None:
+        """
+        ?spoils command
+
+        The end time will be auto set to 3 minutes after the current start time.
+        """
+        logger.info("Spoils command.")
+        logger.info(f"Valor points: {valor_points}")
+
+
+        if await Channel.get_or_none(name=ctx.channel.name):
+            channel = await Channel.get(name=ctx.channel.name)
+            if await Season.active_seasons.all().filter(channel=channel).exists():
+                active_season: Season = await Season.active_seasons.all().filter(channel=channel).first()
+                if await SpoilsSession.active_session.all().filter(channel=channel).exists():
+                    logger.info("Spoils session exists.")
+                else:
+                    end_time = timezone.now() + timedelta(minutes=3)
+                    await SpoilsSession.create(season=active_season, channel=channel, points_reward=valor_points, end_time=end_time)
+                    await ctx.send(f"🏆 VANDERWOOD is VICTORIOUS! Use ?claim to collect your share of the spoils! You have 3 minutes ⏰")
+            else:
+                logger.info("No active seasons.")
 
     @commands.command()
     async def startsession(self, ctx: commands.Context) -> None:
