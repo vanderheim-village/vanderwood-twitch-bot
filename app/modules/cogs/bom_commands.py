@@ -5,7 +5,7 @@ from tortoise.functions import Sum
 from twitchio.ext import commands
 from discord.ext import commands as discord_commands
 
-from app.models import Checkin, Clan, Player, Points, Season, Session, Channel, RaidSession, RaidCheckin, GiftedSubsLeaderboard, FollowerGiveaway, FollowerGiveawayEntry, SpoilsSession, SpoilsClaim
+from app.models import Checkin, Clan, Player, Points, Season, Session, Channel, RaidSession, RaidCheckin, GiftedSubsLeaderboard, FollowerGiveaway, FollowerGiveawayEntry, SpoilsSession, SpoilsClaim, ClanSpoilsClaim, ClanSpoilsSession
 
 if TYPE_CHECKING:
     from bot import TwitchBot, DiscordBot
@@ -487,6 +487,58 @@ class BomCommandsCog(commands.Cog):
                 pass
         else:
             pass
+    
+
+    @commands.command()
+    async def clanclaim(self, ctx: commands.Context) -> None:
+        """
+        ?clanclaim command
+        """
+
+        ## We need to check the following:
+        ## 1. If the channel exists.
+        ## 2. If there is an active season.
+        ## 3. If there is an active spoils session for the user's clan.
+        ## 4. If the user is registered.
+        ## 5. If the user has not claimed the spoils yet.
+
+        if await Channel.get_or_none(name=ctx.channel.name):
+            channel = await Channel.get(name=ctx.channel.name)
+            if await Season.active_seasons.all().filter(channel=channel).exists():
+                season = await Season.active_seasons.filter(channel=channel).first()
+                if await Player.get_or_none(name=ctx.author.name.lower(), channel=channel):
+                    player = await Player.get(name=ctx.author.name.lower(), channel=channel)
+                    if player.is_enabled() and player.clan:
+                        clan = await player.clan.get()
+                        if await ClanSpoilsSession.active_sessions.all().filter(channel=channel, clan=clan).exists():
+                            session = await ClanSpoilsSession.active_sessions.filter(channel=channel, clan=clan).first()
+                            if await ClanSpoilsClaim.get_or_none(player=player, channel=channel, spoils_session=session):
+                                await ctx.send(f"@{ctx.author.name.lower()} has already claimed the spoils!")
+                            else:
+                                await ClanSpoilsClaim.create(player=player, channel=channel, spoils_session=session)
+                                if await Points.get_or_none(player=player, season=season, channel=channel):
+                                    points = await Points.get(player=player, season=season, channel=channel)
+                                    points.points += session.points_reward
+                                    await points.save()
+                                else:
+                                    await Points.create(
+                                        player_id=player.id,
+                                        season_id=season.id,
+                                        points=session.points_reward,
+                                        clan_id=clan.id,
+                                        channel=channel,
+                                    )
+                                await ctx.send(f"Thank you, @{ctx.author.name.lower()} for your aid on the battlefield! ⚔️ You have claimed ({session.points_reward}) Valor Points for {clan.name.upper()}!")
+                        else:
+                            await ctx.send(f"Sorry @{ctx.author.name.lower()}, the next battle has begun!")
+                    else:
+                        pass
+                else:
+                    pass
+            else:
+                pass
+        else:
+            pass      
 
 
 def prepare(twitch_bot: commands.Bot, discord_bot: discord_commands.Bot) -> None:

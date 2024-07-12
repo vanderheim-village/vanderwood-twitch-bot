@@ -6,7 +6,7 @@ from discord.ext import commands as discord_commands
 import time
 
 from app.helpers import date_validate
-from app.models import Clan, Player, Points, Season, Session, Channel, RewardLevel, RaidSession, RaidCheckin, SpoilsSession
+from app.models import Clan, Player, Points, Season, Session, Channel, RewardLevel, RaidSession, RaidCheckin, SpoilsSession, ClanSpoilsSession
 
 import logging
 
@@ -302,6 +302,36 @@ class BomModCommandsCog(commands.Cog):
                     await ctx.send(f"🏆 VANDERWOOD is VICTORIOUS! Use ?claim to collect your share of the spoils! You have 3 minutes ⏰")
             else:
                 logger.info("No active seasons.")
+    
+    @commands.command()
+    async def clanspoils(self, ctx: commands.Context, clan_tag: str, valor_points: int) -> None:
+        """
+        ?clanspoils command
+
+        The end time will be auto set to 3 minutes after the current start time.
+        """
+        logger.info("Clan spoils command.")
+        logger.info(f"Clan tag: {clan_tag}")
+        logger.info(f"Valor points: {valor_points}")
+
+        if await Channel.get_or_none(name=ctx.channel.name):
+            channel = await Channel.get(name=ctx.channel.name)
+            if await Season.active_seasons.all().filter(channel=channel).exists():
+                active_season: Season = await Season.active_seasons.all().filter(channel=channel).first()
+                if await Clan.get_or_none(tag=clan_tag, channel=channel):
+                    clan = await Clan.get(tag=clan_tag, channel=channel)
+                    if await ClanSpoilsSession.active_sessions.all().filter(clan=clan).exists():
+                        logger.info("Clan spoils session exists.")
+                    else:
+                        end_time = timezone.now() + timedelta(minutes=3)
+                        await ClanSpoilsSession.create(season=active_season, channel=channel, clan=clan, points_reward=valor_points, end_time=end_time)
+                        await ctx.send(f"{clan.twitch_emoji_name} The {clan.name.upper()} grow stronger! {clan.twitch_emoji_name} Use ?clanclaim to collect your share of the spoils! You have 3 minutes ⏰")
+                else:
+                    logger.info(f"Clan {clan_tag} does not exist.")
+            else:
+                logger.info("No active seasons.")
+        else:
+            pass
 
     @commands.command()
     async def startsession(self, ctx: commands.Context) -> None:

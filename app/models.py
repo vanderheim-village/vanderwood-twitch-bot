@@ -17,6 +17,7 @@ class Clan(Model):
     name = fields.CharField(max_length=255, unique=False)
     tag = fields.CharField(max_length=4, unique=False)
     channel = fields.ForeignKeyField("models.Channel", related_name="clans")
+    twitch_emoji_name = fields.CharField(max_length=255, null=True)
 
 
 class StatusManager(Manager):
@@ -104,6 +105,18 @@ class SpoilsSessionActiveManager(Manager):
     def get_queryset(self) -> QuerySet["SpoilsSession"]:
         return (
             super(SpoilsSessionActiveManager, self)
+            .get_queryset()
+            .filter(
+                Q(start_time__lte=timezone.now()),
+                Q(end_time__gte=timezone.now())
+            )
+        )
+
+
+class ClanSpoilsSessionActiveManager(Manager):
+    def get_queryset(self) -> QuerySet["ClanSpoilsSession"]:
+        return (
+            super(ClanSpoilsSessionActiveManager, self)
             .get_queryset()
             .filter(
                 Q(start_time__lte=timezone.now()),
@@ -255,3 +268,28 @@ class SpoilsClaim(Model):
         "models.Player", related_name="spoils_claims"
     )
     channel = fields.ForeignKeyField("models.Channel", related_name="spoils_claims")
+
+
+class ClanSpoilsSession(Model):
+    id = fields.IntField(pk=True)
+    season: ForeignKeyRelation[Season] = fields.ForeignKeyField(
+        "models.Season", related_name="clan_spoils_sessions"
+    )
+    start_time = fields.DatetimeField(auto_now_add=True)
+    end_time = fields.DatetimeField(null=True)
+    channel = fields.ForeignKeyField("models.Channel", related_name="clan_spoils_sessions")
+    points_reward = fields.IntField(default=0)
+    clan = fields.ForeignKeyField("models.Clan", related_name="clan_spoils_sessions")
+
+    active_sessions = ClanSpoilsSessionActiveManager()
+
+
+class ClanSpoilsClaim(Model):
+    id = fields.IntField(pk=True)
+    spoils_session: ForeignKeyRelation[ClanSpoilsSession] = fields.ForeignKeyField(
+        "models.ClanSpoilsSession", related_name="clan_spoils_claims"
+    )
+    player: ForeignKeyRelation[Player] = fields.ForeignKeyField(
+        "models.Player", related_name="clan_spoils_claims"
+    )
+    channel = fields.ForeignKeyField("models.Channel", related_name="clan_spoils_claims")
