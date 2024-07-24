@@ -148,6 +148,39 @@ class Checkin(Model):
     channel = fields.ForeignKeyField("models.Channel", related_name="checkins")
 
 
+class SentrySession(Model):
+    id = fields.IntField(pk=True)
+    season: ForeignKeyRelation[Season] = fields.ForeignKeyField(
+        "models.Season", related_name="sentry_sessions"
+    )
+    session = fields.ForeignKeyField("models.Session", related_name="sentry_sessions")
+    start_time = fields.DatetimeField(auto_now_add=True)
+    end_time = fields.DatetimeField(null=True)
+    channel = fields.ForeignKeyField("models.Channel", related_name="sentry_sessions")
+
+
+class SentryCheckin(Model):
+    id = fields.IntField(pk=True)
+    session: ForeignKeyRelation[SentrySession] = fields.ForeignKeyField(
+        "models.SentrySession", related_name="sentry_checkins"
+    )
+    player: ForeignKeyRelation[Player] = fields.ForeignKeyField(
+        "models.Player", related_name="sentry_checkins"
+    )
+    channel = fields.ForeignKeyField("models.Channel", related_name="sentry_checkins")
+
+
+class PlayerWatchTime(Model):
+    id = fields.IntField(pk=True)
+    player: ForeignKeyRelation[Player] = fields.ForeignKeyField(
+        "models.Player", related_name="watch_time"
+    )
+    season: ForeignKeyRelation[Season] = fields.ForeignKeyField(
+        "models.Season", related_name="watch_time"
+    )
+    channel = fields.ForeignKeyField("models.Channel", related_name="watch_time")
+    watch_time = fields.IntField(default=0)
+
 class RaidSession(Model):
     id = fields.IntField(pk=True)
     season: ForeignKeyRelation[Season] = fields.ForeignKeyField(
