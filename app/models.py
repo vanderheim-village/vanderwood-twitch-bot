@@ -125,6 +125,19 @@ class ClanSpoilsSessionActiveManager(Manager):
         )
 
 
+class SentrySessionActiveManager(Manager):
+    def get_queryset(self) -> QuerySet["SentrySession"]:
+        return (
+            super(SentrySessionActiveManager, self)
+            .get_queryset()
+            .filter(
+                Q(start_time__lte=timezone.now()),
+                Q(end_time__gte=timezone.now())
+                | Q(end_time__isnull=True) & Q(start_time__lte=timezone.now()),
+            )
+        )
+
+
 class Session(Model):
     id = fields.IntField(pk=True)
     season: ForeignKeyRelation[Season] = fields.ForeignKeyField(
@@ -157,6 +170,8 @@ class SentrySession(Model):
     start_time = fields.DatetimeField(auto_now_add=True)
     end_time = fields.DatetimeField(null=True)
     channel = fields.ForeignKeyField("models.Channel", related_name="sentry_sessions")
+
+    active_session = SentrySessionActiveManager()
 
 
 class SentryCheckin(Model):
