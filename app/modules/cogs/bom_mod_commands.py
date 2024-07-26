@@ -552,14 +552,6 @@ class BomModCommandsCog(commands.Cog):
                 await ctx.send("No active seasons!")
         else:
             pass
-    
-    @commands.command()
-    async def nextsentry(self, ctx: commands.Context) -> None:
-        """
-        ?nextsentry command
-        """
-
-        next_sentry = self.twitch_bot.start_sentry_session.next_call
 
 
     @commands.command()
