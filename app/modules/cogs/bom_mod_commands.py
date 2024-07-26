@@ -397,6 +397,9 @@ class BomModCommandsCog(commands.Cog):
                     discord_channel = discord_server.get_channel(self.twitch_bot.conf_options["APP"]["DISCORD_CHECKINS_LOG_CHANNEL"])
 
                     await discord_channel.send(f"A session has ended at {timezone.now().strftime('%d/%m/%Y %H:%M:%S')} for the {active_season.name} season.")
+
+                    # We need to end the start_sentry_session routine here
+                    self.twitch_bot.start_sentry_session.stop()
                 else:
                     await ctx.send("No session is currently in progress.")
             else:
@@ -549,6 +552,15 @@ class BomModCommandsCog(commands.Cog):
                 await ctx.send("No active seasons!")
         else:
             pass
+    
+    @commands.command()
+    async def nextsentry(self, ctx: commands.Context) -> None:
+        """
+        ?nextsentry command
+        """
+
+        next_sentry = self.twitch_bot.start_sentry_session.next_call
+
 
     @commands.command()
     async def skal(self, ctx: commands.Context) -> None:
