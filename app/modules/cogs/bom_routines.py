@@ -30,7 +30,7 @@ class BomRoutinesCog(commands.Cog):
                     else:
                         # Sentry session does not exist so create it, with an end time of 5 minutes from now.
                         end_time = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(minutes=5)
-                        await SentrySession.create(channel=channel_object, session=session, end_time=end_time)
+                        await SentrySession.create(channel=channel_object, session=session, end_time=end_time, season=season)
                         message = f"vander60RAIDCHAMP VIKINGS!! vander60RAIDCHAMP We need YOU to keep watch over the WOODLANDS! Use ?sentry to keep VANDERHEIM safe and earn your TAG of ULLR! 🏹👁️"
                         logger.info(f"Sending message to channel {channel_object.name}: {message}")
                         await self.send_twitch_message(channel_object.name, message)
