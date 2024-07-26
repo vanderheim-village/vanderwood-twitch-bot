@@ -32,7 +32,7 @@ from twitchio.models import PartialUser
 import datetime
 
 from app import settings
-from app.models import EventSubscriptions, Player, Points, Season, Subscriptions, Clan, Channel, GiftedSubsLeaderboard, FollowerGiveaway
+from app.models import EventSubscriptions, Player, Points, Season, Subscriptions, Clan, Channel, GiftedSubsLeaderboard, FollowerGiveaway, Session
 
 
 # Define function to process yaml config file
@@ -98,6 +98,13 @@ class TwitchBot(commands.Bot):
     
     async def routines_init(self) -> None:
         self.check_follower_giveaways.start()
+
+        channels = await Channel.all()
+        for channel in channels:
+            if await Session.active_session.filter(channel=channel).exists():
+                twitch_logger.info(f"Starting the sentry session routine.")
+                self.start_sentry_session.start()
+                # Exit the loop after the first channel with an active session is found as we only need to start the routine once.
 
     async def stop(self) -> None:
         await self.session.close()

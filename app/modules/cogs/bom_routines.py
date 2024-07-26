@@ -3,7 +3,7 @@ from twitchio.ext import commands, routines
 from discord.ext import commands as discord_commands
 import datetime
 import random
-from app.models import Channel, FollowerGiveaway, FollowerGiveawayEntry, Player, Points, Season, FollowerGiveawayPrize
+from app.models import Channel, FollowerGiveaway, FollowerGiveawayEntry, Player, Points, Season, FollowerGiveawayPrize, SentrySession, Session
 
 logger = logging.getLogger(__name__)
 
@@ -11,6 +11,37 @@ class BomRoutinesCog(commands.Cog):
     def __init__(self, twitch_bot: commands.Bot, discord_bot: discord_commands.Bot) -> None:
         self.twitch_bot = twitch_bot
         self.discord_bot = discord_bot
+    
+    @routines.routine(minutes=30, wait_first=True)
+    async def start_sentry_session(self) -> None:
+        logger.info("Starting sentry session, if needed.")
+
+        channels = await Channel.all()
+
+        for channel in channels:
+            channel_object = await Channel.get(name=channel.name)
+            if await Season.active_seasons.all().filter(channel=channel_object).exists():
+                season = await Season.active_seasons.get(channel=channel_object)
+                if await Session.active_session.all().filter(channel=channel_object).exists():
+                    session = await Session.active_session.filter(channel=channel_object).first()
+                    if await SentrySession.active_session.filter(channel=channel_object, session=session).exists():
+                        # Sentry session already exists so do nothing
+                        pass
+                    else:
+                        # Sentry session does not exist so create it, with an end time of 5 minutes from now.
+                        end_time = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(minutes=5)
+                        await SentrySession.create(channel=channel_object, session=session, end_time=end_time)
+                        message = f"vander60RAIDCHAMP VIKINGS!! vander60RAIDCHAMP We need YOU to keep watch over the WOODLANDS! Use ?sentry to keep VANDERHEIM safe and earn your TAG of ULLR! 🏹👁️"
+                        logger.info(f"Sending message to channel {channel_object.name}: {message}")
+                        await self.send_twitch_message(channel_object.name, message)
+                else:
+                    pass
+            else:
+                pass
+    
+    @start_sentry_session.before_routine
+    async def before_start_sentry_session(self) -> None:
+        await self.twitch_bot.wait_for_ready()
 
     @routines.routine(seconds=5, wait_first=True)
     async def check_follower_giveaway_winners(self) -> None:
@@ -55,7 +86,7 @@ class BomRoutinesCog(commands.Cog):
     
     @check_follower_giveaway_winners.before_routine
     async def before_check_follower_giveaway_winners(self) -> None:
-        self.twitch_bot.wait_for_ready()
+        await self.twitch_bot.wait_for_ready()
 
     async def send_twitch_message(self, channel_name: str, message: str) -> None:
         channel = self.twitch_bot.get_channel(channel_name)
@@ -69,3 +100,4 @@ def prepare(twitch_bot: commands.Bot, discord_bot: discord_commands.Bot) -> None
     cog = BomRoutinesCog(twitch_bot, discord_bot)
     twitch_bot.add_cog(cog)
     twitch_bot.check_follower_giveaways = cog.check_follower_giveaway_winners
+    twitch_bot.start_sentry_session = cog.start_sentry_session

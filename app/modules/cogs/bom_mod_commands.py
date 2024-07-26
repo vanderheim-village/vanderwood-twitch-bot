@@ -352,6 +352,10 @@ class BomModCommandsCog(commands.Cog):
                     discord_channel = discord_server.get_channel(self.twitch_bot.conf_options["APP"]["DISCORD_CHECKINS_LOG_CHANNEL"])
 
                     await discord_channel.send(f"A session has been started at {timezone.now().strftime('%d/%m/%Y %H:%M:%S')} for the {active_season.name} season.")
+
+                    # We need to kick off the start_sentry_session routine here
+
+                    self.twitch_bot.start_sentry_session.start()
             else:
                 await ctx.send("No active seasons!")
         else:
