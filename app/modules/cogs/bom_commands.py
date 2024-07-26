@@ -5,7 +5,7 @@ from tortoise.functions import Sum
 from twitchio.ext import commands
 from discord.ext import commands as discord_commands
 
-from app.models import Checkin, Clan, Player, Points, Season, Session, Channel, RaidSession, RaidCheckin, GiftedSubsLeaderboard, FollowerGiveaway, FollowerGiveawayEntry, SpoilsSession, SpoilsClaim, ClanSpoilsClaim, ClanSpoilsSession
+from app.models import Checkin, Clan, Player, Points, Season, Session, Channel, RaidSession, RaidCheckin, GiftedSubsLeaderboard, FollowerGiveaway, FollowerGiveawayEntry, SpoilsSession, SpoilsClaim, ClanSpoilsClaim, ClanSpoilsSession, SentryCheckin, SentrySession, PlayerWatchTime, FollowerGiveawayEntry, FollowerGiveawayPrize
 
 if TYPE_CHECKING:
     from bot import TwitchBot, DiscordBot
@@ -538,7 +538,67 @@ class BomCommandsCog(commands.Cog):
             else:
                 pass
         else:
-            pass      
+            pass
+    
+
+    @commands.command()
+    async def sentry(self, ctx: commands.Context) -> None:
+        """
+        ?sentry command
+        """
+        if await Channel.get_or_none(name=ctx.channel.name):
+            channel = await Channel.get(name=ctx.channel.name)
+            if await Season.active_seasons.all().filter(channel=channel).exists():
+                season = await Season.active_seasons.filter(channel=channel).first()
+                if await SentrySession.active_session.all().filter(channel=channel).exists():
+                    session = await SentrySession.active_session.filter(channel=channel).first()
+                    if await Player.get_or_none(name=ctx.author.name.lower(), channel=channel):
+                        player = await Player.get(name=ctx.author.name.lower(), channel=channel)
+                        if player.is_enabled() and player.clan:
+                            if await SentryCheckin.get_or_none(player=player, session=session, channel=channel):
+                                # The user has already checked in for the sentry session
+                                pass
+                            else:
+                                await SentryCheckin.create(player=player, session=session, channel=channel)
+                                clan = await player.clan.get()
+                                if await Points.get_or_none(player=player, season=season, channel=channel):
+                                    points = await Points.get(player=player, season=season, channel=channel)
+                                    points.points += 25
+                                    await points.save()
+                                else:
+                                    assert player.clan is not None
+                                    await Points.create(
+                                        player_id=player.id,
+                                        season_id=season.id,
+                                        points=25,
+                                        clan_id=clan.id,
+                                        channel=channel,
+                                    )
+                                
+                                if await PlayerWatchTime.get_or_none(player=player, channel=channel, season=season):
+                                    watchtime = await PlayerWatchTime.get(player=player, channel=channel, season=season)
+                                    watchtime.minutes += 30
+                                    await watchtime.save()
+                                else:
+                                    await PlayerWatchTime.create(
+                                        player_id=player.id,
+                                        channel_id=channel.id,
+                                        season_id=season.id,
+                                        minutes=30,
+                                    )
+
+                                await ctx.send(f"🏹 👁️ @{ctx.author.name.lower()} is watching...")
+                        else:
+                            await ctx.send(f"@{ctx.author.name.lower()} is not in a Clan roster!")
+                    else:
+                        await ctx.send(f"@{ctx.author.name.lower()} is not in a clan roster!")
+                else:
+                    await ctx.send(f"Sorry @{ctx.author.name.lower()}, the watch has already begun! Wait for the next ?sentry call to join the watch!")
+            else:
+                await ctx.send("No active seasons!")
+        else:
+            pass
+                    
 
 
 def prepare(twitch_bot: commands.Bot, discord_bot: discord_commands.Bot) -> None:
