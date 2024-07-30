@@ -1,13 +1,17 @@
-from typing import Literal, Optional
+from typing import Literal, Optional, TYPE_CHECKING
 import logging
-
+from twitchio.ext import commands as twitch_commands
 import discord
 from discord.ext import commands
 
 logger = logging.getLogger(__name__)
 
+if TYPE_CHECKING:
+    from bot import DiscordBot, TwitchBot
+
 class DevCommandsCog(commands.Cog):
-    def __init__(self, bot: commands.Bot) -> None:
+    def __init__(self, bot: "DiscordBot", twitch_bot: "TwitchBot") -> None:
+        self.twitch_bot = twitch_bot
         self.bot = bot
 
     @commands.command()
@@ -45,5 +49,5 @@ class DevCommandsCog(commands.Cog):
         await ctx.send(f"Synced the tree to {ret}/{len(guilds)}.")
         logger.info(f"Synced the tree to {ret}/{len(guilds)}.")
 
-async def setup(bot: commands.Bot) -> None:
-    await bot.add_cog(DevCommandsCog(bot))
+async def setup(bot: commands.Bot, twitch_bot: twitch_commands.Bot) -> None:
+    await bot.add_cog(DevCommandsCog(bot, twitch_bot))

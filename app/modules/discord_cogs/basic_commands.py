@@ -1,12 +1,16 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-from typing import List, TypedDict
+from typing import List, TypedDict, TYPE_CHECKING
 import logging
 
+from twitchio.ext import commands as twitch_commands
 from tortoise.functions import Sum
 
 from app.models import Clan, Player, Points, Season, Channel, GiftedSubsLeaderboard, Checkin, RaidCheckin
+
+if TYPE_CHECKING:
+    from bot import DiscordBot, TwitchBot
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +29,8 @@ class CheckinsStandings(TypedDict):
     checkins: int
 
 class BasicCommandsCog(commands.Cog):
-    def __init__(self, bot: commands.Bot) -> None:
+    def __init__(self, bot: "DiscordBot", twitch_bot: "TwitchBot") -> None:
+        self.twitch_bot = twitch_bot
         self.bot = bot
 
     @app_commands.command(name="help", description="Get a list of commands which this bot supports.")
@@ -433,5 +438,5 @@ class BasicCommandsCog(commands.Cog):
         else:
             await interaction.response.send_message("This discord server has not been registered yet.")
 
-async def setup(bot: commands.Bot) -> None:
-    await bot.add_cog(BasicCommandsCog(bot))
+async def setup(bot: commands.Bot, twitch_bot: twitch_commands.Bot) -> None:
+    await bot.add_cog(BasicCommandsCog(bot, twitch_bot))

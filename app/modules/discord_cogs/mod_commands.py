@@ -4,19 +4,87 @@ from discord import app_commands
 from tortoise import timezone
 from tortoise.functions import Count
 import random
+from twitchio.ext import commands as twitch_commands
 
-from typing import Literal, Optional
+from typing import Literal, Optional, TYPE_CHECKING
 
 import logging
 
 from app.models import Checkin, Clan, Player, Points, Season, Session, Channel
 
+if TYPE_CHECKING:
+    from bot import TwitchBot, DiscordBot
+
 logger = logging.getLogger(__name__)
 
 
 class ModCommandsCog(commands.Cog):
-    def __init__(self, bot: commands.Bot) -> None:
+    def __init__(self, bot: "DiscordBot", twitch_bot: "TwitchBot") -> None:
+        self.twitch_bot = twitch_bot
         self.bot = bot
+    
+    @app_commands.command(name="get-auth-link", description="Get the authorization link for the twitch bot.")
+    @commands.guild_only()
+    @commands.has_any_role("Moderator", "Admin", "Admins", "Moderators")
+    async def get_auth_link(self, interaction: discord.Interaction) -> None:
+        """
+        Provides the OAuth link for the user to authorize the app with all scopes.
+        """
+        all_scopes = [
+            "analytics:read:extensions",
+            "analytics:read:games",
+            "bits:read",
+            "channel:edit:commercial",
+            "channel:manage:broadcast",
+            "channel:manage:moderators",
+            "channel:manage:polls",
+            "channel:manage:predictions",
+            "channel:manage:redemptions",
+            "channel:manage:schedule",
+            "channel:manage:videos",
+            "channel:read:editors",
+            "channel:read:goals",
+            "channel:read:hype_train",
+            "channel:read:polls",
+            "channel:read:predictions",
+            "channel:read:redemptions",
+            "channel:read:stream_key",
+            "channel:read:subscriptions",
+            "clips:edit",
+            "moderation:read",
+            "moderator:manage:announcements",
+            "moderator:manage:automod",
+            "moderator:manage:banned_users",
+            "moderator:manage:chat_messages",
+            "moderator:manage:chat_settings",
+            "moderator:manage:shoutouts",
+            "moderator:read:automod_settings",
+            "moderator:read:blocked_terms",
+            "moderator:read:chat_settings",
+            "user:edit",
+            "user:edit:follows",
+            "user:manage:blocked_users",
+            "user:read:blocked_users",
+            "user:read:broadcast",
+            "user:read:email",
+            "user:read:follows",
+            "user:read:subscriptions"
+        ]
+
+        callback_url = self.twitch_bot.conf_options["APP"]["CALLBACK_URL"]
+
+        #URL encode the scopes into one string
+        encoded_scopes = "%20".join(all_scopes)
+
+        auth_url = (
+            "https://id.twitch.tv/oauth2/authorize"
+            f"?client_id={self.twitch_bot.client_id}"
+            f"&redirect_uri={callback_url}"
+            f"&response_type=code"
+            f"&scope={encoded_scopes}"
+        )
+        
+        await interaction.response.send_message(auth_url, ephemeral=True)
     
     @app_commands.command(name="set-nickname", description="Set a players nickname, used for triggerfyre if name too long.")
     @commands.guild_only()
@@ -238,5 +306,5 @@ class ModCommandsCog(commands.Cog):
                 await interaction.response.send_message(f"Fixed missing sub points.", ephemeral=True)
 
 
-async def setup(bot: commands.Bot) -> None:
-    await bot.add_cog(ModCommandsCog(bot))
+async def setup(bot: commands.Bot, twitch_bot: twitch_commands.Bot) -> None:
+    await bot.add_cog(ModCommandsCog(bot, twitch_bot))
