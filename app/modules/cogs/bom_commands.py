@@ -316,18 +316,36 @@ class BomCommandsCog(commands.Cog):
                             if await Checkin.get_or_none(player=player, session=session, channel=channel):
                                 await ctx.send(f"@{ctx.author.name.lower()} has already checked in!")
                             else:
-                                await Checkin.create(player=player, session=session, channel=channel)
-                                clan = await player.clan.get()
-
                                 ## We need to check if the checkin is within the first 30 minutes of the session, if so double the points given, if not, give normal points.
                                 ## This is to encourage people to check in early and not just before the session ends.
+                                ## If the person is the first person to check in, give them 300 points instead of 200. Twitch moderators should be excluded from this and not count towards the first check-in.
+                                ## They should get either 200 or 100 points depending on the time of check-in.
 
                                 ## Compare timezone aware datetime objects
 
-                                if session.start_time + timedelta(minutes=30) > datetime.now(timezone.utc):
+                                # broadcaster = await ctx.channel.user()
+                                # mods = await broadcaster.fetch_moderators(self.twitch_bot.conf_options["APP"]["ACCESS_TOKEN"])
+
+                                # list_of_mod_names = []
+
+                                # for mod in mods:
+                                #     list_of_mod_names.append(mod.name)
+                                
+                                # list_of_checkins_except_mods = await Checkin.filter(session=session, channel=channel).exclude(player__name__in=list_of_mod_names)
+
+                                # if len(list_of_checkins_except_mods) == 0:
+                                #     points_to_give = 300
+                                # 
+                                if await Checkin.filter(session=session, channel=channel).count() == 0:
+                                    points_to_give = 300
+                                elif session.start_time + timedelta(minutes=30) > datetime.now(timezone.utc):
                                     points_to_give = 200
                                 else:
                                     points_to_give = 100
+
+                                await Checkin.create(player=player, session=session, channel=channel)
+                                clan = await player.clan.get()
+                                
                                 
                                 if await Points.get_or_none(player=player, season=season, channel=channel):
                                     points = await Points.get(player=player, season=season, channel=channel)
@@ -577,23 +595,25 @@ class BomCommandsCog(commands.Cog):
                                 
                                 if await PlayerWatchTime.get_or_none(player=player, channel=channel, season=season):
                                     watchtime = await PlayerWatchTime.get(player=player, channel=channel, season=season)
-                                    watchtime.minutes += 30
+                                    watchtime.watch_time += 30
                                     await watchtime.save()
                                 else:
                                     await PlayerWatchTime.create(
                                         player_id=player.id,
                                         channel_id=channel.id,
                                         season_id=season.id,
-                                        minutes=30,
+                                        watch_time=30
                                     )
 
-                                await ctx.send(f"🏹 👁️ @{ctx.author.name.lower()} is watching...")
+                                await ctx.send(f"🏹 👁️ @{ctx.author.name.lower()} is watching... (+25 VP)")
                         else:
                             await ctx.send(f"@{ctx.author.name.lower()} is not in a Clan roster!")
                     else:
                         await ctx.send(f"@{ctx.author.name.lower()} is not in a clan roster!")
                 else:
-                    await ctx.send(f"Sorry @{ctx.author.name.lower()}, the watch has already begun! Wait for the next ?sentry call to join the watch!")
+                    next_run_time = self.twitch_bot.start_sentry_session.next_run
+                    minutes_until_next_run = (next_run_time - datetime.now(timezone.utc)).seconds // 60
+                    await ctx.send(f"Sorry @{ctx.author.name.lower()}, the watch has already begun! The next ?sentry call is in {minutes_until_next_run} minutes!")
             else:
                 await ctx.send("No active seasons!")
         else:

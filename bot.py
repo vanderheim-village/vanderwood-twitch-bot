@@ -57,11 +57,25 @@ class DiscordBot(discord_commands.Bot):
         for filename in os.listdir("./app/modules/discord_cogs/"):
             if filename.endswith(".py") and not filename.startswith("__init__"):
                 try:
-                    await discord_bot.load_extension(f"app.modules.discord_cogs.{filename}".strip(".py"))
-                    discord_logger.info(f"Loaded extension app.modules.discord_cogs.{filename}.")
+                    module = importlib.import_module(f"app.modules.discord_cogs.{filename.strip('.py')}")
+
+                    if hasattr(module, "setup"):
+                        await module.setup(discord_bot,twitch_bot)
+                        discord_logger.info(f"Loaded extension app.modules.discord_cogs.{filename}.")
                 except Exception:
                     discord_logger.error(f"Failed to load extension app.modules.discord_cogs.{filename}.")
                     traceback.print_exc()
+
+
+
+        # for filename in os.listdir("./app/modules/discord_cogs/"):
+        #     if filename.endswith(".py") and not filename.startswith("__init__"):
+        #         try:
+        #             await discord_bot.load_extension(f"app.modules.discord_cogs.{filename}".strip(".py"))
+        #             discord_logger.info(f"Loaded extension app.modules.discord_cogs.{filename}.")
+        #         except Exception:
+        #             discord_logger.error(f"Failed to load extension app.modules.discord_cogs.{filename}.")
+        #             traceback.print_exc()
     
     async def log_message(self, message: str) -> None:
         await self.alert_channel.send(message)
@@ -776,12 +790,12 @@ if __name__ == "__main__":
             else:
                 await eventsub_client.subscribe_channel_subscription_gifts(channel_id)
                 await EventSubscriptions.create(
-                    channel_name=channel_name, event_type="channel.subscription.gift", subscribed=True
+                    channel_name=channel_name, event_type="channel.subscription.gift", subscribed=True, channel_id=channel_id
                 )
         except twitchio.HTTPException as err:
             if err.status == 409:
                 await EventSubscriptions.create(
-                    channel_name=channel_name, event_type="channel.subscription.gift", subscribed=True
+                    channel_name=channel_name, event_type="channel.subscription.gift", subscribed=True, channel_id=channel_id
                 )
             else:
                 raise
@@ -798,12 +812,12 @@ if __name__ == "__main__":
             else:
                 await eventsub_client.subscribe_channel_subscriptions(channel_id)
                 await EventSubscriptions.create(
-                    channel_name=channel_name, event_type="channel.subscribe", subscribed=True
+                    channel_name=channel_name, event_type="channel.subscribe", subscribed=True, channel_id=channel_id
                 )
         except twitchio.HTTPException as err:
             if err.status == 409:
                 await EventSubscriptions.create(
-                    channel_name=channel_name, event_type="channel.subscribe", subscribed=True
+                    channel_name=channel_name, event_type="channel.subscribe", subscribed=True, channel_id=channel_id
                 )
             else:
                 raise
@@ -820,12 +834,12 @@ if __name__ == "__main__":
             else:
                 await eventsub_client.subscribe_channel_follows_v2(channel_id, bot_user_id)
                 await EventSubscriptions.create(
-                    channel_name=channel_name, event_type="channel.follow", subscribed=True
+                    channel_name=channel_name, event_type="channel.follow", subscribed=True, channel_id=channel_id
                 )
         except twitchio.HTTPException as err:
             if err.status == 409:
                 await EventSubscriptions.create(
-                    channel_name=channel_name, event_type="channel.follow", subscribed=True
+                    channel_name=channel_name, event_type="channel.follow", subscribed=True, channel_id=channel_id
                 )
             else:
                 twitch_logger.error(err.message)
@@ -845,12 +859,12 @@ if __name__ == "__main__":
             else:
                 await eventsub_client.subscribe_channel_subscription_messages(channel_id)
                 await EventSubscriptions.create(
-                    channel_name=channel_name, event_type="channel.subscription.message", subscribed=True
+                    channel_name=channel_name, event_type="channel.subscription.message", subscribed=True, channel_id=channel_id
                 )
         except twitchio.HTTPException as err:
             if err.status == 409:
                 await EventSubscriptions.create(
-                    channel_name=channel_name, event_type="channel.subscription.message", subscribed=True
+                    channel_name=channel_name, event_type="channel.subscription.message", subscribed=True, channel_id=channel_id
                 )
             else:
                 raise
@@ -868,6 +882,7 @@ if __name__ == "__main__":
             else:
                 await eventsub_client.subscribe_channel_points_redeemed(channel_id)
                 await EventSubscriptions.create(
+                    channel_id=channel_id,
                     channel_name=channel_name,
                     event_type="channel.channel_points_custom_reward_redemption.add",
                     subscribed=True,
@@ -876,6 +891,7 @@ if __name__ == "__main__":
             if err.status == 409:
                 await EventSubscriptions.create(
                     channel_name=channel_name,
+                    channel_id=channel_id,
                     event_type="channel.channel_points_custom_reward_redemption.add",
                     subscribed=True,
                 )
@@ -899,28 +915,28 @@ if __name__ == "__main__":
                     for sub in subscriptions
                 ):
                     await EventSubscriptions.filter(event_type="channel.subscribe").delete()
-                    await subscribe_channel_subscriptions(subscription.channel_name)
+                    await subscribe_channel_subscriptions(subscription.channel_id, subscription.channel_name)
             elif subscription.event_type == "channel.subscription.gift":
                 if not any(
                     sub.type == "channel.subscription.gift" and sub.status == "enabled"
                     for sub in subscriptions
                 ):
                     await EventSubscriptions.filter(event_type="channel.subscription.gift").delete()
-                    await subscribe_channel_subscription_gifts(subscription.channel_name)
+                    await subscribe_channel_subscription_gifts(subscription.channel_id, subscription.channel_name)
             elif subscription.event_type == "channel.subscription.message":
                 if not any(
                     sub.type == "channel.subscription.message" and sub.status == "enabled"
                     for sub in subscriptions
                 ):
                     await EventSubscriptions.filter(event_type="channel.subscription.message").delete()
-                    await subscribe_channel_subscription_messages(subscription.channel_name)
+                    await subscribe_channel_subscription_messages(subscription.channel_id, subscription.channel_name)
             elif subscription.event_type == "channel.channel_points_custom_reward_redemption.add":
                 if not any(
                     sub.type == "channel.channel_points_custom_reward_redemption.add" and sub.status == "enabled"
                     for sub in subscriptions
                 ):
                     await EventSubscriptions.filter(event_type="channel.channel_points_custom_reward_redemption.add").delete()
-                    await subscribe_channel_points_redeemed(subscription.channel_name)
+                    await subscribe_channel_points_redeemed(subscription.channel_id, subscription.channel_name)
             elif subscription.event_type == "channel.follow":
                 if not any(
                     sub.type == "channel.follow" and sub.status == "enabled"
