@@ -234,6 +234,7 @@ class Points(Model):
 
 class EventSubscriptions(Model):
     id = fields.IntField(pk=True)
+    channel_id = fields.CharField(max_length=255, null=True)
     channel_name = fields.CharField(max_length=255)
     event_type = fields.CharField(max_length=255)
     subscribed = fields.BooleanField()
