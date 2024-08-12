@@ -441,11 +441,11 @@ if __name__ == "__main__":
             channel = await Channel.get(name=payload.data.broadcaster.name.lower())
             match subscription_tier:
                 case 1000:
-                    points_to_add = conf_options["APP"]["POINTS"]["TIER_1"] * payload.data.total
+                    points_to_add = (conf_options["APP"]["POINTS"]["TIER_1"] * payload.data.total) / 2
                 case 2000:
-                    points_to_add = conf_options["APP"]["POINTS"]["TIER_2"] * payload.data.total
+                    points_to_add = (conf_options["APP"]["POINTS"]["TIER_2"] * payload.data.total) / 2
                 case 3000:
-                    points_to_add = conf_options["APP"]["POINTS"]["TIER_3"] * payload.data.total
+                    points_to_add = (conf_options["APP"]["POINTS"]["TIER_3"] * payload.data.total) / 2
             
             twitch_logger.info(f"Points to add: {points_to_add}")
 
@@ -763,7 +763,7 @@ if __name__ == "__main__":
             # We need to check if a giveaway exists for the new follower (they may have unfollowed and refollowed), so we need to delete the old giveaway and create a new one.
             if await FollowerGiveaway.get_or_none(channel=channel, follower=player.name.lower()):
                 await FollowerGiveaway.get(channel=channel, follower=player.name.lower()).delete()
-            await FollowerGiveaway.create(channel=channel, end_time=datetime.datetime.now() + datetime.timedelta(seconds=120), follower=player.name.lower())
+            await FollowerGiveaway.create(channel=channel, end_time=datetime.datetime.now() + datetime.timedelta(seconds=30), follower=player.name.lower())
         else:
             pass
 

@@ -73,7 +73,7 @@ class BasicCommandsCog(commands.Cog):
                 points_list = ""
 
                 count = 0
-                for result in sorted_standings:
+                for result in sorted_standings[:50]:
                     count += 1
                     position_list += f"{count}\n"
                     names_list += f" {result['name'].title()}\n"
@@ -125,11 +125,15 @@ class BasicCommandsCog(commands.Cog):
             checkins_list = ""
 
             count = 0
-            for result in sorted_standings:
+            for result in sorted_standings[:50]:
                 count += 1
                 position_list += f"{count}\n"
                 names_list += f" {result['name'].title()}\n"
                 checkins_list += f"{result['points']}\n"
+            
+            logger.info(f"Position: {position_list}")
+            logger.info(f"Player: {names_list}")
+            logger.info(f"Checkins: {checkins_list}")
                 
             embed.add_field(name="Position", value=position_list, inline=True)
             embed.add_field(name="Player", value=names_list, inline=True)
@@ -172,7 +176,7 @@ class BasicCommandsCog(commands.Cog):
             checkins_list = ""
 
             count = 0
-            for result in sorted_standings:
+            for result in sorted_standings[:50]:
                 count += 1
                 position_list += f"{count}\n"
                 names_list += f" {result['name'].title()}\n"
@@ -208,7 +212,7 @@ class BasicCommandsCog(commands.Cog):
             leaderboard = sorted(leaderboard, key=lambda k: k.gifted_subs, reverse=True)
 
             count = 0
-            for result in leaderboard:
+            for result in leaderboard[:50]:
                 player = await result.player.get()
 
                 count += 1
@@ -255,7 +259,7 @@ class BasicCommandsCog(commands.Cog):
             points_list = ""
 
             count = 0
-            for result in sorted_standings:
+            for result in sorted_standings[:50]:
                 count += 1
                 position_list += f"{count}\n"
                 names_list += f" {result['name'].title()}\n"

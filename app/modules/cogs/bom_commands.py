@@ -1,5 +1,6 @@
 from typing import List, TypedDict, TYPE_CHECKING
 from datetime import datetime, timedelta, timezone
+import logging
 
 from tortoise.functions import Sum
 from twitchio.ext import commands
@@ -9,6 +10,9 @@ from app.models import Checkin, Clan, Player, Points, Season, Session, Channel, 
 
 if TYPE_CHECKING:
     from bot import TwitchBot, DiscordBot
+
+
+logger = logging.getLogger(__name__)
 
 class Standings(TypedDict):
     name: str
@@ -614,6 +618,112 @@ class BomCommandsCog(commands.Cog):
                     next_run_time = self.twitch_bot.start_sentry_session.next_run
                     minutes_until_next_run = (next_run_time - datetime.now(timezone.utc)).seconds // 60
                     await ctx.send(f"Sorry @{ctx.author.name.lower()}, the watch has already begun! The next ?sentry call is in {minutes_until_next_run} minutes!")
+            else:
+                await ctx.send("No active seasons!")
+        else:
+            pass
+    
+
+    @commands.command()
+    async def profile(self, ctx: commands.Context) -> None:
+        """
+        ?profile command
+
+        Display current season points, lifetime points, current season rank in clan and overall rank for current season, checkins, raids, sentry time in hours and gift subs.
+        """
+        if await Channel.get_or_none(name=ctx.channel.name):
+            channel = await Channel.get(name=ctx.channel.name)
+            if await Season.active_seasons.all().filter(channel=channel).exists():
+                if await Player.get_or_none(name=ctx.author.name.lower(), channel=channel):
+                    player = await Player.get(name=ctx.author.name.lower(), channel=channel)
+                    actual_player_object = await Player.get(name=ctx.author.name.lower(), channel=channel)
+                    active_season = await Season.active_seasons.all().filter(channel=channel).first()
+                    assert player.clan is not None
+                    if await player.clan.get() is None:
+                        await ctx.send("You are not in a clan.")
+                    else:
+                        clan = await player.clan.get()
+                        if await Points.get_or_none(player=player, season=active_season, channel=channel):
+                            current_season_points = (
+                                await Points.get(player=player, season=active_season, channel=channel)
+                            ).points
+                        else:
+                            current_season_points = 0
+                        if await Player.get_or_none(name=player.name, channel=channel):
+                            lifetime_points = (
+                                await Points.get(player=player, channel=channel)
+                                .annotate(sum=Sum("points"))
+                                .values_list("sum")
+                            )[0]
+                            print(lifetime_points)
+                        else:
+                            lifetime_points = 0
+
+                        if await Points.get_or_none(player=player, season=active_season, channel=channel):
+                            standings: List[PlayerStandings] = []
+                            for points_row in await Points.filter(season=active_season, channel=channel):
+                                player = await points_row.player.get()
+                                assert player.clan is not None
+                                player_standings: PlayerStandings = {
+                                    "points": points_row.points,
+                                    "name": player.name,
+                                    "clantag": (await player.clan.get()).tag,
+                                }
+                                standings.append(player_standings)
+                            sorted_standings = sorted(
+                                standings, key=lambda k: k["points"], reverse=True
+                            )
+                            count = 0
+                            for result in sorted_standings:
+                                count += 1
+                                if result["name"] == ctx.author.name.lower():
+                                    current_season_overall_rank = count
+                                    break
+                        else:
+                            current_season_overall_rank = 0
+
+                        if await Points.get_or_none(player=player, season=active_season, channel=channel):
+                            clan_standings: List[PlayerStandings] = []
+                            for points_row in await Points.filter(season=active_season, clan=clan, channel=channel):
+                                player = await points_row.player.get()
+                                assert player.clan is not None
+                                clan_player_standings: PlayerStandings = {
+                                    "points": points_row.points,
+                                    "name": player.name,
+                                    "clantag": (await player.clan.get()).tag,
+                                }
+                                clan_standings.append(clan_player_standings)
+                            clan_sorted_standings = sorted(
+                                clan_standings, key=lambda k: k["points"], reverse=True
+                            )
+                            count = 0
+                            for result in clan_sorted_standings:
+                                count += 1
+                                if result["name"] == ctx.author.name.lower():
+                                    current_season_clan_rank = count
+                                    break
+                        else:
+                            current_season_clan_rank = 0
+
+                        checkins = await Checkin.filter(player=actual_player_object, channel=channel).count()
+                        raids = await RaidCheckin.filter(player=actual_player_object, channel=channel).count()
+                        sentry_watchtimes = await PlayerWatchTime.filter(player=actual_player_object, channel=channel, season=active_season).values_list("watch_time")
+                        total_sentry_watchtime = 0
+                        for watchtime in sentry_watchtimes:
+                            total_sentry_watchtime += watchtime[0]
+                        # total sentry watchtime in hours and should support .5 hours as sentry is calculated in 30 minute intervals.
+                        logger.info(f"Total sentry watchtime: {total_sentry_watchtime}")
+                        total_sentry_watchtime_hours = total_sentry_watchtime / 60
+                        logger.info(f"Total sentry watchtime in hours: {total_sentry_watchtime_hours}")
+
+                        if await GiftedSubsLeaderboard.get_or_none(player=actual_player_object, channel=channel):
+                            gifted_subs = (await GiftedSubsLeaderboard.get(player=actual_player_object, channel=channel)).gifted_subs
+                        else:
+                            gifted_subs = 0
+
+                        await ctx.send(f"{clan.twitch_emoji_name} [{clan.tag}] {actual_player_object.name.upper()} (RANKS - CLAN: {current_season_clan_rank} | OVERALL: {current_season_overall_rank}) | SEASON VP: {current_season_points} | LIFETIME VP: {lifetime_points} | CHECKINS: {checkins} | RAIDS: {raids} | ?SENTRY TIME: {total_sentry_watchtime_hours}hrs | GIFTED SUBS: {gifted_subs} {clan.twitch_emoji_name}")
+                else:
+                    await ctx.send("You are not registered.")
             else:
                 await ctx.send("No active seasons!")
         else:
