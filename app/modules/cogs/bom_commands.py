@@ -609,7 +609,7 @@ class BomCommandsCog(commands.Cog):
                                         watch_time=30
                                     )
 
-                                await ctx.send(f"🏹 👁️ @{ctx.author.name.lower()} is watching... (+25 VP)")
+                                await ctx.send(f"🏹 👁️ @{ctx.author.name.lower()} is watching... (+25 VP ⌛ {watchtime.watch_time / 60}hrs)")
                         else:
                             await ctx.send(f"@{ctx.author.name.lower()} is not in a Clan roster!")
                     else:
