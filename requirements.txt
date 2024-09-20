@@ -1,7 +1,7 @@
 asyncpg==0.29.0
 aiohttp==3.10.1
 twitchio==2.10.0
-pyyaml==6.0.1
+pyyaml==6.0.2
 tortoise-orm[asyncpg]==0.21.5
 aerich==0.7.2
 mkdocs-material==9.5.31
