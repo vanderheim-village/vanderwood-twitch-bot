@@ -7,7 +7,7 @@ import logging
 from twitchio.ext import commands as twitch_commands
 from tortoise.functions import Sum
 
-from app.models import Clan, Player, Points, Season, Channel, GiftedSubsLeaderboard, Checkin, RaidCheckin
+from app.models import Clan, Player, Points, Season, Channel, GiftedSubsLeaderboard, Checkin, RaidCheckin, PlayerWatchTime
 
 if TYPE_CHECKING:
     from bot import DiscordBot, TwitchBot
@@ -228,6 +228,56 @@ class BasicCommandsCog(commands.Cog):
         else:
             logger.info("There are no entries in the gifted subs leaderboard.")
             await interaction.response.send_message("There are no entries in the gifted subs leaderboard.")
+    
+
+    @app_commands.command(name="watchtime-leaderboard", description="Get the watchtime leaderboard for the Twitch channel.")
+    async def watchtime_leaderboard(self, interaction: discord.Interaction) -> None:
+        """
+        /watchtime-leaderboard command
+        Watch time in the database is stored as watch_time and is in minutes. 
+        The leaderboard should display in hours and support decimal points for minutes. 
+        Only show decimal points if the watch time is not a whole number.
+        """
+        if await PlayerWatchTime.all().exists():
+            leaderboard = await PlayerWatchTime.all()
+            embed = discord.Embed(title="Watchtime Leaderboard:")
+            embed.timestamp = interaction.created_at
+            embed.set_footer(text=f"Requested by {interaction.user.name}", icon_url=interaction.user.avatar.url)
+            embed.color = discord.Color.green()
+
+            position_list = ""
+            names_list = ""
+            watchtime_list = ""
+
+            # Sort the leaderboard by watch time
+            leaderboard = sorted(leaderboard, key=lambda k: k.watch_time, reverse=True)
+
+            count = 0
+            for result in leaderboard[:50]:
+                player = await result.player.get()
+
+                count += 1
+                position_list += f"{count}\n"
+                names_list += f"{player.name.title()}\n"
+                
+                # Convert watch time to hours
+                watch_time_in_hours = result.watch_time / 60
+                
+                # Only show 1 decimal place if the watch time is not a whole number
+                if watch_time_in_hours.is_integer():
+                    watchtime_list += f"{int(watch_time_in_hours)} hours\n"
+                else:
+                    watchtime_list += f"{watch_time_in_hours:.1f} hours\n"
+                    
+            embed.add_field(name="Position", value=position_list, inline=True)
+            embed.add_field(name="Player", value=names_list, inline=True)
+            embed.add_field(name="Watch Time", value=watchtime_list, inline=True)
+            
+            await interaction.response.send_message(embed=embed)
+        else:
+            logger.info("There are no entries in the watchtime leaderboard.")
+            await interaction.response.send_message("There are no entries in the watchtime leaderboard.")
+
     
 
     @app_commands.command(name="lifetime-standings", description="Get the lifetime clan standings for the Battle of Midgard.")
