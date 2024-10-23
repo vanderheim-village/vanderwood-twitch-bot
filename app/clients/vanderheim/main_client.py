@@ -5,6 +5,7 @@ from app.clients.vanderheim.endpoints.clan_spoils_sessions import ClanSpoilsSess
 from app.clients.vanderheim.endpoints.clans import ClansAPI
 from app.clients.vanderheim.endpoints.follower_giveaway_entries import FollowerGiveawayEntriesAPI
 from app.clients.vanderheim.endpoints.follower_giveaway_prizes import FollowerGiveawayPrizesAPI
+from app.clients.vanderheim.endpoints.follower_giveaways import FollowerGiveawaysAPI
 
 
 class VanderheimAPIClient:
@@ -16,3 +17,4 @@ class VanderheimAPIClient:
         self.clans = ClansAPI(self.base_client)
         self.follower_giveaway_entries = FollowerGiveawayEntriesAPI(self.base_client)
         self.follower_giveaway_prizes = FollowerGiveawayPrizesAPI(self.base_client)
+        self.follower_giveaways = FollowerGiveawaysAPI(self.base_client)
