@@ -7,6 +7,7 @@ from app.clients.vanderheim.endpoints.follower_giveaway_entries import FollowerG
 from app.clients.vanderheim.endpoints.follower_giveaway_prizes import FollowerGiveawayPrizesAPI
 from app.clients.vanderheim.endpoints.follower_giveaways import FollowerGiveawaysAPI
 from app.clients.vanderheim.endpoints.gifted_subscriptions import GiftedSubscriptionsAPI
+from app.clients.vanderheim.endpoints.player_watch_times import PlayerWatchTimesAPI
 
 
 class VanderheimAPIClient:
@@ -20,3 +21,4 @@ class VanderheimAPIClient:
         self.follower_giveaway_prizes = FollowerGiveawayPrizesAPI(self.base_client)
         self.follower_giveaways = FollowerGiveawaysAPI(self.base_client)
         self.gifted_subscriptions = GiftedSubscriptionsAPI(self.base_client)
+        self.player_watch_times = PlayerWatchTimesAPI(self.base_client)
