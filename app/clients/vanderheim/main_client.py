@@ -14,6 +14,7 @@ from app.clients.vanderheim.endpoints.raid_checkins import RaidCheckinsAPI
 from app.clients.vanderheim.endpoints.raid_sessions import RaidSessionsAPI
 from app.clients.vanderheim.endpoints.seasons import SeasonsAPI
 from app.clients.vanderheim.endpoints.sentry_checkins import SentryCheckinsAPI
+from app.clients.vanderheim.endpoints.sentry_sessions import SentrySessionsAPI
 
 
 class VanderheimAPIClient:
@@ -34,3 +35,4 @@ class VanderheimAPIClient:
         self.raid_sessions = RaidSessionsAPI(self.base_client)
         self.seasons = SeasonsAPI(self.base_client)
         self.sentry_checkins = SentryCheckinsAPI(self.base_client)
+        self.sentry_sessions = SentrySessionsAPI(self.base_client)
