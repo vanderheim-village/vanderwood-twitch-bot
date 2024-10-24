@@ -35,7 +35,7 @@ class FollowerGiveawayPrizesAPI:
             page += 1
         return {"results": all_follower_giveaway_prizes}
     
-    def fetch_follower_giveaway_prize(self, follower_giveaway_prize_id: int) -> Dict[str, Any]:
+    def fetch_follower_giveaway_prize(self, follower_giveaway_prize_id: str) -> Dict[str, Any]:
         """
         Fetches a single follower giveaway prize by ID.
         """
@@ -49,21 +49,21 @@ class FollowerGiveawayPrizesAPI:
         url = f"{self.client.base_url}/vanderheim-api/follower-giveaway-prizes/"
         return self.client._post(url, data)
     
-    def update_follower_giveaway_prize(self, follower_giveaway_prize_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    def update_follower_giveaway_prize(self, follower_giveaway_prize_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Updates an existing follower giveaway prize by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/follower-giveaway-prizes/{follower_giveaway_prize_id}/"
         return self.client._put(url, data)
     
-    def partial_update_follower_giveaway_prize(self, follower_giveaway_prize_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    def partial_update_follower_giveaway_prize(self, follower_giveaway_prize_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Partially updates an existing follower giveaway prize by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/follower-giveaway-prizes/{follower_giveaway_prize_id}/"
         return self.client._patch(url, data)
     
-    def delete_follower_giveaway_prize(self, follower_giveaway_prize_id: int) -> None:
+    def delete_follower_giveaway_prize(self, follower_giveaway_prize_id: str) -> None:
         """
         Deletes an existing follower giveaway prize by ID.
         """

@@ -35,7 +35,7 @@ class RaidCheckinsAPI:
             page += 1
         return {"results": all_raid_checkins}
     
-    def fetch_raid_checkin(self, raid_checkin_id: int) -> Dict[str, Any]:
+    def fetch_raid_checkin(self, raid_checkin_id: str) -> Dict[str, Any]:
         """
         Fetches a single raid checkin by ID.
         """
@@ -49,21 +49,21 @@ class RaidCheckinsAPI:
         url = f"{self.client.base_url}/vanderheim-api/raid-checkins/"
         return self.client._post(url, data)
     
-    def update_raid_checkin(self, raid_checkin_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    def update_raid_checkin(self, raid_checkin_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Updates an existing raid checkin by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/raid-checkins/{raid_checkin_id}/"
         return self.client._put(url, data)
     
-    def partial_update_raid_checkin(self, raid_checkin_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    def partial_update_raid_checkin(self, raid_checkin_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Partially updates an existing raid checkin by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/raid-checkins/{raid_checkin_id}/"
         return self.client._patch(url, data)
     
-    def delete_raid_checkin(self, raid_checkin_id: int) -> None:
+    def delete_raid_checkin(self, raid_checkin_id: str) -> None:
         """
         Deletes a raid checkin by ID.
         """

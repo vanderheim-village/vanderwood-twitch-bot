@@ -35,7 +35,7 @@ class ClanSpoilsSessionsAPI:
             page += 1
         return {"results": all_clan_spoils_sessions}
     
-    def fetch_clan_spoils_session(self, clan_spoils_session_id: int) -> Dict[str, Any]:
+    def fetch_clan_spoils_session(self, clan_spoils_session_id: str) -> Dict[str, Any]:
         """
         Fetches a single clan spoils session by ID.
         """
@@ -49,21 +49,21 @@ class ClanSpoilsSessionsAPI:
         url = f"{self.client.base_url}/vanderheim-api/clan-spoils-sessions/"
         return self.client._post(url, data)
     
-    def update_clan_spoils_session(self, clan_spoils_session_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    def update_clan_spoils_session(self, clan_spoils_session_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Updates an existing clan spoils session by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/clan-spoils-sessions/{clan_spoils_session_id}/"
         return self.client._put(url, data)
     
-    def partial_update_clan_spoils_session(self, clan_spoils_session_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    def partial_update_clan_spoils_session(self, clan_spoils_session_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Partially updates an existing clan spoils session by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/clan-spoils-sessions/{clan_spoils_session_id}/"
         return self.client._patch(url, data)
     
-    def delete_clan_spoils_session(self, clan_spoils_session_id: int) -> Dict[str, Any]:
+    def delete_clan_spoils_session(self, clan_spoils_session_id: str) -> Dict[str, Any]:
         """
         Deletes a clan spoils session by ID.
         """

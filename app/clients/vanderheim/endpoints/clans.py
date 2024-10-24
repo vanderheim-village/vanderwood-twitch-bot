@@ -35,7 +35,7 @@ class ClansAPI:
             page += 1
         return {"results": all_clans}
     
-    async def fetch_clan(self, clan_id: int) -> Dict[str, Any]:
+    async def fetch_clan(self, clan_id: str) -> Dict[str, Any]:
         """
         Fetches a single clan by ID.
         """
@@ -49,28 +49,28 @@ class ClansAPI:
         url = f"{self.client.base_url}/vanderheim-api/clans/"
         return await self.client._post(url, data)
     
-    async def update_clan(self, clan_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def update_clan(self, clan_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Updates an existing clan by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/clans/{clan_id}/"
         return await self.client._put(url, data)
     
-    async def partial_update_clan(self, clan_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def partial_update_clan(self, clan_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Partially updates an existing clan by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/clans/{clan_id}/"
         return await self.client._patch(url, data)
     
-    async def delete_clan(self, clan_id: int) -> Dict[str, Any]:
+    async def delete_clan(self, clan_id: str) -> Dict[str, Any]:
         """
         Deletes a clan by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/clans/{clan_id}/"
         return await self.client._delete(url)
     
-    async def _fetch_clan_players_page(self, clan_id: int, page: Optional[int] = None, page_size: Optional[int] = None) -> Dict[str, Any]:
+    async def _fetch_clan_players_page(self, clan_id: str, page: Optional[int] = None, page_size: Optional[int] = None) -> Dict[str, Any]:
         """
         Fetches a single page of a paginated list of clan players.
         """
@@ -83,7 +83,7 @@ class ClansAPI:
         url = f"{self.client.base_url}/vanderheim-api/clans/{clan_id}/players/"
         return await self.client._get(url, params=params)
     
-    async def fetch_all_clan_players(self, clan_id: int) -> Dict[str, Any]:
+    async def fetch_all_clan_players(self, clan_id: str) -> Dict[str, Any]:
         """
         Fetches all clan players using the fetch_clan_players_page method.
         """
@@ -98,35 +98,35 @@ class ClansAPI:
             page += 1
         return {"results": all_clan_players}
     
-    async def fetch_clan_player(self, clan_id: int, player_id: int) -> Dict[str, Any]:
+    async def fetch_clan_player(self, clan_id: str, player_id: str) -> Dict[str, Any]:
         """
         Fetches a single clan player by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/clans/{clan_id}/players/{player_id}/"
         return await self.client._get(url)
     
-    async def create_clan_player(self, clan_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def create_clan_player(self, clan_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Creates a new clan player.
         """
         url = f"{self.client.base_url}/vanderheim-api/clans/{clan_id}/players/"
         return await self.client._post(url, data)
     
-    async def update_clan_player(self, clan_id: int, player_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def update_clan_player(self, clan_id: str, player_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Updates an existing clan player by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/clans/{clan_id}/players/{player_id}/"
         return await self.client._put(url, data)
     
-    async def partial_update_clan_player(self, clan_id: int, player_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def partial_update_clan_player(self, clan_id: str, player_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Partially updates an existing clan player by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/clans/{clan_id}/players/{player_id}/"
         return await self.client._patch(url, data)
     
-    async def delete_clan_player(self, clan_id: int, player_id: int) -> Dict[str, Any]:
+    async def delete_clan_player(self, clan_id: str, player_id: str) -> Dict[str, Any]:
         """
         Deletes a clan player by ID.
         """

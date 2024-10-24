@@ -35,7 +35,7 @@ class RaidSessionsAPI:
             page += 1
         return {"results": all_raid_sessions}
     
-    def fetch_raid_session(self, raid_session_id: int) -> Dict[str, Any]:
+    def fetch_raid_session(self, raid_session_id: str) -> Dict[str, Any]:
         """
         Fetches a single raid session by ID.
         """
@@ -49,21 +49,21 @@ class RaidSessionsAPI:
         url = f"{self.client.base_url}/vanderheim-api/raid-sessions/"
         return self.client._post(url, data)
     
-    def update_raid_session(self, raid_session_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    def update_raid_session(self, raid_session_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Updates an existing raid session by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/raid-sessions/{raid_session_id}/"
         return self.client._put(url, data)
     
-    def partial_update_raid_session(self, raid_session_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    def partial_update_raid_session(self, raid_session_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Partially updates an existing raid session by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/raid-sessions/{raid_session_id}/"
         return self.client._patch(url, data)
     
-    def delete_raid_session(self, raid_session_id: int) -> None:
+    def delete_raid_session(self, raid_session_id: str) -> None:
         """
         Deletes an existing raid session by ID.
         """

@@ -35,7 +35,7 @@ class PlayerWatchTimesAPI:
             page += 1
         return {"results": all_player_watch_times}
     
-    async def fetch_player_watch_time(self, player_watch_time_id: int) -> Dict[str, Any]:
+    async def fetch_player_watch_time(self, player_watch_time_id: str) -> Dict[str, Any]:
         """
         Fetches a single player watch time by ID.
         """
@@ -49,21 +49,21 @@ class PlayerWatchTimesAPI:
         url = f"{self.client.base_url}/vanderheim-api/player-watch-times/"
         return await self.client._post(url, data)
     
-    async def update_player_watch_time(self, player_watch_time_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def update_player_watch_time(self, player_watch_time_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Updates an existing player watch time by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/player-watch-times/{player_watch_time_id}/"
         return await self.client._put(url, data)
     
-    async def partial_update_player_watch_time(self, player_watch_time_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def partial_update_player_watch_time(self, player_watch_time_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Partially updates an existing player watch time by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/player-watch-times/{player_watch_time_id}/"
         return await self.client._patch(url, data)
     
-    async def delete_player_watch_time(self, player_watch_time_id: int) -> None:
+    async def delete_player_watch_time(self, player_watch_time_id: str) -> None:
         """
         Deletes an existing player watch time by ID.
         """

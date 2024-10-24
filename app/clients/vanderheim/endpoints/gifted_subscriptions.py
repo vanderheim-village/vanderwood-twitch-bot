@@ -35,7 +35,7 @@ class GiftedSubscriptionsAPI:
             page += 1
         return {"results": all_gifted_subscriptions}
     
-    def fetch_gifted_subscription(self, gifted_subscription_id: int) -> Dict[str, Any]:
+    def fetch_gifted_subscription(self, gifted_subscription_id: str) -> Dict[str, Any]:
         """
         Fetches a single gifted subscription by ID.
         """
@@ -49,21 +49,21 @@ class GiftedSubscriptionsAPI:
         url = f"{self.client.base_url}/vanderheim-api/gifted-subscriptions/"
         return self.client._post(url, data)
     
-    def update_gifted_subscription(self, gifted_subscription_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    def update_gifted_subscription(self, gifted_subscription_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Updates an existing gifted subscription by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/gifted-subscriptions/{gifted_subscription_id}/"
         return self.client._put(url, data)
     
-    def partial_update_gifted_subscription(self, gifted_subscription_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    def partial_update_gifted_subscription(self, gifted_subscription_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Partially updates an existing gifted subscription by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/gifted-subscriptions/{gifted_subscription_id}/"
         return self.client._patch(url, data)
     
-    def delete_gifted_subscription(self, gifted_subscription_id: int) -> None:
+    def delete_gifted_subscription(self, gifted_subscription_id: str) -> None:
         """
         Deletes a single gifted subscription by ID.
         """

@@ -35,7 +35,7 @@ class PointsAPI:
             page += 1
         return {"results": all_points}
     
-    def fetch_point(self, point_id: int) -> Dict[str, Any]:
+    def fetch_point(self, point_id: str) -> Dict[str, Any]:
         """
         Fetches a single point by ID.
         """
@@ -49,21 +49,21 @@ class PointsAPI:
         url = f"{self.client.base_url}/vanderheim-api/points/"
         return self.client._post(url, data)
     
-    def update_point(self, point_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    def update_point(self, point_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Updates an existing point by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/points/{point_id}/"
         return self.client._put(url, data)
     
-    def partial_update_point(self, point_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    def partial_update_point(self, point_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Partially updates an existing point by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/points/{point_id}/"
         return self.client._patch(url, data)
     
-    def delete_point(self, point_id: int) -> None:
+    def delete_point(self, point_id: str) -> None:
         """
         Deletes a point by ID.
         """

@@ -35,7 +35,7 @@ class CheckinsAPI:
             page += 1
         return {"results": all_checkins}
     
-    async def fetch_checkin(self, checkin_id: int) -> Dict[str, Any]:
+    async def fetch_checkin(self, checkin_id: str) -> Dict[str, Any]:
         """
         Fetches a single check-in by ID.
         """
@@ -49,21 +49,21 @@ class CheckinsAPI:
         url = f"{self.client.base_url}/vanderheim-api/checkins/"
         return await self.client._post(url, data)
     
-    async def update_checkin(self, checkin_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def update_checkin(self, checkin_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Updates an existing check-in by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/checkins/{checkin_id}/"
         return await self.client._put(url, data)
     
-    async def partial_update_checkin(self, checkin_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def partial_update_checkin(self, checkin_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Partially updates an existing check-in by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/checkins/{checkin_id}/"
         return await self.client._patch(url, data)
     
-    async def delete_checkin(self, checkin_id: int) -> Dict[str, Any]:
+    async def delete_checkin(self, checkin_id: str) -> Dict[str, Any]:
         """
         Deletes a check-in by ID.
         """
