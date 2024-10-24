@@ -11,3 +11,4 @@ pillow==10.4.0
 mike==2.1.2
 discord.py==2.4.0
 tortoise-cli==0.1.2
+python-dotenv==1.0.1
