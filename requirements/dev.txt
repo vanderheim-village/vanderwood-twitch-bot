@@ -117,12 +117,6 @@ arrow==1.2.2 \
     --hash=sha256:05caf1fd3d9a11a1135b2b6f09887421153b94558e5ef4d090b567b47173ac2b \
     --hash=sha256:d622c46ca681b5b3e3574fcb60a04e5cc81b9625112d5fb2b44220c36c892177
     # via gitlint-core
-asgiref==3.8.1 \
-    --hash=sha256:3e1e3ecc849832fe52ccf2cb6686b7a55f82bb1d6aee72a58826471390335e47 \
-    --hash=sha256:c343bd80a0bec947a9860adb4c432ffa7db769836c64238fc34bdc3fec84d590
-    # via
-    #   django
-    #   django-stubs
 async-timeout==4.0.3 \
     --hash=sha256:4640d96be84d82d02ed59ea2b7105a0f7b33abe8703703cd0ab0bf87c427522f \
     --hash=sha256:7405140ff1230c310e51dc27b3145b9092d659ce68ff733fb0cefe3ee42be028
@@ -446,9 +440,7 @@ coverage==7.6.4 \
     --hash=sha256:f3ddf056d3ebcf6ce47bdaf56142af51bb7fad09e4af310241e9db7a3a8022e1 \
     --hash=sha256:f8fe4984b431f8621ca53d9380901f62bfb54ff759a1348cd140490ada7b693c \
     --hash=sha256:fe439416eb6380de434886b00c859304338f8b19f6f54811984f3420a2e03858
-    # via
-    #   -r requirements/dev.in
-    #   django-coverage-plugin
+    # via -r requirements/dev.in
 cssselect2==0.7.0 \
     --hash=sha256:1ccd984dab89fc68955043aca4e1b03e0cf29cad9880f6e28e3ba7a74b14aa5a \
     --hash=sha256:fd23a65bfd444595913f02fc71f6b286c29261e354c41d722ca7a261a49b5969
@@ -465,24 +457,6 @@ discord-py==2.4.0 \
     --hash=sha256:b8af6711c70f7e62160bfbecb55be699b5cb69d007426759ab8ab06b1bd77d1d \
     --hash=sha256:d07cb2a223a185873a1d0ee78b9faa9597e45b3f6186df21a95cec1e9bcdc9a5
     # via -r requirements/common.in
-django==5.1.2 \
-    --hash=sha256:bd7376f90c99f96b643722eee676498706c9fd7dc759f55ebfaf2c08ebcdf4f0 \
-    --hash=sha256:f11aa87ad8d5617171e3f77e1d5d16f004b79a2cf5d2e1d2b97a6a1f8e9ba5ed
-    # via
-    #   django-stubs
-    #   django-stubs-ext
-django-coverage-plugin==3.1.0 \
-    --hash=sha256:223d34bf92bebadcb8b7b89932480e41c7bd98b44a8156934488fbe7f4a71f99 \
-    --hash=sha256:eb0ea8ffdb0db11a02994fc99be6500550efb496c350d709f418ff3d8e553a67
-    # via -r requirements/dev.in
-django-stubs==5.1.0 \
-    --hash=sha256:86128c228b65e6c9a85e5dc56eb1c6f41125917dae0e21e6cfecdf1b27e630c5 \
-    --hash=sha256:b98d49a80aa4adf1433a97407102d068de26c739c405431d93faad96dd282c40
-    # via -r requirements/mypy.in
-django-stubs-ext==5.1.0 \
-    --hash=sha256:a455fc222c90b30b29ad8c53319559f5b54a99b4197205ddbb385aede03b395d \
-    --hash=sha256:ed7d51c0b731651879fc75f331fb0806d98b67bfab464e96e2724db6b46ef926
-    # via django-stubs
 flake8==7.1.1 \
     --hash=sha256:049d058491e228e03e67b390f311bbf88fce2dbaa8fa673e7aea87b7198b8d38 \
     --hash=sha256:597477df7860daa5aa0fdd84bf5208a043ab96b8e96ab708770ae0364dd03213
@@ -605,9 +579,9 @@ importlib-resources==6.4.5 \
     --hash=sha256:980862a1d16c9e147a59603677fa2aa5fd82b87f223b6cb870695bcfce830065 \
     --hash=sha256:ac29d5f956f01d5e4bb63102a5a19957f1b9175e45649977264a1416783bb717
     # via mike
-iso8601==1.1.0 \
-    --hash=sha256:32811e7b81deee2063ea6d2e94f8819a86d1f3811e49d23623a41fa832bef03f \
-    --hash=sha256:8400e90141bf792bce2634df533dc57e3bee19ea120a87bebcd3da89a58ad73f
+iso8601==2.1.0 \
+    --hash=sha256:6b1d3829ee8921c4301998c909f7829fa9ed3cbdac0d3b16af2d743aed1ba8df \
+    --hash=sha256:aac4145c4dcb66ad8b648a02830f5e2ff6c24af20f4f482689be402db2429242
     # via
     #   tortoise-orm
     #   twitchio
@@ -1216,9 +1190,9 @@ pyparsing==3.2.0 \
     --hash=sha256:93d9577b88da0bbea8cc8334ee8b918ed014968fd2ec383e868fb8afb1ccef84 \
     --hash=sha256:cbf74e27246d595d9a74b186b810f6fbb86726dbf3b9532efb343f6d7294fe9c
     # via mike
-pypika-tortoise==0.1.6 \
-    --hash=sha256:2d68bbb7e377673743cff42aa1059f3a80228d411fbcae591e4465e173109fd8 \
-    --hash=sha256:d802868f479a708e3263724c7b5719a26ad79399b2a70cea065f4a4cadbebf36
+pypika-tortoise==0.2.1 \
+    --hash=sha256:979bbb9d60fe9f6e4129a25c44ee008aab4a4e97b296350be9983dcaa2766354 \
+    --hash=sha256:e91a1c5a78c6753ead1a9ba1aa169a1f1282c5035170e5462f0073564bc18886
     # via tortoise-orm
 pyproject-hooks==1.0.0 \
     --hash=sha256:283c11acd6b928d2f6a7c73fa0d01cb2bdc5f07c57a2eeb6e83d5e56b97976f8 \
@@ -1409,10 +1383,6 @@ six==1.16.0 \
     --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
     --hash=sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254
     # via python-dateutil
-sqlparse==0.5.1 \
-    --hash=sha256:773dcbf9a5ab44a090f3441e2180efe2560220203dc2f8c0b0fa141e18b505e4 \
-    --hash=sha256:bb6b4df465655ef332548e24f08e205afc81b9ab86cb1c45657a7ff173a3a00e
-    # via django
 tinycss2==1.3.0 \
     --hash=sha256:152f9acabd296a8375fbca5b84c961ff95971fcfc32e79550c8df8e29118c54d \
     --hash=sha256:54a8dbdffb334d536851be0226030e9505965bb2f30f21a4a82c55fb2a80fae7
@@ -1425,7 +1395,6 @@ tomli==2.0.2 \
     # via
     #   black
     #   build
-    #   django-stubs
     #   mypy
     #   pip-tools
     #   pyproject-hooks
@@ -1439,9 +1408,9 @@ tortoise-cli==0.1.2 \
     --hash=sha256:6b8cf7847af4a71b4b14069bb7c9212aa0dc014618baafc07c41ce1544f0066a \
     --hash=sha256:dd803e85d04434982084f4788c1a5111f76178280eb648732573662a0e355218
     # via -r requirements/common.in
-tortoise-orm[asyncpg]==0.21.5 \
-    --hash=sha256:a9657568b31c5ee24c0596d531fd51210c75855551c4c18b376e8a24f33b3e1d \
-    --hash=sha256:cccd23178380a325890e10742c74250722e92e4aa088fd7ebf863c3475a4f1ef
+tortoise-orm[asyncpg]==0.21.7 \
+    --hash=sha256:2229925885461f424673223ea1875bd5e6961384c766833af55a1ea11a9b25eb \
+    --hash=sha256:8a790a931828aa37ac364b344c561e603422aced2af5e403f6790575da0f19c5
     # via
     #   -r requirements/common.in
     #   aerich
@@ -1462,10 +1431,6 @@ types-pytz==2024.2.0.20241003 \
     --hash=sha256:3e22df1336c0c6ad1d29163c8fda82736909eb977281cb823c57f8bae07118b7 \
     --hash=sha256:575dc38f385a922a212bac00a7d6d2e16e141132a3c955078f4a4fd13ed6cb44
     # via -r requirements/mypy.in
-types-pyyaml==6.0.10 \
-    --hash=sha256:18985a382c93fb12187daae6f57ce7787e3651cd590291c907d3e757919689ff \
-    --hash=sha256:a1676caeb098096833fe2f1472e7ea8debf7663222964fa90545cfaafebf3385
-    # via django-stubs
 types-requests==2.32.0.20241016 \
     --hash=sha256:0d9cad2f27515d0e3e3da7134a1b6f28fb97129d86b867f24d9c726452634d95 \
     --hash=sha256:4195d62d6d3e043a4eaaf08ff8a62184584d2e8684e9d2aa178c7915a7da3747
@@ -1476,10 +1441,7 @@ typing-extensions==4.12.2 \
     # via
     #   adamlint
     #   aiosqlite
-    #   asgiref
     #   black
-    #   django-stubs
-    #   django-stubs-ext
     #   multidict
     #   mypy
     #   pydantic

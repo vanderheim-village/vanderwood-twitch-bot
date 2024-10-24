@@ -24,8 +24,6 @@ adamlint==1.0.0
 codespell==2.3.0
 
 # For code coverage
-
 coverage==7.6.4
-django-coverage-plugin==3.1.0
 
 flake8==7.1.1
