@@ -10,6 +10,7 @@ from app.clients.vanderheim.endpoints.gifted_subscriptions import GiftedSubscrip
 from app.clients.vanderheim.endpoints.player_watch_times import PlayerWatchTimesAPI
 from app.clients.vanderheim.endpoints.players import PlayersAPI
 from app.clients.vanderheim.endpoints.points import PointsAPI
+from app.clients.vanderheim.endpoints.raid_sessions import RaidSessionsAPI
 
 
 class VanderheimAPIClient:
@@ -26,3 +27,4 @@ class VanderheimAPIClient:
         self.player_watch_times = PlayerWatchTimesAPI(self.base_client)
         self.players = PlayersAPI(self.base_client)
         self.points = PointsAPI(self.base_client)
+        self.raid_sessions = RaidSessionsAPI(self.base_client)
