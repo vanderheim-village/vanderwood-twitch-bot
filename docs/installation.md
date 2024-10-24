@@ -2,10 +2,10 @@
 
 ## Requirements
 
-* Ubuntu 20.04 or later
-* Python 3.10 or later
-* PostgreSQL 13 or later
-* Nginx
+-   Ubuntu 20.04 or later
+-   Python 3.10 or later
+-   PostgreSQL 13 or later
+-   Nginx
 
 ## Installation Steps
 
@@ -13,7 +13,7 @@
 
 1. Create a Python virtual environment and install the dependencies.
 
-    ``` bash
+    ```bash
     python3 -m venv venv
     source venv/bin/activate
     pip install -r requirements.txt
@@ -21,7 +21,7 @@
 
 1. Create a PostgreSQL database and user.
 
-    ``` bash
+    ```bash
     sudo -u postgres psql
     CREATE DATABASE battleofmidgard;
     CREATE USER battleofmidgard WITH PASSWORD 'password';
@@ -30,7 +30,7 @@
 
 1. Make a copy of config.yml.example and rename it to config.yml.
 
-    ``` bash
+    ```bash
     cp example.config.yaml config.yaml
     ```
 
@@ -48,13 +48,13 @@
 
 1. Run the database migrations.
 
-    ``` bash
+    ```bash
     aerich upgrade
     ```
 
 1. Run the application.
 
-    ``` bash
+    ```bash
     python3 bot.py
     ```
 
@@ -66,19 +66,19 @@
 
 1. Reload the systemd daemon.
 
-    ``` bash
+    ```bash
     sudo systemctl daemon-reload
     ```
 
 1. Enable the service.
 
-    ``` bash
+    ```bash
     sudo systemctl enable vanderwood-twitch-bot.service
     ```
 
 1. Start the service.
 
-    ``` bash
+    ```bash
     sudo systemctl start vanderwood-twitch-bot.service
     ```
 
@@ -88,12 +88,12 @@
 
 1. Run the database migrations.
 
-    ``` bash
+    ```bash
     aerich upgrade
     ```
 
 1. Restart the application.
 
-    ``` bash
+    ```bash
     sudo systemctl restart vanderwood-twitch-bot.service
     ```

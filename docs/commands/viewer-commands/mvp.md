@@ -1,6 +1,6 @@
 # MVP
 
-The `?mvp` command is used to display the  MVP from the previous season of the Battle of Midgard game.
+The `?mvp` command is used to display the MVP from the previous season of the Battle of Midgard game.
 
 ## Usage
 
