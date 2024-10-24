@@ -160,3 +160,5 @@ cython_debug/
 #.idea/
 
 config.yaml
+node_modules/
+.DS_Store
