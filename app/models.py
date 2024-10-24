@@ -12,6 +12,7 @@ class Channel(Model):
     twitch_channel_id = fields.CharField(max_length=255, unique=True, null=True)
     discord_server_id = fields.CharField(max_length=255, unique=True, null=True)
 
+
 class Clan(Model):
     id = fields.IntField(pk=True)
     name = fields.CharField(max_length=255, unique=False)
@@ -106,10 +107,7 @@ class SpoilsSessionActiveManager(Manager):
         return (
             super(SpoilsSessionActiveManager, self)
             .get_queryset()
-            .filter(
-                Q(start_time__lte=timezone.now()),
-                Q(end_time__gte=timezone.now())
-            )
+            .filter(Q(start_time__lte=timezone.now()), Q(end_time__gte=timezone.now()))
         )
 
 
@@ -118,10 +116,7 @@ class ClanSpoilsSessionActiveManager(Manager):
         return (
             super(ClanSpoilsSessionActiveManager, self)
             .get_queryset()
-            .filter(
-                Q(start_time__lte=timezone.now()),
-                Q(end_time__gte=timezone.now())
-            )
+            .filter(Q(start_time__lte=timezone.now()), Q(end_time__gte=timezone.now()))
         )
 
 
@@ -195,6 +190,7 @@ class PlayerWatchTime(Model):
     )
     channel = fields.ForeignKeyField("models.Channel", related_name="watch_time")
     watch_time = fields.IntField(default=0)
+
 
 class RaidSession(Model):
     id = fields.IntField(pk=True)

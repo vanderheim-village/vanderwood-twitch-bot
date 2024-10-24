@@ -1,13 +1,15 @@
-from typing import Literal, Optional, TYPE_CHECKING
 import logging
-from twitchio.ext import commands as twitch_commands
+from typing import TYPE_CHECKING, Literal, Optional
+
 import discord
 from discord.ext import commands
+from twitchio.ext import commands as twitch_commands
 
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from bot import DiscordBot, TwitchBot
+
 
 class DevCommandsCog(commands.Cog):
     def __init__(self, bot: "DiscordBot", twitch_bot: "TwitchBot") -> None:
@@ -17,7 +19,12 @@ class DevCommandsCog(commands.Cog):
     @commands.command()
     @commands.guild_only()
     @commands.is_owner()
-    async def sync(self, ctx: commands.Context, guilds: commands.Greedy[discord.Object], spec: Optional[Literal["~", "*", "^"]] = None) -> None:
+    async def sync(
+        self,
+        ctx: commands.Context,
+        guilds: commands.Greedy[discord.Object],
+        spec: Optional[Literal["~", "*", "^"]] = None,
+    ) -> None:
         if not guilds:
             if spec == "~":
                 synced = await ctx.bot.tree.sync(guild=ctx.guild)
@@ -34,7 +41,9 @@ class DevCommandsCog(commands.Cog):
             await ctx.send(
                 f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild.'}"
             )
-            logger.info(f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild.'}")
+            logger.info(
+                f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild.'}"
+            )
             return
 
         ret = 0
@@ -48,6 +57,7 @@ class DevCommandsCog(commands.Cog):
 
         await ctx.send(f"Synced the tree to {ret}/{len(guilds)}.")
         logger.info(f"Synced the tree to {ret}/{len(guilds)}.")
+
 
 async def setup(bot: commands.Bot, twitch_bot: twitch_commands.Bot) -> None:
     await bot.add_cog(DevCommandsCog(bot, twitch_bot))

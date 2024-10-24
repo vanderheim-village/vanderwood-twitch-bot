@@ -1,18 +1,40 @@
-from typing import List, TypedDict, TYPE_CHECKING
-from datetime import datetime, timedelta, timezone
 import logging
+from datetime import datetime, timedelta, timezone
+from typing import TYPE_CHECKING, List, TypedDict
 
+from discord.ext import commands as discord_commands
 from tortoise.functions import Sum
 from twitchio.ext import commands
-from discord.ext import commands as discord_commands
 
-from app.models import Checkin, Clan, Player, Points, Season, Session, Channel, RaidSession, RaidCheckin, GiftedSubsLeaderboard, FollowerGiveaway, FollowerGiveawayEntry, SpoilsSession, SpoilsClaim, ClanSpoilsClaim, ClanSpoilsSession, SentryCheckin, SentrySession, PlayerWatchTime, FollowerGiveawayEntry, FollowerGiveawayPrize
+from app.models import (
+    Channel,
+    Checkin,
+    Clan,
+    ClanSpoilsClaim,
+    ClanSpoilsSession,
+    FollowerGiveaway,
+    FollowerGiveawayEntry,
+    FollowerGiveawayPrize,
+    GiftedSubsLeaderboard,
+    Player,
+    PlayerWatchTime,
+    Points,
+    RaidCheckin,
+    RaidSession,
+    Season,
+    SentryCheckin,
+    SentrySession,
+    Session,
+    SpoilsClaim,
+    SpoilsSession,
+)
 
 if TYPE_CHECKING:
-    from bot import TwitchBot, DiscordBot
+    from bot import DiscordBot, TwitchBot
 
 
 logger = logging.getLogger(__name__)
+
 
 class Standings(TypedDict):
     name: str
@@ -36,7 +58,6 @@ class BomCommandsCog(commands.Cog):
         self.twitch_bot = twitch_bot
         self.discord_bot = discord_bot
 
-    
     @commands.command()
     async def giftedsubleaderboard(self, ctx: commands.Context) -> None:
         """
@@ -77,7 +98,9 @@ class BomCommandsCog(commands.Cog):
                 if await Clan.get_or_none(tag=clanname, channel=channel):
                     clan = await Clan.get(tag=clanname, channel=channel)
                     standings: List[PlayerStandings] = []
-                    for points_row in await Points.filter(season=season, clan=clan, channel=channel):
+                    for points_row in await Points.filter(
+                        season=season, clan=clan, channel=channel
+                    ):
                         player = await points_row.player.get()
                         player_standings: PlayerStandings = {
                             "points": points_row.points,
@@ -124,7 +147,9 @@ class BomCommandsCog(commands.Cog):
                 count = 0
                 for result in sorted_standings:
                     count += 1
-                    await ctx.send(f"{count}. [{result['tag']}] {result['name']} - {result['points']}")
+                    await ctx.send(
+                        f"{count}. [{result['tag']}] {result['name']} - {result['points']}"
+                    )
             else:
                 await ctx.send("No active seasons!")
         else:
@@ -174,15 +199,21 @@ class BomCommandsCog(commands.Cog):
             if await Season.active_seasons.all().filter(channel=channel).exists():
                 if await Player.get_or_none(name=ctx.author.name.lower(), channel=channel):
                     player = await Player.get(name=ctx.author.name.lower(), channel=channel)
-                    active_season = await Season.active_seasons.all().filter(channel=channel).first()
+                    active_season = (
+                        await Season.active_seasons.all().filter(channel=channel).first()
+                    )
                     assert player.clan is not None
                     if await player.clan.get() is None:
                         await ctx.send("You are not in a clan.")
                     else:
                         clan = await player.clan.get()
-                        if await Points.get_or_none(player=player, season=active_season, channel=channel):
+                        if await Points.get_or_none(
+                            player=player, season=active_season, channel=channel
+                        ):
                             current_season_points = (
-                                await Points.get(player=player, season=active_season, channel=channel)
+                                await Points.get(
+                                    player=player, season=active_season, channel=channel
+                                )
                             ).points
                         else:
                             current_season_points = 0
@@ -196,9 +227,13 @@ class BomCommandsCog(commands.Cog):
                         else:
                             lifetime_points = 0
 
-                        if await Points.get_or_none(player=player, season=active_season, channel=channel):
+                        if await Points.get_or_none(
+                            player=player, season=active_season, channel=channel
+                        ):
                             standings: List[PlayerStandings] = []
-                            for points_row in await Points.filter(season=active_season, channel=channel):
+                            for points_row in await Points.filter(
+                                season=active_season, channel=channel
+                            ):
                                 player = await points_row.player.get()
                                 assert player.clan is not None
                                 player_standings: PlayerStandings = {
@@ -219,9 +254,13 @@ class BomCommandsCog(commands.Cog):
                         else:
                             current_season_overall_rank = 0
 
-                        if await Points.get_or_none(player=player, season=active_season, channel=channel):
+                        if await Points.get_or_none(
+                            player=player, season=active_season, channel=channel
+                        ):
                             clan_standings: List[PlayerStandings] = []
-                            for points_row in await Points.filter(season=active_season, clan=clan, channel=channel):
+                            for points_row in await Points.filter(
+                                season=active_season, clan=clan, channel=channel
+                            ):
                                 player = await points_row.player.get()
                                 assert player.clan is not None
                                 clan_player_standings: PlayerStandings = {
@@ -286,10 +325,19 @@ class BomCommandsCog(commands.Cog):
         if await Channel.get_or_none(name=ctx.channel.name):
             channel = await Channel.get(name=ctx.channel.name)
             if await Season.all().filter(channel=channel).exists():
-                previous_season = await Season.previous_seasons.filter(channel=channel).order_by("-end_date").first()
+                previous_season = (
+                    await Season.previous_seasons.filter(channel=channel)
+                    .order_by("-end_date")
+                    .first()
+                )
                 await ctx.send(f"{previous_season.name}")
                 if await Points.filter(channel=channel).filter(season=previous_season).exists():
-                    points = await Points.filter(channel=channel).filter(season=previous_season).order_by("-points").first()
+                    points = (
+                        await Points.filter(channel=channel)
+                        .filter(season=previous_season)
+                        .order_by("-points")
+                        .first()
+                    )
                     assert points is not None
                     player = await points.player.get()
                     assert player.clan is not None
@@ -317,8 +365,12 @@ class BomCommandsCog(commands.Cog):
                     if await Player.get_or_none(name=ctx.author.name.lower(), channel=channel):
                         player = await Player.get(name=ctx.author.name.lower(), channel=channel)
                         if player.is_enabled() and player.clan:
-                            if await Checkin.get_or_none(player=player, session=session, channel=channel):
-                                await ctx.send(f"@{ctx.author.name.lower()} has already checked in!")
+                            if await Checkin.get_or_none(
+                                player=player, session=session, channel=channel
+                            ):
+                                await ctx.send(
+                                    f"@{ctx.author.name.lower()} has already checked in!"
+                                )
                             else:
                                 ## We need to check if the checkin is within the first 30 minutes of the session, if so double the points given, if not, give normal points.
                                 ## This is to encourage people to check in early and not just before the session ends.
@@ -334,25 +386,35 @@ class BomCommandsCog(commands.Cog):
 
                                 # for mod in mods:
                                 #     list_of_mod_names.append(mod.name)
-                                
+
                                 # list_of_checkins_except_mods = await Checkin.filter(session=session, channel=channel).exclude(player__name__in=list_of_mod_names)
 
                                 # if len(list_of_checkins_except_mods) == 0:
                                 #     points_to_give = 300
-                                # 
-                                if await Checkin.filter(session=session, channel=channel).count() == 0:
+                                #
+                                if (
+                                    await Checkin.filter(session=session, channel=channel).count()
+                                    == 0
+                                ):
                                     points_to_give = 300
-                                elif session.start_time + timedelta(minutes=30) > datetime.now(timezone.utc):
+                                elif session.start_time + timedelta(minutes=30) > datetime.now(
+                                    timezone.utc
+                                ):
                                     points_to_give = 200
                                 else:
                                     points_to_give = 100
 
-                                await Checkin.create(player=player, session=session, channel=channel)
+                                await Checkin.create(
+                                    player=player, session=session, channel=channel
+                                )
                                 clan = await player.clan.get()
-                                
-                                
-                                if await Points.get_or_none(player=player, season=season, channel=channel):
-                                    points = await Points.get(player=player, season=season, channel=channel)
+
+                                if await Points.get_or_none(
+                                    player=player, season=season, channel=channel
+                                ):
+                                    points = await Points.get(
+                                        player=player, season=season, channel=channel
+                                    )
                                     points.points += points_to_give
                                     await points.save()
                                 else:
@@ -364,17 +426,31 @@ class BomCommandsCog(commands.Cog):
                                         clan_id=clan.id,
                                         channel=channel,
                                     )
-                                
-                                user_lifetime_checkins = await Checkin.filter(player=player, channel=channel).count()
+
+                                user_lifetime_checkins = await Checkin.filter(
+                                    player=player, channel=channel
+                                ).count()
                                 if player.nickname:
-                                    await ctx.send(f"@{ctx.author.name.lower()} ({player.nickname}) has checked in and earned {points_to_give} VP for the {clan.name.upper()}! HEIMDALL see's you watching! Total lifetime check-ins: ({user_lifetime_checkins})")
+                                    await ctx.send(
+                                        f"@{ctx.author.name.lower()} ({player.nickname}) has checked in and earned {points_to_give} VP for the {clan.name.upper()}! HEIMDALL see's you watching! Total lifetime check-ins: ({user_lifetime_checkins})"
+                                    )
                                 else:
-                                    await ctx.send(f"@{ctx.author.name.lower()} has checked in and earned {points_to_give} VP for the {clan.name.upper()}! HEIMDALL see's you watching! Total lifetime check-ins: ({user_lifetime_checkins})")
+                                    await ctx.send(
+                                        f"@{ctx.author.name.lower()} has checked in and earned {points_to_give} VP for the {clan.name.upper()}! HEIMDALL see's you watching! Total lifetime check-ins: ({user_lifetime_checkins})"
+                                    )
 
-                                discord_server = self.discord_bot.get_guild(self.twitch_bot.conf_options["APP"]["DISCORD_SERVER_ID"])
-                                discord_channel = discord_server.get_channel(self.twitch_bot.conf_options["APP"]["DISCORD_CHECKINS_LOG_CHANNEL"])
+                                discord_server = self.discord_bot.get_guild(
+                                    self.twitch_bot.conf_options["APP"]["DISCORD_SERVER_ID"]
+                                )
+                                discord_channel = discord_server.get_channel(
+                                    self.twitch_bot.conf_options["APP"][
+                                        "DISCORD_CHECKINS_LOG_CHANNEL"
+                                    ]
+                                )
 
-                                await discord_channel.send(f"{ctx.author.name.lower()} has checked in for the {clan.name.upper()}! HEIMDALL see's them watching! Total lifetime check-ins: ({user_lifetime_checkins})")
+                                await discord_channel.send(
+                                    f"{ctx.author.name.lower()} has checked in for the {clan.name.upper()}! HEIMDALL see's them watching! Total lifetime check-ins: ({user_lifetime_checkins})"
+                                )
                         else:
                             await ctx.send(f"@{ctx.author.name.lower()} is not in a Clan roster!")
                     else:
@@ -386,7 +462,6 @@ class BomCommandsCog(commands.Cog):
         else:
             pass
 
-    
     @commands.command()
     async def raid(self, ctx: commands.Context) -> None:
         """
@@ -401,13 +476,23 @@ class BomCommandsCog(commands.Cog):
                     if await Player.get_or_none(name=ctx.author.name.lower(), channel=channel):
                         player = await Player.get(name=ctx.author.name.lower(), channel=channel)
                         if player.is_enabled() and player.clan:
-                            if await RaidCheckin.get_or_none(player=player, session=session, channel=channel):
-                                await ctx.send(f"@{ctx.author.name.lower()} is already in the raid boat! vander60RAIDBOAT")
+                            if await RaidCheckin.get_or_none(
+                                player=player, session=session, channel=channel
+                            ):
+                                await ctx.send(
+                                    f"@{ctx.author.name.lower()} is already in the raid boat! vander60RAIDBOAT"
+                                )
                             else:
-                                await RaidCheckin.create(player=player, session=session, channel=channel)
+                                await RaidCheckin.create(
+                                    player=player, session=session, channel=channel
+                                )
                                 clan = await player.clan.get()
-                                if await Points.get_or_none(player=player, season=season, channel=channel):
-                                    points = await Points.get(player=player, season=season, channel=channel)
+                                if await Points.get_or_none(
+                                    player=player, season=season, channel=channel
+                                ):
+                                    points = await Points.get(
+                                        player=player, season=season, channel=channel
+                                    )
                                     points.points += 100
                                     await points.save()
                                 else:
@@ -419,7 +504,9 @@ class BomCommandsCog(commands.Cog):
                                         clan_id=clan.id,
                                         channel=channel,
                                     )
-                                await ctx.send(f"vander60RAIDBOAT Hej @{ctx.author.name.lower()}, welcome aboard! vander60RAIDBOAT We set sail soon so sharpen your weapons and get ready to row! vander60RAIDBOAT")
+                                await ctx.send(
+                                    f"vander60RAIDBOAT Hej @{ctx.author.name.lower()}, welcome aboard! vander60RAIDBOAT We set sail soon so sharpen your weapons and get ready to row! vander60RAIDBOAT"
+                                )
                         else:
                             await ctx.send(f"@{ctx.author.name.lower()} is not in a Clan roster!")
                     else:
@@ -430,7 +517,6 @@ class BomCommandsCog(commands.Cog):
                 await ctx.send("No active seasons!")
         else:
             pass
-    
 
     @commands.command()
     async def search(self, ctx: commands.Context, playername: str) -> None:
@@ -453,10 +539,14 @@ class BomCommandsCog(commands.Cog):
                 if follower_giveaway.end_time > datetime.now(timezone.utc):
                     if await Player.get_or_none(name=ctx.author.name.lower(), channel=channel):
                         player = await Player.get(name=ctx.author.name.lower(), channel=channel)
-                        if await FollowerGiveawayEntry.get_or_none(giveaway=follower_giveaway, player=player, channel=channel):
+                        if await FollowerGiveawayEntry.get_or_none(
+                            giveaway=follower_giveaway, player=player, channel=channel
+                        ):
                             pass
                         else:
-                            await FollowerGiveawayEntry.create(giveaway=follower_giveaway, player=player, channel=channel)
+                            await FollowerGiveawayEntry.create(
+                                giveaway=follower_giveaway, player=player, channel=channel
+                            )
                             await ctx.send(f"@{ctx.author.name.lower()} is searching...")
                     else:
                         pass
@@ -466,7 +556,6 @@ class BomCommandsCog(commands.Cog):
                 pass
         else:
             pass
-    
 
     @commands.command()
     async def claim(self, ctx: commands.Context) -> None:
@@ -482,12 +571,22 @@ class BomCommandsCog(commands.Cog):
                     if await Player.get_or_none(name=ctx.author.name.lower(), channel=channel):
                         player = await Player.get(name=ctx.author.name.lower(), channel=channel)
                         if player.is_enabled() and player.clan:
-                            if await SpoilsClaim.get_or_none(player=player, channel=channel, spoils_session=session):
-                                await ctx.send(f"@{ctx.author.name.lower()} has already claimed the spoils!")
+                            if await SpoilsClaim.get_or_none(
+                                player=player, channel=channel, spoils_session=session
+                            ):
+                                await ctx.send(
+                                    f"@{ctx.author.name.lower()} has already claimed the spoils!"
+                                )
                             else:
-                                await SpoilsClaim.create(player=player, channel=channel, spoils_session=session)
-                                if await Points.get_or_none(player=player, season=season, channel=channel):
-                                    points = await Points.get(player=player, season=season, channel=channel)
+                                await SpoilsClaim.create(
+                                    player=player, channel=channel, spoils_session=session
+                                )
+                                if await Points.get_or_none(
+                                    player=player, season=season, channel=channel
+                                ):
+                                    points = await Points.get(
+                                        player=player, season=season, channel=channel
+                                    )
                                     points.points += session.points_reward
                                     await points.save()
                                 else:
@@ -498,7 +597,9 @@ class BomCommandsCog(commands.Cog):
                                         clan_id=0,
                                         channel=channel,
                                     )
-                                await ctx.send(f"Thank you, @{ctx.author.name.lower()} for your aid on the battlefield! ⚔️ You have claimed ({session.points_reward}) Valor Points!")
+                                await ctx.send(
+                                    f"Thank you, @{ctx.author.name.lower()} for your aid on the battlefield! ⚔️ You have claimed ({session.points_reward}) Valor Points!"
+                                )
                         else:
                             pass
                     else:
@@ -509,7 +610,6 @@ class BomCommandsCog(commands.Cog):
                 pass
         else:
             pass
-    
 
     @commands.command()
     async def clanclaim(self, ctx: commands.Context) -> None:
@@ -532,14 +632,30 @@ class BomCommandsCog(commands.Cog):
                     player = await Player.get(name=ctx.author.name.lower(), channel=channel)
                     if player.is_enabled() and player.clan:
                         clan = await player.clan.get()
-                        if await ClanSpoilsSession.active_sessions.all().filter(channel=channel, clan=clan).exists():
-                            session = await ClanSpoilsSession.active_sessions.filter(channel=channel, clan=clan).first()
-                            if await ClanSpoilsClaim.get_or_none(player=player, channel=channel, spoils_session=session):
-                                await ctx.send(f"@{ctx.author.name.lower()} has already claimed the spoils!")
+                        if (
+                            await ClanSpoilsSession.active_sessions.all()
+                            .filter(channel=channel, clan=clan)
+                            .exists()
+                        ):
+                            session = await ClanSpoilsSession.active_sessions.filter(
+                                channel=channel, clan=clan
+                            ).first()
+                            if await ClanSpoilsClaim.get_or_none(
+                                player=player, channel=channel, spoils_session=session
+                            ):
+                                await ctx.send(
+                                    f"@{ctx.author.name.lower()} has already claimed the spoils!"
+                                )
                             else:
-                                await ClanSpoilsClaim.create(player=player, channel=channel, spoils_session=session)
-                                if await Points.get_or_none(player=player, season=season, channel=channel):
-                                    points = await Points.get(player=player, season=season, channel=channel)
+                                await ClanSpoilsClaim.create(
+                                    player=player, channel=channel, spoils_session=session
+                                )
+                                if await Points.get_or_none(
+                                    player=player, season=season, channel=channel
+                                ):
+                                    points = await Points.get(
+                                        player=player, season=season, channel=channel
+                                    )
                                     points.points += session.points_reward
                                     await points.save()
                                 else:
@@ -550,9 +666,13 @@ class BomCommandsCog(commands.Cog):
                                         clan_id=clan.id,
                                         channel=channel,
                                     )
-                                await ctx.send(f"Thank you, @{ctx.author.name.lower()} for your aid on the battlefield! ⚔️ You have claimed ({session.points_reward}) Valor Points for {clan.name.upper()}!")
+                                await ctx.send(
+                                    f"Thank you, @{ctx.author.name.lower()} for your aid on the battlefield! ⚔️ You have claimed ({session.points_reward}) Valor Points for {clan.name.upper()}!"
+                                )
                         else:
-                            await ctx.send(f"Sorry @{ctx.author.name.lower()}, the next battle has begun!")
+                            await ctx.send(
+                                f"Sorry @{ctx.author.name.lower()}, the next battle has begun!"
+                            )
                     else:
                         pass
                 else:
@@ -561,7 +681,6 @@ class BomCommandsCog(commands.Cog):
                 pass
         else:
             pass
-    
 
     @commands.command()
     async def sentry(self, ctx: commands.Context) -> None:
@@ -577,14 +696,22 @@ class BomCommandsCog(commands.Cog):
                     if await Player.get_or_none(name=ctx.author.name.lower(), channel=channel):
                         player = await Player.get(name=ctx.author.name.lower(), channel=channel)
                         if player.is_enabled() and player.clan:
-                            if await SentryCheckin.get_or_none(player=player, session=session, channel=channel):
+                            if await SentryCheckin.get_or_none(
+                                player=player, session=session, channel=channel
+                            ):
                                 # The user has already checked in for the sentry session
                                 pass
                             else:
-                                await SentryCheckin.create(player=player, session=session, channel=channel)
+                                await SentryCheckin.create(
+                                    player=player, session=session, channel=channel
+                                )
                                 clan = await player.clan.get()
-                                if await Points.get_or_none(player=player, season=season, channel=channel):
-                                    points = await Points.get(player=player, season=season, channel=channel)
+                                if await Points.get_or_none(
+                                    player=player, season=season, channel=channel
+                                ):
+                                    points = await Points.get(
+                                        player=player, season=season, channel=channel
+                                    )
                                     points.points += 25
                                     await points.save()
                                 else:
@@ -596,9 +723,13 @@ class BomCommandsCog(commands.Cog):
                                         clan_id=clan.id,
                                         channel=channel,
                                     )
-                                
-                                if await PlayerWatchTime.get_or_none(player=player, channel=channel, season=season):
-                                    watchtime = await PlayerWatchTime.get(player=player, channel=channel, season=season)
+
+                                if await PlayerWatchTime.get_or_none(
+                                    player=player, channel=channel, season=season
+                                ):
+                                    watchtime = await PlayerWatchTime.get(
+                                        player=player, channel=channel, season=season
+                                    )
                                     watchtime.watch_time += 30
                                     await watchtime.save()
                                 else:
@@ -606,23 +737,28 @@ class BomCommandsCog(commands.Cog):
                                         player_id=player.id,
                                         channel_id=channel.id,
                                         season_id=season.id,
-                                        watch_time=30
+                                        watch_time=30,
                                     )
 
-                                await ctx.send(f"🏹 👁️ @{ctx.author.name.lower()} is watching... (+25 VP ⌛ {watchtime.watch_time / 60}hrs)")
+                                await ctx.send(
+                                    f"🏹 👁️ @{ctx.author.name.lower()} is watching... (+25 VP ⌛ {watchtime.watch_time / 60}hrs)"
+                                )
                         else:
                             await ctx.send(f"@{ctx.author.name.lower()} is not in a Clan roster!")
                     else:
                         await ctx.send(f"@{ctx.author.name.lower()} is not in a clan roster!")
                 else:
                     next_run_time = self.twitch_bot.start_sentry_session.next_run
-                    minutes_until_next_run = (next_run_time - datetime.now(timezone.utc)).seconds // 60
-                    await ctx.send(f"Sorry @{ctx.author.name.lower()}, the watch has already begun! The next ?sentry call is in {minutes_until_next_run} minutes!")
+                    minutes_until_next_run = (
+                        next_run_time - datetime.now(timezone.utc)
+                    ).seconds // 60
+                    await ctx.send(
+                        f"Sorry @{ctx.author.name.lower()}, the watch has already begun! The next ?sentry call is in {minutes_until_next_run} minutes!"
+                    )
             else:
                 await ctx.send("No active seasons!")
         else:
             pass
-    
 
     @commands.command()
     async def profile(self, ctx: commands.Context) -> None:
@@ -636,16 +772,24 @@ class BomCommandsCog(commands.Cog):
             if await Season.active_seasons.all().filter(channel=channel).exists():
                 if await Player.get_or_none(name=ctx.author.name.lower(), channel=channel):
                     player = await Player.get(name=ctx.author.name.lower(), channel=channel)
-                    actual_player_object = await Player.get(name=ctx.author.name.lower(), channel=channel)
-                    active_season = await Season.active_seasons.all().filter(channel=channel).first()
+                    actual_player_object = await Player.get(
+                        name=ctx.author.name.lower(), channel=channel
+                    )
+                    active_season = (
+                        await Season.active_seasons.all().filter(channel=channel).first()
+                    )
                     assert player.clan is not None
                     if await player.clan.get() is None:
                         await ctx.send("You are not in a clan.")
                     else:
                         clan = await player.clan.get()
-                        if await Points.get_or_none(player=player, season=active_season, channel=channel):
+                        if await Points.get_or_none(
+                            player=player, season=active_season, channel=channel
+                        ):
                             current_season_points = (
-                                await Points.get(player=player, season=active_season, channel=channel)
+                                await Points.get(
+                                    player=player, season=active_season, channel=channel
+                                )
                             ).points
                         else:
                             current_season_points = 0
@@ -659,9 +803,13 @@ class BomCommandsCog(commands.Cog):
                         else:
                             lifetime_points = 0
 
-                        if await Points.get_or_none(player=player, season=active_season, channel=channel):
+                        if await Points.get_or_none(
+                            player=player, season=active_season, channel=channel
+                        ):
                             standings: List[PlayerStandings] = []
-                            for points_row in await Points.filter(season=active_season, channel=channel):
+                            for points_row in await Points.filter(
+                                season=active_season, channel=channel
+                            ):
                                 player = await points_row.player.get()
                                 assert player.clan is not None
                                 player_standings: PlayerStandings = {
@@ -682,9 +830,13 @@ class BomCommandsCog(commands.Cog):
                         else:
                             current_season_overall_rank = 0
 
-                        if await Points.get_or_none(player=player, season=active_season, channel=channel):
+                        if await Points.get_or_none(
+                            player=player, season=active_season, channel=channel
+                        ):
                             clan_standings: List[PlayerStandings] = []
-                            for points_row in await Points.filter(season=active_season, clan=clan, channel=channel):
+                            for points_row in await Points.filter(
+                                season=active_season, clan=clan, channel=channel
+                            ):
                                 player = await points_row.player.get()
                                 assert player.clan is not None
                                 clan_player_standings: PlayerStandings = {
@@ -705,30 +857,45 @@ class BomCommandsCog(commands.Cog):
                         else:
                             current_season_clan_rank = 0
 
-                        checkins = await Checkin.filter(player=actual_player_object, channel=channel).count()
-                        raids = await RaidCheckin.filter(player=actual_player_object, channel=channel).count()
-                        sentry_watchtimes = await PlayerWatchTime.filter(player=actual_player_object, channel=channel, season=active_season).values_list("watch_time")
+                        checkins = await Checkin.filter(
+                            player=actual_player_object, channel=channel
+                        ).count()
+                        raids = await RaidCheckin.filter(
+                            player=actual_player_object, channel=channel
+                        ).count()
+                        sentry_watchtimes = await PlayerWatchTime.filter(
+                            player=actual_player_object, channel=channel, season=active_season
+                        ).values_list("watch_time")
                         total_sentry_watchtime = 0
                         for watchtime in sentry_watchtimes:
                             total_sentry_watchtime += watchtime[0]
                         # total sentry watchtime in hours and should support .5 hours as sentry is calculated in 30 minute intervals.
                         logger.info(f"Total sentry watchtime: {total_sentry_watchtime}")
                         total_sentry_watchtime_hours = total_sentry_watchtime / 60
-                        logger.info(f"Total sentry watchtime in hours: {total_sentry_watchtime_hours}")
+                        logger.info(
+                            f"Total sentry watchtime in hours: {total_sentry_watchtime_hours}"
+                        )
 
-                        if await GiftedSubsLeaderboard.get_or_none(player=actual_player_object, channel=channel):
-                            gifted_subs = (await GiftedSubsLeaderboard.get(player=actual_player_object, channel=channel)).gifted_subs
+                        if await GiftedSubsLeaderboard.get_or_none(
+                            player=actual_player_object, channel=channel
+                        ):
+                            gifted_subs = (
+                                await GiftedSubsLeaderboard.get(
+                                    player=actual_player_object, channel=channel
+                                )
+                            ).gifted_subs
                         else:
                             gifted_subs = 0
 
-                        await ctx.send(f"{clan.twitch_emoji_name} [{clan.tag}] {actual_player_object.name.upper()} (RANKS - CLAN: {current_season_clan_rank} | OVERALL: {current_season_overall_rank}) | SEASON VP: {current_season_points} | LIFETIME VP: {lifetime_points} | CHECKINS: {checkins} | RAIDS: {raids} | ?SENTRY TIME: {total_sentry_watchtime_hours}hrs | GIFTED SUBS: {gifted_subs} {clan.twitch_emoji_name}")
+                        await ctx.send(
+                            f"{clan.twitch_emoji_name} [{clan.tag}] {actual_player_object.name.upper()} (RANKS - CLAN: {current_season_clan_rank} | OVERALL: {current_season_overall_rank}) | SEASON VP: {current_season_points} | LIFETIME VP: {lifetime_points} | CHECKINS: {checkins} | RAIDS: {raids} | ?SENTRY TIME: {total_sentry_watchtime_hours}hrs | GIFTED SUBS: {gifted_subs} {clan.twitch_emoji_name}"
+                        )
                 else:
                     await ctx.send("You are not registered.")
             else:
                 await ctx.send("No active seasons!")
         else:
             pass
-                    
 
 
 def prepare(twitch_bot: commands.Bot, discord_bot: discord_commands.Bot) -> None:

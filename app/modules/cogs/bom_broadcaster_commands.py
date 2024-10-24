@@ -1,5 +1,5 @@
-from twitchio.ext import commands
 from discord.ext import commands as discord_commands
+from twitchio.ext import commands
 
 from app.models import Channel
 
@@ -11,7 +11,7 @@ class BomBroadcasterCommandsCog(commands.Cog):
 
     async def cog_check(self, ctx: commands.Context) -> bool:
         return ctx.author.is_broadcaster
-    
+
     @commands.command()
     async def registerchannel(self, ctx: commands.Context, discord_server_id: str) -> None:
         """
@@ -25,9 +25,13 @@ class BomBroadcasterCommandsCog(commands.Cog):
             if discord_server_id == "":
                 await Channel.create(name=ctx.channel.name, twitch_channel_id=channel_id)
             else:
-                await Channel.create(name=ctx.channel.name, discord_server_id=discord_server_id, twitch_channel_id=channel_id)
+                await Channel.create(
+                    name=ctx.channel.name,
+                    discord_server_id=discord_server_id,
+                    twitch_channel_id=channel_id,
+                )
             await ctx.send("This channel has been registered.")
-    
+
     @commands.command()
     async def registerdiscordserver(self, ctx: commands.Context, discord_server_id: str) -> None:
         """
@@ -40,6 +44,7 @@ class BomBroadcasterCommandsCog(commands.Cog):
             await ctx.send("This channel has been registered.")
         else:
             await ctx.send("This channel has not been registered yet.")
+
 
 def prepare(twitch_bot: commands.Bot, discord_bot: discord_commands.Bot) -> None:
     twitch_bot.add_cog(BomBroadcasterCommandsCog(twitch_bot, discord_bot))

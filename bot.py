@@ -1,8 +1,11 @@
 # Import libraries
 import importlib
 import logging
+
 import requests
+
 from app.logger import CustomFormatter
+
 # Set up logging
 
 discord_logger = logging.getLogger("discord_bot")
@@ -13,26 +16,37 @@ log_handler.setFormatter(CustomFormatter())
 
 logging.basicConfig(level=logging.INFO, handlers=[log_handler])
 
+import datetime
 import os
 import random
 import sys
 import traceback
 from typing import Any, Dict, List
 
+import discord
 import twitchio
 import yaml
 from aiohttp import ClientSession
 from aiohttp.web_runner import GracefulExit
-import discord
 from discord.ext import commands as discord_commands
 from tortoise import Tortoise
-from twitchio.ext import commands, eventsub
 from tortoise.functions import Count
+from twitchio.ext import commands, eventsub
 from twitchio.models import PartialUser
-import datetime
 
 from app import settings
-from app.models import EventSubscriptions, Player, Points, Season, Subscriptions, Clan, Channel, GiftedSubsLeaderboard, FollowerGiveaway, Session
+from app.models import (
+    Channel,
+    Clan,
+    EventSubscriptions,
+    FollowerGiveaway,
+    GiftedSubsLeaderboard,
+    Player,
+    Points,
+    Season,
+    Session,
+    Subscriptions,
+)
 
 
 # Define function to process yaml config file
@@ -47,26 +61,30 @@ class DiscordBot(discord_commands.Bot):
     def __init__(self, *args, **kwargs):
         self.conf_options = kwargs.pop("conf_options")
         super().__init__(*args, **kwargs)
-    
+
     async def on_ready(self) -> None:
         discord_logger.info(f"Logged in as {self.user.name}")
         await self.change_presence(activity=discord.Game(name="/help"))
         self.alert_channel = self.get_channel(self.conf_options["APP"]["DISCORD_ALERT_CHANNEL"])
-    
+
     async def setup_hook(self) -> None:
         for filename in os.listdir("./app/modules/discord_cogs/"):
             if filename.endswith(".py") and not filename.startswith("__init__"):
                 try:
-                    module = importlib.import_module(f"app.modules.discord_cogs.{filename.strip('.py')}")
+                    module = importlib.import_module(
+                        f"app.modules.discord_cogs.{filename.strip('.py')}"
+                    )
 
                     if hasattr(module, "setup"):
-                        await module.setup(discord_bot,twitch_bot)
-                        discord_logger.info(f"Loaded extension app.modules.discord_cogs.{filename}.")
+                        await module.setup(discord_bot, twitch_bot)
+                        discord_logger.info(
+                            f"Loaded extension app.modules.discord_cogs.{filename}."
+                        )
                 except Exception:
-                    discord_logger.error(f"Failed to load extension app.modules.discord_cogs.{filename}.")
+                    discord_logger.error(
+                        f"Failed to load extension app.modules.discord_cogs.{filename}."
+                    )
                     traceback.print_exc()
-
-
 
         # for filename in os.listdir("./app/modules/discord_cogs/"):
         #     if filename.endswith(".py") and not filename.startswith("__init__"):
@@ -76,7 +94,7 @@ class DiscordBot(discord_commands.Bot):
         #         except Exception:
         #             discord_logger.error(f"Failed to load extension app.modules.discord_cogs.{filename}.")
         #             traceback.print_exc()
-    
+
     async def log_message(self, message: str) -> None:
         await self.alert_channel.send(message)
 
@@ -97,10 +115,15 @@ class TwitchBot(commands.Bot):
         """
         self.conf_options = conf_options
         self.discord_bot = discord_bot
-        self.refresh_token_url ="https://id.twitch.tv/oauth2/token"
+        self.refresh_token_url = "https://id.twitch.tv/oauth2/token"
         self.client_id = conf_options["APP"]["CLIENT_ID"]
         self.client_secret = client_secret
-        super().__init__(token=access_token, client_secret=client_secret, prefix=prefix, initial_channels=initial_channels)
+        super().__init__(
+            token=access_token,
+            client_secret=client_secret,
+            prefix=prefix,
+            initial_channels=initial_channels,
+        )
 
     async def tinit(self) -> None:
         self.session = ClientSession()
@@ -109,7 +132,7 @@ class TwitchBot(commands.Bot):
         )
 
         await Tortoise.generate_schemas(safe=True)
-    
+
     async def routines_init(self) -> None:
         self.check_follower_giveaways.start()
 
@@ -123,7 +146,7 @@ class TwitchBot(commands.Bot):
     async def stop(self) -> None:
         await self.session.close()
         await Tortoise.close_connections()
-    
+
     async def event_token_expired(self) -> None:
         """
         Reacts to the bot's token expiring.
@@ -140,7 +163,7 @@ class TwitchBot(commands.Bot):
             self.token = response_data["access_token"]
             self.refresh_token = response_data["refresh_token"]
             twitch_logger.info("Token refreshed.")
-        
+
         ## Save the new token and refresh to the config file
         self.conf_options["APP"]["ACCESS_TOKEN"] = self.token
         self.conf_options["APP"]["REFRESH_TOKEN"] = self.refresh_token
@@ -150,17 +173,24 @@ class TwitchBot(commands.Bot):
         twitch_logger.info("Token saved to config file.")
 
         return self.token
-    
+
     async def event_message(self, message: twitchio.Message) -> None:
         if message.echo:
             msg: str = message.content
             if msg.startswith("https://clips.twitch.tv"):
                 if "custom-reward-id" in message.tags:
-                    if message.tags["custom-reward-id"] == conf_options["APP"]["BATTLE_CUT_REWARD_ID"]:
+                    if (
+                        message.tags["custom-reward-id"]
+                        == conf_options["APP"]["BATTLE_CUT_REWARD_ID"]
+                    ):
                         return
                 twitch_logger.info("Received a clip message event.")
-                discord_server = self.discord_bot.get_guild(self.conf_options["APP"]["DISCORD_SERVER_ID"])
-                clip_channel = discord_server.get_channel(self.conf_options["APP"]["DISCORD_CLIP_CHANNEL"])
+                discord_server = self.discord_bot.get_guild(
+                    self.conf_options["APP"]["DISCORD_SERVER_ID"]
+                )
+                clip_channel = discord_server.get_channel(
+                    self.conf_options["APP"]["DISCORD_CLIP_CHANNEL"]
+                )
                 await clip_channel.send(f"RVNSBOT shared a clip: {msg}")
             else:
                 return
@@ -171,22 +201,34 @@ class TwitchBot(commands.Bot):
                     if message.tags["msg-id"] == "highlighted-message":
                         twitch_logger.info("Received a highlighted message event.")
                         await self.discord_bot.log_message("Received a highlighted message event.")
-                        if await Player.get_or_none(name=message.author.name.lower(), channel=channel):
-                            player = await Player.get(name=message.author.name.lower(), channel=channel)
+                        if await Player.get_or_none(
+                            name=message.author.name.lower(), channel=channel
+                        ):
+                            player = await Player.get(
+                                name=message.author.name.lower(), channel=channel
+                            )
                             if await Season.active_seasons.all().filter(channel=channel).exists():
                                 season = await Season.active_seasons.filter(channel=channel).first()
                                 if player.is_enabled() and player.clan:
                                     clan = await player.clan.get()
-                                    if await Points.get_or_none(player=player, season=season, channel=channel):
-                                        points = await Points.get(player=player, season=season, channel=channel)
-                                        points.points += self.conf_options["APP"]["HIGHLIGHTED_MESSAGE_POINTS"]
+                                    if await Points.get_or_none(
+                                        player=player, season=season, channel=channel
+                                    ):
+                                        points = await Points.get(
+                                            player=player, season=season, channel=channel
+                                        )
+                                        points.points += self.conf_options["APP"][
+                                            "HIGHLIGHTED_MESSAGE_POINTS"
+                                        ]
                                         await points.save()
                                     else:
                                         assert player.clan is not None
                                         await Points.create(
                                             player_id=player.id,
                                             season_id=season.id,
-                                            points=self.conf_options["APP"]["HIGHLIGHTED_MESSAGE_POINTS"],
+                                            points=self.conf_options["APP"][
+                                                "HIGHLIGHTED_MESSAGE_POINTS"
+                                            ],
                                             clan_id=clan.id,
                                             chanel=channel,
                                         )
@@ -202,17 +244,30 @@ class TwitchBot(commands.Bot):
                     msg: str = message.content
                     if msg.startswith("https://clips.twitch.tv"):
                         if "custom-reward-id" in message.tags:
-                            if message.tags["custom-reward-id"] == conf_options["APP"]["BATTLE_CUT_REWARD_ID"]:
+                            if (
+                                message.tags["custom-reward-id"]
+                                == conf_options["APP"]["BATTLE_CUT_REWARD_ID"]
+                            ):
                                 pass
                             else:
                                 twitch_logger.info("Received a clip message event.")
-                                discord_server = self.discord_bot.get_guild(self.conf_options["APP"]["DISCORD_SERVER_ID"])
-                                clip_channel = discord_server.get_channel(self.conf_options["APP"]["DISCORD_CLIP_CHANNEL"])
-                                await clip_channel.send(f"{message.author.name} shared a clip: {msg}")
+                                discord_server = self.discord_bot.get_guild(
+                                    self.conf_options["APP"]["DISCORD_SERVER_ID"]
+                                )
+                                clip_channel = discord_server.get_channel(
+                                    self.conf_options["APP"]["DISCORD_CLIP_CHANNEL"]
+                                )
+                                await clip_channel.send(
+                                    f"{message.author.name} shared a clip: {msg}"
+                                )
                         else:
                             twitch_logger.info("Received a clip message event.")
-                            discord_server = self.discord_bot.get_guild(self.conf_options["APP"]["DISCORD_SERVER_ID"])
-                            clip_channel = discord_server.get_channel(self.conf_options["APP"]["DISCORD_CLIP_CHANNEL"])
+                            discord_server = self.discord_bot.get_guild(
+                                self.conf_options["APP"]["DISCORD_SERVER_ID"]
+                            )
+                            clip_channel = discord_server.get_channel(
+                                self.conf_options["APP"]["DISCORD_CLIP_CHANNEL"]
+                            )
                             await clip_channel.send(f"{message.author.name} shared a clip: {msg}")
             else:
                 pass
@@ -229,7 +284,7 @@ if __name__ == "__main__":
     channel_names = []
     for channel in conf_options["APP"]["ACCOUNTS"]:
         channel_names.append("#" + channel["name"])
-    
+
     data = {
         "client_id": conf_options["APP"]["CLIENT_ID"],
         "client_secret": conf_options["APP"]["CLIENT_SECRET"],
@@ -243,7 +298,7 @@ if __name__ == "__main__":
 
     with open("config.yaml", "w") as stream:
         yaml.dump(conf_options, stream)
-       
+
     intents = discord.Intents.default()
     intents.guilds = True
     intents.message_content = True
@@ -295,7 +350,7 @@ if __name__ == "__main__":
 
         subscribed_user: PartialUser = payload.data.user
         subscription_tier: int = payload.data.tier
-        
+
         twitch_logger.info("Received a new subscription event.")
         if await Channel.get_or_none(name=payload.data.broadcaster.name.lower()):
             twitch_logger.info(f"Channel {payload.data.broadcaster.name} exists.")
@@ -340,10 +395,16 @@ if __name__ == "__main__":
                                 clan_id=clan.id,
                                 channel=channel,
                             )
-                        
-                        discord_server = discord_bot.get_guild(conf_options["APP"]["DISCORD_SERVER_ID"])
-                        discord_channel = discord_server.get_channel(conf_options["APP"]["DISCORD_SUBS_LOG_CHANNEL"])
-                        await discord_channel.send(f"@{player.name.lower()} has subscribed to {channel.name} for {subscription.months_subscribed} months.")
+
+                        discord_server = discord_bot.get_guild(
+                            conf_options["APP"]["DISCORD_SERVER_ID"]
+                        )
+                        discord_channel = discord_server.get_channel(
+                            conf_options["APP"]["DISCORD_SUBS_LOG_CHANNEL"]
+                        )
+                        await discord_channel.send(
+                            f"@{player.name.lower()} has subscribed to {channel.name} for {subscription.months_subscribed} months."
+                        )
 
                         await twitch_bot.get_channel(payload.data.broadcaster.name).send(
                             f"Hej, @{player.name.lower()}! Welcome to the VANDERWOOD FAMILY! Your clan, the {clan.name.upper()} has gained a new warrior. You can now forge your !shield for WALLHALLA and use ?checkin every live stream to earn ⬣100 VALOR POINTS for you and your clan! Skál! vander60SKAL"
@@ -367,7 +428,9 @@ if __name__ == "__main__":
                     clan["id"] for clan in clan_totals if clan["count"] == min_total["count"]
                 ]
                 new_clan = random.choice(clans_to_choose_from)
-                await Player.create(name=subscribed_user.name.lower(), clan_id=new_clan, channel=channel)
+                await Player.create(
+                    name=subscribed_user.name.lower(), clan_id=new_clan, channel=channel
+                )
                 twitch_logger.info(f"Created player {subscribed_user.name.lower()}.")
                 player = await Player.get(name=subscribed_user.name.lower(), channel=channel)
                 if await Subscriptions.get_or_none(player=player, channel=channel):
@@ -399,11 +462,17 @@ if __name__ == "__main__":
                                 clan_id=clan.id,
                                 channel=channel,
                             )
-                        
-                        discord_server = discord_bot.get_guild(conf_options["APP"]["DISCORD_SERVER_ID"])
-                        discord_channel = discord_server.get_channel(conf_options["APP"]["DISCORD_SUBS_LOG_CHANNEL"])
-                        await discord_channel.send(f"@{player.name.lower()} has subscribed to {channel.name} for {subscription.months_subscribed} months.")
-                        
+
+                        discord_server = discord_bot.get_guild(
+                            conf_options["APP"]["DISCORD_SERVER_ID"]
+                        )
+                        discord_channel = discord_server.get_channel(
+                            conf_options["APP"]["DISCORD_SUBS_LOG_CHANNEL"]
+                        )
+                        await discord_channel.send(
+                            f"@{player.name.lower()} has subscribed to {channel.name} for {subscription.months_subscribed} months."
+                        )
+
                         await twitch_bot.get_channel(payload.data.broadcaster.name).send(
                             f"Hej, @{player.name.lower()}! Welcome to the VANDERWOOD FAMILY! Your clan, the {clan.name.upper()} has gained a new warrior. You can now forge your !shield for WALLHALLA and use ?checkin every live stream to earn ⬣100 VALOR POINTS for you and your clan! Skál! vander60SKAL"
                         )
@@ -415,7 +484,7 @@ if __name__ == "__main__":
                     pass
         else:
             pass
-    
+
     @twitch_eventsubbot.event()
     async def event_eventsub_notification_subscription_gift(
         payload: eventsub.ChannelSubscriptionGiftData,
@@ -429,7 +498,6 @@ if __name__ == "__main__":
         twitch_logger.info(f"Total gifts: {payload.data.total}")
         twitch_logger.info(f"Payload: {payload.data}")
 
-
         gift_giver: PartialUser = payload.data.user
         subscription_tier: int = payload.data.tier
         is_anonymous: bool = payload.data.is_anonymous
@@ -441,12 +509,18 @@ if __name__ == "__main__":
             channel = await Channel.get(name=payload.data.broadcaster.name.lower())
             match subscription_tier:
                 case 1000:
-                    points_to_add = (conf_options["APP"]["POINTS"]["TIER_1"] * payload.data.total) / 2
+                    points_to_add = (
+                        conf_options["APP"]["POINTS"]["TIER_1"] * payload.data.total
+                    ) / 2
                 case 2000:
-                    points_to_add = (conf_options["APP"]["POINTS"]["TIER_2"] * payload.data.total) / 2
+                    points_to_add = (
+                        conf_options["APP"]["POINTS"]["TIER_2"] * payload.data.total
+                    ) / 2
                 case 3000:
-                    points_to_add = (conf_options["APP"]["POINTS"]["TIER_3"] * payload.data.total) / 2
-            
+                    points_to_add = (
+                        conf_options["APP"]["POINTS"]["TIER_3"] * payload.data.total
+                    ) / 2
+
             twitch_logger.info(f"Points to add: {points_to_add}")
 
         if is_anonymous:
@@ -473,18 +547,27 @@ if __name__ == "__main__":
                                 clan_id=clan.id,
                                 channel=channel,
                             )
-                        
+
                         if await GiftedSubsLeaderboard.get_or_none(channel=channel, player=player):
-                            gifted_sub = await GiftedSubsLeaderboard.get(channel=channel, player=player)
+                            gifted_sub = await GiftedSubsLeaderboard.get(
+                                channel=channel, player=player
+                            )
                             gifted_sub.gifted_subs += payload.data.total
                             await gifted_sub.save()
                         else:
-                            await GiftedSubsLeaderboard.create(channel=channel, player=player, gifted_subs=1)
-                        
+                            await GiftedSubsLeaderboard.create(
+                                channel=channel, player=player, gifted_subs=1
+                            )
 
-                        discord_server = discord_bot.get_guild(conf_options["APP"]["DISCORD_SERVER_ID"])
-                        discord_channel = discord_server.get_channel(conf_options["APP"]["DISCORD_SUBS_LOG_CHANNEL"])
-                        await discord_channel.send(f"@{player.name.lower()} has gifted {payload.data.total} subs to {channel.name}.")
+                        discord_server = discord_bot.get_guild(
+                            conf_options["APP"]["DISCORD_SERVER_ID"]
+                        )
+                        discord_channel = discord_server.get_channel(
+                            conf_options["APP"]["DISCORD_SUBS_LOG_CHANNEL"]
+                        )
+                        await discord_channel.send(
+                            f"@{player.name.lower()} has gifted {payload.data.total} subs to {channel.name}."
+                        )
                     else:
                         twitch_logger.info("Player is not enabled or does not have a clan")
                         pass
@@ -524,17 +607,31 @@ if __name__ == "__main__":
                                 clan_id=clan.id,
                                 channel=channel,
                             )
-                        
-                        if GiftedSubsLeaderboard.all().filter(channel=channel, player=player).exists():
-                            gifted_sub = await GiftedSubsLeaderboard.get(channel=channel, player=player)
+
+                        if (
+                            GiftedSubsLeaderboard.all()
+                            .filter(channel=channel, player=player)
+                            .exists()
+                        ):
+                            gifted_sub = await GiftedSubsLeaderboard.get(
+                                channel=channel, player=player
+                            )
                             gifted_sub.gifted_subs += 1
                             await gifted_sub.save()
                         else:
-                            await GiftedSubsLeaderboard.create(channel=channel, player=player, gifted_subs=1)
-                        
-                        discord_server = discord_bot.get_guild(conf_options["APP"]["DISCORD_SERVER_ID"])
-                        discord_channel = discord_server.get_channel(conf_options["APP"]["DISCORD_SUBS_LOG_CHANNEL"])
-                        await discord_channel.send(f"@{player.name.lower()} has gifted {payload.data.total} subs to {channel.name}.")
+                            await GiftedSubsLeaderboard.create(
+                                channel=channel, player=player, gifted_subs=1
+                            )
+
+                        discord_server = discord_bot.get_guild(
+                            conf_options["APP"]["DISCORD_SERVER_ID"]
+                        )
+                        discord_channel = discord_server.get_channel(
+                            conf_options["APP"]["DISCORD_SUBS_LOG_CHANNEL"]
+                        )
+                        await discord_channel.send(
+                            f"@{player.name.lower()} has gifted {payload.data.total} subs to {channel.name}."
+                        )
 
                         await twitch_bot.get_channel(payload.data.broadcaster.name).send(
                             f"Hej, @{player.name.lower()}! Welcome to the VANDERWOOD FAMILY! Your clan, the {clan.name.upper()} has gained a new warrior. You can now forge your !shield for WALLHALLA and use ?checkin every live stream to earn ⬣100 VALOR POINTS for you and your clan! Skál! vander60SKAL"
@@ -546,7 +643,6 @@ if __name__ == "__main__":
                     twitch_logger.info("No active seasons")
                     pass
 
-    
     @twitch_eventsubbot.event()
     async def event_eventsub_notification_subscription_message(
         payload: eventsub.ChannelSubscribeData,
@@ -561,7 +657,7 @@ if __name__ == "__main__":
 
         subscribed_user: PartialUser = payload.data.user
         subscription_tier: int = payload.data.tier
-        
+
         twitch_logger.info("Received a new subscription event.")
         if await Channel.get_or_none(name=payload.data.broadcaster.name.lower()):
             twitch_logger.info(f"Channel {payload.data.broadcaster.name} exists.")
@@ -608,11 +704,16 @@ if __name__ == "__main__":
                                 clan_id=clan.id,
                                 channel=channel,
                             )
-                        
 
-                        discord_server = discord_bot.get_guild(conf_options["APP"]["DISCORD_SERVER_ID"])
-                        discord_channel = discord_server.get_channel(conf_options["APP"]["DISCORD_SUBS_LOG_CHANNEL"])
-                        await discord_channel.send(f"@{player.name.lower()} has subscribed to {channel.name} for {subscription.months_subscribed} months.")
+                        discord_server = discord_bot.get_guild(
+                            conf_options["APP"]["DISCORD_SERVER_ID"]
+                        )
+                        discord_channel = discord_server.get_channel(
+                            conf_options["APP"]["DISCORD_SUBS_LOG_CHANNEL"]
+                        )
+                        await discord_channel.send(
+                            f"@{player.name.lower()} has subscribed to {channel.name} for {subscription.months_subscribed} months."
+                        )
                     else:
                         "Player is not enabled or does not have a clan"
                         pass
@@ -632,7 +733,9 @@ if __name__ == "__main__":
                     clan["id"] for clan in clan_totals if clan["count"] == min_total["count"]
                 ]
                 new_clan = random.choice(clans_to_choose_from)
-                await Player.create(name=subscribed_user.name.lower(), clan_id=new_clan, channel=channel)
+                await Player.create(
+                    name=subscribed_user.name.lower(), clan_id=new_clan, channel=channel
+                )
                 twitch_logger.info(f"Created player {subscribed_user.name.lower()}.")
                 player = await Player.get(name=subscribed_user.name.lower(), channel=channel)
                 if await Subscriptions.get_or_none(player=player, channel=channel):
@@ -664,10 +767,16 @@ if __name__ == "__main__":
                                 clan_id=clan.id,
                                 channel=channel,
                             )
-                        
-                        discord_server = discord_bot.get_guild(conf_options["APP"]["DISCORD_SERVER_ID"])
-                        discord_channel = discord_server.get_channel(conf_options["APP"]["DISCORD_SUBS_LOG_CHANNEL"])
-                        await discord_channel.send(f"@{player.name.lower()} has subscribed to {channel.name} for {subscription.months_subscribed} months.")
+
+                        discord_server = discord_bot.get_guild(
+                            conf_options["APP"]["DISCORD_SERVER_ID"]
+                        )
+                        discord_channel = discord_server.get_channel(
+                            conf_options["APP"]["DISCORD_SUBS_LOG_CHANNEL"]
+                        )
+                        await discord_channel.send(
+                            f"@{player.name.lower()} has subscribed to {channel.name} for {subscription.months_subscribed} months."
+                        )
                     else:
                         "Player is not enabled or does not have a clan"
                         pass
@@ -676,7 +785,6 @@ if __name__ == "__main__":
                     pass
         else:
             pass
-
 
     @twitch_eventsubbot.event()
     async def event_eventsub_notification_channel_reward_redeem(
@@ -724,14 +832,24 @@ if __name__ == "__main__":
                                 clan_id=clan.id,
                                 channel=channel,
                             )
-                        
-                        discord_server = discord_bot.get_guild(conf_options["APP"]["DISCORD_SERVER_ID"])
-                        discord_channel = discord_server.get_channel(conf_options["APP"]["DISCORD_LOG_CHANNEL"])
-                        await discord_channel.send(f"@{user.name.lower()} redeemed a reward: {reward.title}")
+
+                        discord_server = discord_bot.get_guild(
+                            conf_options["APP"]["DISCORD_SERVER_ID"]
+                        )
+                        discord_channel = discord_server.get_channel(
+                            conf_options["APP"]["DISCORD_LOG_CHANNEL"]
+                        )
+                        await discord_channel.send(
+                            f"@{user.name.lower()} redeemed a reward: {reward.title}"
+                        )
 
                         if reward.id == conf_options["APP"]["BATTLE_CUT_REWARD_ID"]:
-                            battle_cut_discord_channel = discord_server.get_channel(conf_options["APP"]["DISCORD_BATTLE_CUT_LOG_CHANNEL"])
-                            await battle_cut_discord_channel.send(f"@{user.name.lower()} has redeemed a battle cut reward, with the following clip: {user_input}")
+                            battle_cut_discord_channel = discord_server.get_channel(
+                                conf_options["APP"]["DISCORD_BATTLE_CUT_LOG_CHANNEL"]
+                            )
+                            await battle_cut_discord_channel.send(
+                                f"@{user.name.lower()} has redeemed a battle cut reward, with the following clip: {user_input}"
+                            )
                     else:
                         pass
                 else:
@@ -741,7 +859,7 @@ if __name__ == "__main__":
                 pass
         else:
             pass
-    
+
     @twitch_eventsubbot.event()
     async def event_eventsub_notification_followV2(
         payload: eventsub.ChannelFollowData,
@@ -763,7 +881,11 @@ if __name__ == "__main__":
             # We need to check if a giveaway exists for the new follower (they may have unfollowed and refollowed), so we need to delete the old giveaway and create a new one.
             if await FollowerGiveaway.get_or_none(channel=channel, follower=player.name.lower()):
                 await FollowerGiveaway.get(channel=channel, follower=player.name.lower()).delete()
-            await FollowerGiveaway.create(channel=channel, end_time=datetime.datetime.now() + datetime.timedelta(seconds=30), follower=player.name.lower())
+            await FollowerGiveaway.create(
+                channel=channel,
+                end_time=datetime.datetime.now() + datetime.timedelta(seconds=30),
+                follower=player.name.lower(),
+            )
         else:
             pass
 
@@ -771,7 +893,6 @@ if __name__ == "__main__":
             f"🌲🌲🌲Who goes there!!? 👀 A weary traveller has emerged from the WOODLANDS. I need someone to ?search @{player.name} now before they enter VANDERHEIM!🌲🌲🌲"
         )
 
-        
     eventsub_client = eventsub.EventSubClient(
         twitch_eventsubbot,
         conf_options["APP"]["SECRET_STRING"],
@@ -790,12 +911,18 @@ if __name__ == "__main__":
             else:
                 await eventsub_client.subscribe_channel_subscription_gifts(channel_id)
                 await EventSubscriptions.create(
-                    channel_name=channel_name, event_type="channel.subscription.gift", subscribed=True, channel_id=channel_id
+                    channel_name=channel_name,
+                    event_type="channel.subscription.gift",
+                    subscribed=True,
+                    channel_id=channel_id,
                 )
         except twitchio.HTTPException as err:
             if err.status == 409:
                 await EventSubscriptions.create(
-                    channel_name=channel_name, event_type="channel.subscription.gift", subscribed=True, channel_id=channel_id
+                    channel_name=channel_name,
+                    event_type="channel.subscription.gift",
+                    subscribed=True,
+                    channel_id=channel_id,
                 )
             else:
                 raise
@@ -812,17 +939,25 @@ if __name__ == "__main__":
             else:
                 await eventsub_client.subscribe_channel_subscriptions(channel_id)
                 await EventSubscriptions.create(
-                    channel_name=channel_name, event_type="channel.subscribe", subscribed=True, channel_id=channel_id
+                    channel_name=channel_name,
+                    event_type="channel.subscribe",
+                    subscribed=True,
+                    channel_id=channel_id,
                 )
         except twitchio.HTTPException as err:
             if err.status == 409:
                 await EventSubscriptions.create(
-                    channel_name=channel_name, event_type="channel.subscribe", subscribed=True, channel_id=channel_id
+                    channel_name=channel_name,
+                    event_type="channel.subscribe",
+                    subscribed=True,
+                    channel_id=channel_id,
                 )
             else:
                 raise
-    
-    async def subscribe_channel_follows_v2(channel_id: int, channel_name: str, bot_user_id: str) -> None:
+
+    async def subscribe_channel_follows_v2(
+        channel_id: int, channel_name: str, bot_user_id: str
+    ) -> None:
         """
         Subscribes to new channel follow events.
         """
@@ -834,19 +969,25 @@ if __name__ == "__main__":
             else:
                 await eventsub_client.subscribe_channel_follows_v2(channel_id, bot_user_id)
                 await EventSubscriptions.create(
-                    channel_name=channel_name, event_type="channel.follow", subscribed=True, channel_id=channel_id
+                    channel_name=channel_name,
+                    event_type="channel.follow",
+                    subscribed=True,
+                    channel_id=channel_id,
                 )
         except twitchio.HTTPException as err:
             if err.status == 409:
                 await EventSubscriptions.create(
-                    channel_name=channel_name, event_type="channel.follow", subscribed=True, channel_id=channel_id
+                    channel_name=channel_name,
+                    event_type="channel.follow",
+                    subscribed=True,
+                    channel_id=channel_id,
                 )
             else:
                 twitch_logger.error(err.message)
                 twitch_logger.error(err.status)
                 twitch_logger.error(err.reason)
                 raise
-    
+
     async def subscribe_channel_subscription_messages(channel_id: int, channel_name: str) -> None:
         """
         Subscribes to channel resubscription messages.
@@ -859,12 +1000,18 @@ if __name__ == "__main__":
             else:
                 await eventsub_client.subscribe_channel_subscription_messages(channel_id)
                 await EventSubscriptions.create(
-                    channel_name=channel_name, event_type="channel.subscription.message", subscribed=True, channel_id=channel_id
+                    channel_name=channel_name,
+                    event_type="channel.subscription.message",
+                    subscribed=True,
+                    channel_id=channel_id,
                 )
         except twitchio.HTTPException as err:
             if err.status == 409:
                 await EventSubscriptions.create(
-                    channel_name=channel_name, event_type="channel.subscription.message", subscribed=True, channel_id=channel_id
+                    channel_name=channel_name,
+                    event_type="channel.subscription.message",
+                    subscribed=True,
+                    channel_id=channel_id,
                 )
             else:
                 raise
@@ -897,7 +1044,7 @@ if __name__ == "__main__":
                 )
             else:
                 raise
-    
+
     async def get_eventsub_subscriptions() -> None:
         """
         Gets all active eventsub subscriptions.
@@ -905,8 +1052,10 @@ if __name__ == "__main__":
         subscriptions = await eventsub_client.get_subscriptions()
 
         for subscription in subscriptions:
-            twitch_logger.info(f"subscription Type: {subscription.type}, Status: {subscription.status}, Transport: {subscription.transport}, Transport Method: {subscription.transport_method}, Subscription ID: {subscription.id}, Subscription Cost: {subscription.cost}")
-        
+            twitch_logger.info(
+                f"subscription Type: {subscription.type}, Status: {subscription.status}, Transport: {subscription.transport}, Transport Method: {subscription.transport_method}, Subscription ID: {subscription.id}, Subscription Cost: {subscription.cost}"
+            )
+
         # We need to check if the subscriptions returned match the ones in the database, if one in the database is not in the subscriptions, we need to delete the database entry and then resubscribe.
         for subscription in await EventSubscriptions.all():
             if subscription.event_type == "channel.subscribe":
@@ -915,28 +1064,41 @@ if __name__ == "__main__":
                     for sub in subscriptions
                 ):
                     await EventSubscriptions.filter(event_type="channel.subscribe").delete()
-                    await subscribe_channel_subscriptions(subscription.channel_id, subscription.channel_name)
+                    await subscribe_channel_subscriptions(
+                        subscription.channel_id, subscription.channel_name
+                    )
             elif subscription.event_type == "channel.subscription.gift":
                 if not any(
                     sub.type == "channel.subscription.gift" and sub.status == "enabled"
                     for sub in subscriptions
                 ):
                     await EventSubscriptions.filter(event_type="channel.subscription.gift").delete()
-                    await subscribe_channel_subscription_gifts(subscription.channel_id, subscription.channel_name)
+                    await subscribe_channel_subscription_gifts(
+                        subscription.channel_id, subscription.channel_name
+                    )
             elif subscription.event_type == "channel.subscription.message":
                 if not any(
                     sub.type == "channel.subscription.message" and sub.status == "enabled"
                     for sub in subscriptions
                 ):
-                    await EventSubscriptions.filter(event_type="channel.subscription.message").delete()
-                    await subscribe_channel_subscription_messages(subscription.channel_id, subscription.channel_name)
+                    await EventSubscriptions.filter(
+                        event_type="channel.subscription.message"
+                    ).delete()
+                    await subscribe_channel_subscription_messages(
+                        subscription.channel_id, subscription.channel_name
+                    )
             elif subscription.event_type == "channel.channel_points_custom_reward_redemption.add":
                 if not any(
-                    sub.type == "channel.channel_points_custom_reward_redemption.add" and sub.status == "enabled"
+                    sub.type == "channel.channel_points_custom_reward_redemption.add"
+                    and sub.status == "enabled"
                     for sub in subscriptions
                 ):
-                    await EventSubscriptions.filter(event_type="channel.channel_points_custom_reward_redemption.add").delete()
-                    await subscribe_channel_points_redeemed(subscription.channel_id, subscription.channel_name)
+                    await EventSubscriptions.filter(
+                        event_type="channel.channel_points_custom_reward_redemption.add"
+                    ).delete()
+                    await subscribe_channel_points_redeemed(
+                        subscription.channel_id, subscription.channel_name
+                    )
             elif subscription.event_type == "channel.follow":
                 if not any(
                     sub.type == "channel.follow" and sub.status == "enabled"
@@ -944,7 +1106,11 @@ if __name__ == "__main__":
                 ):
                     channel = await Channel.get(name=subscription.channel_name)
                     await EventSubscriptions.filter(event_type="channel.follow").delete()
-                    await subscribe_channel_follows_v2(channel_name=subscription.channel_name, bot_user_id=conf_options["APP"]["BOT_USER_ID"], channel_id=channel.twitch_channel_id)
+                    await subscribe_channel_follows_v2(
+                        channel_name=subscription.channel_name,
+                        bot_user_id=conf_options["APP"]["BOT_USER_ID"],
+                        channel_id=channel.twitch_channel_id,
+                    )
             else:
                 pass
 
@@ -969,10 +1135,16 @@ if __name__ == "__main__":
             )
         )
         twitch_eventsubbot.loop.create_task(
-            subscribe_channel_subscription_gifts(channel_id=channel["id"], channel_name=channel["name"])
+            subscribe_channel_subscription_gifts(
+                channel_id=channel["id"], channel_name=channel["name"]
+            )
         )
         twitch_eventsubbot.loop.create_task(
-            subscribe_channel_follows_v2(channel_id=channel["id"], channel_name=channel["name"], bot_user_id=conf_options["APP"]["BOT_USER_ID"])
+            subscribe_channel_follows_v2(
+                channel_id=channel["id"],
+                channel_name=channel["name"],
+                bot_user_id=conf_options["APP"]["BOT_USER_ID"],
+            )
         )
         pass
 

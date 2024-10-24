@@ -1,10 +1,10 @@
 import random
 
+from discord.ext import commands as discord_commands
 from tortoise.functions import Count
 from twitchio.ext import commands
-from discord.ext import commands as discord_commands
 
-from app.models import Clan, Player, Channel
+from app.models import Channel, Clan, Player
 
 
 class BomSubCommandsCog(commands.Cog):
@@ -49,7 +49,9 @@ class BomSubCommandsCog(commands.Cog):
                         clan["id"] for clan in clan_totals if clan["count"] == min_total["count"]
                     ]
                     new_clan = random.choice(clans_to_choose_from)
-                    await Player.create(name=ctx.author.name.lower(), clan_id=new_clan, channel=channel)
+                    await Player.create(
+                        name=ctx.author.name.lower(), clan_id=new_clan, channel=channel
+                    )
                     clan_details = next(clan for clan in clan_totals if clan["id"] == new_clan)
                     print(clan_details)
                     await ctx.send(
