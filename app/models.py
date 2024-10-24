@@ -19,6 +19,7 @@ class Clan(Model):
     tag = fields.CharField(max_length=4, unique=False)
     channel = fields.ForeignKeyField("models.Channel", related_name="clans")
     twitch_emoji_name = fields.CharField(max_length=255, null=True)
+    new_guid_id = fields.UUIDField(null=True)
 
 
 class StatusManager(Manager):
@@ -37,6 +38,7 @@ class Player(Model):
     enabled = fields.BooleanField(default=True)
 
     enabled_players = StatusManager()
+    new_guid_id = fields.UUIDField(null=True)
 
     def is_enabled(self) -> bool:
         return self.enabled
@@ -71,6 +73,7 @@ class Season(Model):
     end_date = fields.DatetimeField(null=True)
     info_end_date = fields.DatetimeField(null=True)
     channel = fields.ForeignKeyField("models.Channel", related_name="seasons")
+    new_guid_id = fields.UUIDField(null=True)
 
     active_seasons = SeasonActiveManager()
     previous_seasons = PreviousSeasonsManager()
@@ -141,6 +144,7 @@ class Session(Model):
     start_time = fields.DatetimeField(auto_now_add=True)
     end_time = fields.DatetimeField(null=True)
     channel = fields.ForeignKeyField("models.Channel", related_name="sessions")
+    new_guid_id = fields.UUIDField(null=True)
 
     active_session = SessionActiveManager()
 
@@ -154,6 +158,7 @@ class Checkin(Model):
         "models.Player", related_name="checkins"
     )
     channel = fields.ForeignKeyField("models.Channel", related_name="checkins")
+    new_guid_id = fields.UUIDField(null=True)
 
 
 class SentrySession(Model):
@@ -167,6 +172,7 @@ class SentrySession(Model):
     channel = fields.ForeignKeyField("models.Channel", related_name="sentry_sessions")
 
     active_session = SentrySessionActiveManager()
+    new_guid_id = fields.UUIDField(null=True)
 
 
 class SentryCheckin(Model):
@@ -178,6 +184,7 @@ class SentryCheckin(Model):
         "models.Player", related_name="sentry_checkins"
     )
     channel = fields.ForeignKeyField("models.Channel", related_name="sentry_checkins")
+    new_guid_id = fields.UUIDField(null=True)
 
 
 class PlayerWatchTime(Model):
@@ -190,6 +197,7 @@ class PlayerWatchTime(Model):
     )
     channel = fields.ForeignKeyField("models.Channel", related_name="watch_time")
     watch_time = fields.IntField(default=0)
+    new_guid_id = fields.UUIDField(null=True)
 
 
 class RaidSession(Model):
@@ -202,6 +210,7 @@ class RaidSession(Model):
     channel = fields.ForeignKeyField("models.Channel", related_name="raid_sessions")
 
     active_session = RaidSessionActiveManager()
+    new_guid_id = fields.UUIDField(null=True)
 
 
 class RaidCheckin(Model):
@@ -213,6 +222,7 @@ class RaidCheckin(Model):
         "models.Player", related_name="raid_checkins"
     )
     channel = fields.ForeignKeyField("models.Channel", related_name="raid_checkins")
+    new_guid_id = fields.UUIDField(null=True)
 
 
 class Points(Model):
@@ -226,6 +236,7 @@ class Points(Model):
     clan: ForeignKeyRelation[Clan] = fields.ForeignKeyField("models.Clan", related_name="points")
     channel = fields.ForeignKeyField("models.Channel", related_name="points")
     points = fields.IntField(default=0)
+    new_guid_id = fields.UUIDField(null=True)
 
 
 class EventSubscriptions(Model):
@@ -234,6 +245,7 @@ class EventSubscriptions(Model):
     channel_name = fields.CharField(max_length=255)
     event_type = fields.CharField(max_length=255)
     subscribed = fields.BooleanField()
+    new_guid_id = fields.UUIDField(null=True)
 
 
 class Subscriptions(Model):
@@ -244,6 +256,7 @@ class Subscriptions(Model):
     channel = fields.ForeignKeyField("models.Channel", related_name="subscriptions")
     months_subscribed = fields.IntField(default=1)
     currently_subscribed = fields.BooleanField()
+    new_guid_id = fields.UUIDField(null=True)
 
 
 class GiftedSubsLeaderboard(Model):
@@ -253,6 +266,7 @@ class GiftedSubsLeaderboard(Model):
     )
     channel = fields.ForeignKeyField("models.Channel", related_name="gifted_subs_leaderboard")
     gifted_subs = fields.IntField(default=0)
+    new_guid_id = fields.UUIDField(null=True)
 
 
 class RewardLevel(Model):
@@ -271,6 +285,7 @@ class FollowerGiveaway(Model):
     winner: ForeignKeyNullableRelation[Player] = fields.ForeignKeyField(
         "models.Player", related_name="follower_giveaways", null=True
     )
+    new_guid_id = fields.UUIDField(null=True)
 
 
 class FollowerGiveawayEntry(Model):
@@ -282,6 +297,7 @@ class FollowerGiveawayEntry(Model):
         "models.Player", related_name="follower_giveaway_entries"
     )
     channel = fields.ForeignKeyField("models.Channel", related_name="follower_giveaway_entries")
+    new_guid_id = fields.UUIDField(null=True)
 
 
 class FollowerGiveawayPrize(Model):
@@ -289,6 +305,7 @@ class FollowerGiveawayPrize(Model):
     message = fields.TextField()
     vp_reward = fields.IntField()
     channel = fields.ForeignKeyField("models.Channel", related_name="giveaway_prizes")
+    new_guid_id = fields.UUIDField(null=True)
 
 
 class SpoilsSession(Model):
@@ -302,6 +319,7 @@ class SpoilsSession(Model):
     points_reward = fields.IntField(default=0)
 
     active_session = SpoilsSessionActiveManager()
+    new_guid_id = fields.UUIDField(null=True)
 
 
 class SpoilsClaim(Model):
@@ -313,6 +331,7 @@ class SpoilsClaim(Model):
         "models.Player", related_name="spoils_claims"
     )
     channel = fields.ForeignKeyField("models.Channel", related_name="spoils_claims")
+    new_guid_id = fields.UUIDField(null=True)
 
 
 class ClanSpoilsSession(Model):
@@ -322,11 +341,12 @@ class ClanSpoilsSession(Model):
     )
     start_time = fields.DatetimeField(auto_now_add=True)
     end_time = fields.DatetimeField(null=True)
-    channel = fields.ForeignKeyField("models.Channel", related_name="clan_spoils_sessions")
+    channel: ForeignKeyRelation[Channel] = fields.ForeignKeyField("models.Channel", related_name="clan_spoils_sessions")
     points_reward = fields.IntField(default=0)
-    clan = fields.ForeignKeyField("models.Clan", related_name="clan_spoils_sessions")
+    clan: ForeignKeyRelation[Clan] = fields.ForeignKeyField("models.Clan", related_name="clan_spoils_sessions")
 
     active_sessions = ClanSpoilsSessionActiveManager()
+    new_guid_id = fields.UUIDField(null=True)
 
 
 class ClanSpoilsClaim(Model):
@@ -338,3 +358,4 @@ class ClanSpoilsClaim(Model):
         "models.Player", related_name="clan_spoils_claims"
     )
     channel = fields.ForeignKeyField("models.Channel", related_name="clan_spoils_claims")
+    new_guid_id = fields.UUIDField(null=True)
