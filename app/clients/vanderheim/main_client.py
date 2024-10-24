@@ -18,6 +18,7 @@ from app.clients.vanderheim.endpoints.sentry_sessions import SentrySessionsAPI
 from app.clients.vanderheim.endpoints.sessions import SessionsAPI
 from app.clients.vanderheim.endpoints.spoils_claims import SpoilsClaimsAPI
 from app.clients.vanderheim.endpoints.spoils_sessions import SpoilsSessionsAPI
+from app.clients.vanderheim.endpoints.subscriptions import SubscriptionsAPI
 
 
 class VanderheimAPIClient:
@@ -42,3 +43,4 @@ class VanderheimAPIClient:
         self.sessions = SessionsAPI(self.base_client)
         self.spoils_claims = SpoilsClaimsAPI(self.base_client)
         self.spoils_sessions = SpoilsSessionsAPI(self.base_client)
+        self.subscriptions = SubscriptionsAPI(self.base_client)
