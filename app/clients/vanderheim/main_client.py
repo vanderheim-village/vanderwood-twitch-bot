@@ -12,6 +12,7 @@ from app.clients.vanderheim.endpoints.players import PlayersAPI
 from app.clients.vanderheim.endpoints.points import PointsAPI
 from app.clients.vanderheim.endpoints.raid_checkins import RaidCheckinsAPI
 from app.clients.vanderheim.endpoints.raid_sessions import RaidSessionsAPI
+from app.clients.vanderheim.endpoints.seasons import SeasonsAPI
 
 
 class VanderheimAPIClient:
@@ -30,3 +31,4 @@ class VanderheimAPIClient:
         self.points = PointsAPI(self.base_client)
         self.raid_checkins = RaidCheckinsAPI(self.base_client)
         self.raid_sessions = RaidSessionsAPI(self.base_client)
+        self.seasons = SeasonsAPI(self.base_client)
