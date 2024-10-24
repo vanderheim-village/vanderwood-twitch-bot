@@ -70,7 +70,7 @@ class PlayersAPI:
         Deletes an existing player by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/players/{player_id}/"
-        return await self.client._delete(url)
+        await self.client._delete(url)
 
     async def _fetch_player_checkins_page(
         self, player_id: str, page: Optional[int] = None, page_size: Optional[int] = None
@@ -139,7 +139,7 @@ class PlayersAPI:
         Deletes an existing check-in for a player by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/players/{player_id}/checkins/{checkin_id}/"
-        return await self.client._delete(url)
+        await self.client._delete(url)
 
     async def _fetch_player_clan_spoils_claims_page(
         self, player_id: str, page: Optional[int] = None, page_size: Optional[int] = None
@@ -214,7 +214,7 @@ class PlayersAPI:
         Deletes an existing clan spoils claim for a player by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/players/{player_id}/clan-spoils-claims/{clan_spoils_claim_id}/"
-        return await self.client._delete(url)
+        await self.client._delete(url)
 
     async def _fetch_player_gifted_subscriptions_page(
         self, player_id: str, page: Optional[int] = None, page_size: Optional[int] = None
@@ -289,7 +289,7 @@ class PlayersAPI:
         Deletes an existing gifted subscription for a player by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/players/{player_id}/gifted-subscriptions/{gifted_subscription_id}/"
-        return await self.client._delete(url)
+        await self.client._delete(url)
 
     async def _fetch_player_player_watch_times_page(
         self, player_id: str, page: Optional[int] = None, page_size: Optional[int] = None
@@ -364,7 +364,7 @@ class PlayersAPI:
         Deletes an existing watch time for a player by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/players/{player_id}/player-watch-times/{player_watch_time_id}/"
-        return await self.client._delete(url)
+        await self.client._delete(url)
 
     async def _fetch_player_points_page(
         self, player_id: str, page: Optional[int] = None, page_size: Optional[int] = None
@@ -433,7 +433,7 @@ class PlayersAPI:
         Deletes an existing point for a player by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/players/{player_id}/points/{point_id}/"
-        return await self.client._delete(url)
+        await self.client._delete(url)
 
     async def _fetch_player_raid_checkins_page(
         self, player_id: str, page: Optional[int] = None, page_size: Optional[int] = None
@@ -506,7 +506,7 @@ class PlayersAPI:
         Deletes an existing raid check-in for a player by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/players/{player_id}/raid-checkins/{raid_checkin_id}/"
-        return await self.client._delete(url)
+        await self.client._delete(url)
 
     async def _fetch_player_sentry_checkins_page(
         self, player_id: str, page: Optional[int] = None, page_size: Optional[int] = None
@@ -579,7 +579,7 @@ class PlayersAPI:
         Deletes an existing sentry check-in for a player by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/players/{player_id}/sentry-checkins/{sentry_checkin_id}/"
-        return await self.client._delete(url)
+        await self.client._delete(url)
 
     async def _fetch_player_spoils_claims_page(
         self, player_id: str, page: Optional[int] = None, page_size: Optional[int] = None
@@ -652,7 +652,7 @@ class PlayersAPI:
         Deletes an existing spoils claim for a player by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/players/{player_id}/spoils-claims/{spoils_claim_id}/"
-        return await self.client._delete(url)
+        await self.client._delete(url)
 
     async def _fetch_player_subscriptions_page(
         self, player_id: str, page: Optional[int] = None, page_size: Optional[int] = None
@@ -725,4 +725,4 @@ class PlayersAPI:
         Deletes an existing subscription for a player by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/players/{player_id}/subscriptions/{subscription_id}/"
-        return await self.client._delete(url)
+        await self.client._delete(url)

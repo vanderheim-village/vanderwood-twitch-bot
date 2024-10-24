@@ -7,7 +7,7 @@ class FollowerGiveawayEntriesAPI:
     def __init__(self, client: BaseAPIClient):
         self.client = client
 
-    def _fetch_follower_giveaway_entries_page(
+    async def _fetch_follower_giveaway_entries_page(
         self, page: Optional[int] = None, page_size: Optional[int] = None
     ) -> Dict[str, Any]:
         """
@@ -20,16 +20,16 @@ class FollowerGiveawayEntriesAPI:
             params["page_size"] = page_size
 
         url = f"{self.client.base_url}/vanderheim-api/follower-giveaway-entries/"
-        return self.client._get(url, params=params)
+        return await self.client._get(url, params=params)
 
-    def fetch_all_follower_giveaway_entries(self) -> Dict[str, Any]:
+    async def fetch_all_follower_giveaway_entries(self) -> Dict[str, Any]:
         """
         Fetches all follower giveaway entries using the fetch_follower_giveaway_entries_page method.
         """
         all_follower_giveaway_entries = []
         page = 1
         while True:
-            response = self._fetch_follower_giveaway_entries_page(page=page)
+            response = await self._fetch_follower_giveaway_entries_page(page=page)
             follower_giveaway_entries = response["results"]
             all_follower_giveaway_entries.extend(follower_giveaway_entries)
             if not response["next"]:
@@ -37,41 +37,43 @@ class FollowerGiveawayEntriesAPI:
             page += 1
         return {"results": all_follower_giveaway_entries}
 
-    def fetch_follower_giveaway_entry(self, follower_giveaway_entry_id: str) -> Dict[str, Any]:
+    async def fetch_follower_giveaway_entry(
+        self, follower_giveaway_entry_id: str
+    ) -> Dict[str, Any]:
         """
         Fetches a single follower giveaway entry by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/follower-giveaway-entries/{follower_giveaway_entry_id}/"
-        return self.client._get(url)
+        return await self.client._get(url)
 
-    def create_follower_giveaway_entry(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def create_follower_giveaway_entry(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Creates a new follower giveaway entry.
         """
         url = f"{self.client.base_url}/vanderheim-api/follower-giveaway-entries/"
-        return self.client._post(url, data)
+        return await self.client._post(url, data)
 
-    def update_follower_giveaway_entry(
+    async def update_follower_giveaway_entry(
         self, follower_giveaway_entry_id: str, data: Dict[str, Any]
     ) -> Dict[str, Any]:
         """
         Updates an existing follower giveaway entry by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/follower-giveaway-entries/{follower_giveaway_entry_id}/"
-        return self.client._put(url, data)
+        return await self.client._put(url, data)
 
-    def partial_update_follower_giveaway_entry(
+    async def partial_update_follower_giveaway_entry(
         self, follower_giveaway_entry_id: str, data: Dict[str, Any]
     ) -> Dict[str, Any]:
         """
         Partially updates an existing follower giveaway entry by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/follower-giveaway-entries/{follower_giveaway_entry_id}/"
-        return self.client._patch(url, data)
+        return await self.client._patch(url, data)
 
-    def delete_follower_giveaway_entry(self, follower_giveaway_entry_id: str) -> None:
+    async def delete_follower_giveaway_entry(self, follower_giveaway_entry_id: str) -> None:
         """
         Deletes a follower giveaway entry by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/follower-giveaway-entries/{follower_giveaway_entry_id}/"
-        self.client._delete(url)
+        await self.client._delete(url)

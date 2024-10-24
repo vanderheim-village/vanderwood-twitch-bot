@@ -65,12 +65,12 @@ class ClansAPI:
         url = f"{self.client.base_url}/vanderheim-api/clans/{clan_id}/"
         return await self.client._patch(url, data)
 
-    async def delete_clan(self, clan_id: str) -> Dict[str, Any]:
+    async def delete_clan(self, clan_id: str) -> None:
         """
         Deletes a clan by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/clans/{clan_id}/"
-        return await self.client._delete(url)
+        await self.client._delete(url)
 
     async def _fetch_clan_players_page(
         self, clan_id: str, page: Optional[int] = None, page_size: Optional[int] = None
@@ -134,9 +134,9 @@ class ClansAPI:
         url = f"{self.client.base_url}/vanderheim-api/clans/{clan_id}/players/{player_id}/"
         return await self.client._patch(url, data)
 
-    async def delete_clan_player(self, clan_id: str, player_id: str) -> Dict[str, Any]:
+    async def delete_clan_player(self, clan_id: str, player_id: str) -> None:
         """
         Deletes a clan player by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/clans/{clan_id}/players/{player_id}/"
-        return await self.client._delete(url)
+        await self.client._delete(url)

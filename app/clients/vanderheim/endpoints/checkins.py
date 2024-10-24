@@ -65,9 +65,9 @@ class CheckinsAPI:
         url = f"{self.client.base_url}/vanderheim-api/checkins/{checkin_id}/"
         return await self.client._patch(url, data)
 
-    async def delete_checkin(self, checkin_id: str) -> Dict[str, Any]:
+    async def delete_checkin(self, checkin_id: str) -> None:
         """
         Deletes a check-in by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/checkins/{checkin_id}/"
-        return await self.client._delete(url)
+        await self.client._delete(url)

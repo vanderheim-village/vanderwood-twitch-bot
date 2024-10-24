@@ -7,7 +7,7 @@ class GiftedSubscriptionsAPI:
     def __init__(self, client: BaseAPIClient):
         self.client = client
 
-    def _fetch_gifted_subscriptions_page(
+    async def _fetch_gifted_subscriptions_page(
         self, page: Optional[int] = None, page_size: Optional[int] = None
     ) -> Dict[str, Any]:
         """
@@ -20,16 +20,16 @@ class GiftedSubscriptionsAPI:
             params["page_size"] = page_size
 
         url = f"{self.client.base_url}/vanderheim-api/gifted-subscriptions/"
-        return self.client._get(url, params=params)
+        return await self.client._get(url, params=params)
 
-    def fetch_all_gifted_subscriptions(self) -> Dict[str, Any]:
+    async def fetch_all_gifted_subscriptions(self) -> Dict[str, Any]:
         """
         Fetches all gifted subscriptions using the fetch_gifted_subscriptions_page method.
         """
         all_gifted_subscriptions = []
         page = 1
         while True:
-            response = self._fetch_gifted_subscriptions_page(page=page)
+            response = await self._fetch_gifted_subscriptions_page(page=page)
             gifted_subscriptions = response["results"]
             all_gifted_subscriptions.extend(gifted_subscriptions)
             if not response["next"]:
@@ -37,23 +37,23 @@ class GiftedSubscriptionsAPI:
             page += 1
         return {"results": all_gifted_subscriptions}
 
-    def fetch_gifted_subscription(self, gifted_subscription_id: str) -> Dict[str, Any]:
+    async def fetch_gifted_subscription(self, gifted_subscription_id: str) -> Dict[str, Any]:
         """
         Fetches a single gifted subscription by ID.
         """
         url = (
             f"{self.client.base_url}/vanderheim-api/gifted-subscriptions/{gifted_subscription_id}/"
         )
-        return self.client._get(url)
+        return await self.client._get(url)
 
-    def create_gifted_subscription(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def create_gifted_subscription(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Creates a new gifted subscription.
         """
         url = f"{self.client.base_url}/vanderheim-api/gifted-subscriptions/"
-        return self.client._post(url, data)
+        return await self.client._post(url, data)
 
-    def update_gifted_subscription(
+    async def update_gifted_subscription(
         self, gifted_subscription_id: str, data: Dict[str, Any]
     ) -> Dict[str, Any]:
         """
@@ -62,9 +62,9 @@ class GiftedSubscriptionsAPI:
         url = (
             f"{self.client.base_url}/vanderheim-api/gifted-subscriptions/{gifted_subscription_id}/"
         )
-        return self.client._put(url, data)
+        return await self.client._put(url, data)
 
-    def partial_update_gifted_subscription(
+    async def partial_update_gifted_subscription(
         self, gifted_subscription_id: str, data: Dict[str, Any]
     ) -> Dict[str, Any]:
         """
@@ -73,13 +73,13 @@ class GiftedSubscriptionsAPI:
         url = (
             f"{self.client.base_url}/vanderheim-api/gifted-subscriptions/{gifted_subscription_id}/"
         )
-        return self.client._patch(url, data)
+        return await self.client._patch(url, data)
 
-    def delete_gifted_subscription(self, gifted_subscription_id: str) -> None:
+    async def delete_gifted_subscription(self, gifted_subscription_id: str) -> None:
         """
         Deletes a single gifted subscription by ID.
         """
         url = (
             f"{self.client.base_url}/vanderheim-api/gifted-subscriptions/{gifted_subscription_id}/"
         )
-        self.client._delete(url)
+        await self.client._delete(url)
