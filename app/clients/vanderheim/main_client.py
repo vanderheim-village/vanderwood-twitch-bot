@@ -17,6 +17,7 @@ from app.clients.vanderheim.endpoints.sentry_checkins import SentryCheckinsAPI
 from app.clients.vanderheim.endpoints.sentry_sessions import SentrySessionsAPI
 from app.clients.vanderheim.endpoints.sessions import SessionsAPI
 from app.clients.vanderheim.endpoints.spoils_claims import SpoilsClaimsAPI
+from app.clients.vanderheim.endpoints.spoils_sessions import SpoilsSessionsAPI
 
 
 class VanderheimAPIClient:
@@ -40,3 +41,4 @@ class VanderheimAPIClient:
         self.sentry_sessions = SentrySessionsAPI(self.base_client)
         self.sessions = SessionsAPI(self.base_client)
         self.spoils_claims = SpoilsClaimsAPI(self.base_client)
+        self.spoils_sessions = SpoilsSessionsAPI(self.base_client)
