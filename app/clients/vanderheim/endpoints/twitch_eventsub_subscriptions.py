@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 from app.clients.vanderheim.base_client import BaseAPIClient
 
@@ -6,7 +6,7 @@ from app.clients.vanderheim.base_client import BaseAPIClient
 class TwitchEventSubSubscriptionsAPI:
     def __init__(self, client: BaseAPIClient):
         self.client = client
-    
+
     def _fetch_twitch_eventsub_subscriptions_page(
         self, page: Optional[int] = None, page_size: Optional[int] = None
     ) -> Dict[str, Any]:
@@ -18,10 +18,10 @@ class TwitchEventSubSubscriptionsAPI:
             params["page"] = page
         if page_size is not None:
             params["page_size"] = page_size
-        
+
         url = f"{self.client.base_url}/vanderheim-api/twitch-eventsub-subscriptions/"
         return self.client._get(url, params=params)
-    
+
     def fetch_all_twitch_eventsub_subscriptions(self) -> Dict[str, Any]:
         """
         Fetches all Twitch EventSub subscriptions using the fetch_twitch_eventsub_subscriptions_page method.
@@ -36,28 +36,32 @@ class TwitchEventSubSubscriptionsAPI:
                 break
             page += 1
         return {"results": all_twitch_eventsub_subscriptions}
-    
-    def fetch_twitch_eventsub_subscription(self, twitch_eventsub_subscription_id: str) -> Dict[str, Any]:
+
+    def fetch_twitch_eventsub_subscription(
+        self, twitch_eventsub_subscription_id: str
+    ) -> Dict[str, Any]:
         """
         Fetches a single Twitch EventSub subscription by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/twitch-eventsub-subscriptions/{twitch_eventsub_subscription_id}/"
         return self.client._get(url)
-    
+
     def create_twitch_eventsub_subscription(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Creates a new Twitch EventSub subscription.
         """
         url = f"{self.client.base_url}/vanderheim-api/twitch-eventsub-subscriptions/"
         return self.client._post(url, data)
-    
-    def update_twitch_eventsub_subscription(self, twitch_eventsub_subscription_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def update_twitch_eventsub_subscription(
+        self, twitch_eventsub_subscription_id: str, data: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Updates an existing Twitch EventSub subscription by ID.
         """
         url = f"{self.client.base_url}/vanderheim-api/twitch-eventsub-subscriptions/{twitch_eventsub_subscription_id}/"
         return self.client._put(url, data)
-    
+
     def partial_update_twitch_eventsub_subscription(
         self, twitch_eventsub_subscription_id: str, data: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -66,7 +70,7 @@ class TwitchEventSubSubscriptionsAPI:
         """
         url = f"{self.client.base_url}/vanderheim-api/twitch-eventsub-subscriptions/{twitch_eventsub_subscription_id}/"
         return self.client._patch(url, data)
-    
+
     def delete_twitch_eventsub_subscription(self, twitch_eventsub_subscription_id: str) -> None:
         """
         Deletes a Twitch EventSub subscription by ID.

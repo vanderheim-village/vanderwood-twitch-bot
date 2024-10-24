@@ -19,7 +19,9 @@ from app.clients.vanderheim.endpoints.sessions import SessionsAPI
 from app.clients.vanderheim.endpoints.spoils_claims import SpoilsClaimsAPI
 from app.clients.vanderheim.endpoints.spoils_sessions import SpoilsSessionsAPI
 from app.clients.vanderheim.endpoints.subscriptions import SubscriptionsAPI
-from app.clients.vanderheim.endpoints.twitch_eventsub_subscriptions import TwitchEventSubSubscriptionsAPI
+from app.clients.vanderheim.endpoints.twitch_eventsub_subscriptions import (
+    TwitchEventSubSubscriptionsAPI,
+)
 
 
 class VanderheimAPIClient:
