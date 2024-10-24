@@ -4,11 +4,11 @@
 
 # Do not invoke gitlint if commit message is empty
 if grep -q '^[^#]' "$1"; then
-	lint_cmd="tools/lint --only=gitlint"
+	lint_cmd="tools/lint --only=gitlint --from-hook"
 	if
 		! eval "$lint_cmd" <"$1"
 	then
-		echo "WARNING: Your commit message does not match vanderwood-twitch-bot's style guide."
+		echo "WARNING: Your commit message does not match vanderheim's style guide."
 	fi
 fi
 

@@ -1,23 +1,43 @@
 #!/usr/bin/env bash
 
 # Lint all commit messages that are newer than upstream/master if running
-# locally or the commits in the push or PR if in CircleCI.
+# locally or the commits in the push or PR if in GitHub Actions.
 
 # The rules can be found in /.gitlint
+
+repository="vanderheim-village/vanderwood-twitch-bot"
 
 if [[ "
 $(git remote -v)
 " =~ '
-'([^[:space:]]*)[[:space:]]*(https://github\.com/|ssh://git@github\.com/|git@github\.com:)adb-web-designs/vanderwood-twitch-bot(\.git|/)?\ \(fetch\)'
+'([^[:space:]]*)[[:space:]]*(https://github\.com/|ssh://git@github\.com/|git@github\.com:)$repository(\.git|/)?\ \(fetch\)'
 ' ]]; then
 	range="${BASH_REMATCH[1]}/main..HEAD"
 else
-	range="upstream/main..HEAD"
+	range="origin/main..HEAD"
 fi
 
-commits=$(git log "$range" | wc -l)
-if [ "$commits" -gt 0 ]; then
-	# Only run gitlint with non-empty commit lists, to avoid a printed
-	# warning.
+# Check if script is invoked with --hook argument
+if [[ "$1" == "--hook" ]]; then
+	IN_HOOK=true
+else
+	IN_HOOK=false
+fi
+
+if [ "$GITHUB_ACTIONS" = "true" ]; then
+	# Running in GitHub Actions, so don't use --staged flag
 	gitlint --commits "$range"
+else
+	if $IN_HOOK; then
+		# Running from a git hook, so use --staged flag
+		commits=$(git log "$range" | wc -l)
+		if [ "$commits" -gt 0 ]; then
+			# Only run gitlint with non-empty commit lists, to avoid a printed
+			# warning.
+			gitlint --commits "$range" --staged
+		fi
+	else
+		# Running locally but not from a hook
+		gitlint --commits "$range"
+	fi
 fi

@@ -1,0 +1,15 @@
+{
+    "parser": "@babel/eslint-parser",
+    "parserOptions": {
+        "requireConfigFile": false
+    },
+    "env": {
+        "es6": true,
+        "node": true
+    },
+    "root": true,
+    "rules": {
+        "no-html-link-for-pages": 0,
+        "@next/next/no-html-link-for-pages": "off"
+    }
+}

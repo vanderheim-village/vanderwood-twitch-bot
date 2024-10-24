@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+set -e
+
+# Make sure the virtualenv exists, and operate within it.
+if [ ! -d venv/bin ]; then
+	source venv/bin/activate
+fi
+
+compile_requirements() {
+	source="$1"
+	output="$2"
+
+	echo "Compiling $output"
+	venv/bin/pip-compile --quiet --resolver=backtracking --allow-unsafe --generate-hashes --no-strip-extras --output-file "$output" "$source"
+
+	# 	cat - "$output" <<EOF | sponge "$output"
+	# #
+	# # This file is GENERATED.  Don't edit directly.
+	# #
+	# # To update, edit the non-"lock" files in requirements/*.in, then:
+	# #
+	# #    tools/update-locked-requirements
+	# #
+	# # For details, see requirements/README.md .
+	# #
+	# EOF
+
+	# Work around https://github.com/jazzband/pip-tools/issues/268
+	chmod a+r "$output"
+}
+
+OUTPUT_BASE_DIR='requirements'
+
+# Parse arguments.
+if [ $# -gt 0 ]; then
+	while [ "$1" != "" ]; do
+		case $1 in
+		--output-dir)
+			shift
+			OUTPUT_BASE_DIR=$(readlink -m "$1")
+			;;
+		*)
+			echo "Invalid arguments passed."
+			echo "Usage: $0 [--output-dir <path-to-output-dir>]"
+			exit
+			;;
+		esac
+		shift
+	done
+fi
+
+compile_requirements requirements/dev.in "$OUTPUT_BASE_DIR/dev.txt"
+for name in prod mypy; do
+	cp "$OUTPUT_BASE_DIR/dev.txt" "$OUTPUT_BASE_DIR/$name.txt"
+	compile_requirements "requirements/$name.in" "$OUTPUT_BASE_DIR/$name.txt"
+done

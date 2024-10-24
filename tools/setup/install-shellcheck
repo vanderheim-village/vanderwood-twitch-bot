@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -eu
 
-version=0.7.1
+version=0.10.0
 tarball="shellcheck-v$version.linux.x86_64.tar.xz"
-sha256=64f17152d96d7ec261ad3086ed42d18232fcb65148b44571b564d688269d36c8
+sha256=6c881ab0698e4e6ea235245f22832860544f17ba386442fe7e9d629f8cbedf87
 
 check_version() {
 	out="$(shellcheck --version 2>/dev/null)" && [[ "$out" = *"

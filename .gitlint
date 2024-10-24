@@ -1,5 +1,6 @@
 [general]
 ignore=title-trailing-punctuation, body-min-length, body-is-missing
+regex-style-search=True
 
 extra-path=tools/lib/gitlint-rules.py
 
@@ -11,3 +12,8 @@ line-length=76
 
 [body-max-line-length]
 line-length=76
+
+[ignore-by-author-name]
+# Match commits by author name (e.g. ignore dependabot commits)
+regex=(.*)dependabot(.*)
+ignore=all

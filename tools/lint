@@ -7,7 +7,7 @@ import re
 from lib.custom_check import non_py_rules
 from zulint.command import LinterConfig, add_default_linter_arguments
 from zulint.custom_rules import RuleList
-from zulint.linters import run_pyflakes
+from zulint.linters import run_command
 
 MYPY = False
 if MYPY:
@@ -17,7 +17,12 @@ if MYPY:
 def run():
     # type: () -> None
     parser = argparse.ArgumentParser()
-    # Add custom parser arguments here.
+    # Add a parameter that is passed if running in a git hook
+    parser.add_argument(
+        "--from-hook",
+        action="store_true",
+        help="Indicates that this script is being run from a git hook.",
+    )
 
     add_default_linter_arguments(parser)
     args = parser.parse_args()
@@ -26,16 +31,34 @@ def run():
 
     # Linters will be run on these file types.
     # eg: file_types = ['py', 'html', 'css', 'js']
-    file_types = ["py", "sh", "md", "yaml"]
+    file_types = ["py", "sh", "md", "yaml", "ts", "js", "tsx", "json", "css", "scss"]
 
-    EXCLUDED_FILES = [
-        # No linters will be run on files in this list.
-        # eg: 'path/to/file.py'
-    ]  # type: List[str]
+    EXCLUDED_FILES: List[str] = ["static/"]
     by_lang = linter_config.list_files(file_types, exclude=EXCLUDED_FILES)
 
     command = ["tools/run-mypy", "--quiet"]
 
+    linter_config.external_linter(
+        "css",
+        ["node", "node_modules/.bin/stylelint"],
+        ["css"],
+        fix_arg="--fix",
+        description="Standard CSS style and formatting linter (config: stylelint.config.js)",
+    )
+    linter_config.external_linter(
+        "eslint",
+        [
+            "node",
+            "node_modules/.bin/eslint",
+            "--max-warnings=0",
+            "--cache",
+            "--ext",
+            ".js,.ts",
+        ],
+        ["js", "ts"],
+        fix_arg="--fix",
+        description="Standard JavaScript style and formatting linter (config: .eslintrc).",
+    )
     linter_config.external_linter(
         "mypy",
         command,
@@ -44,11 +67,19 @@ def run():
         description="Static type checker for Python",
     )
 
-    linter_config.external_linter(
-        "gitlint",
-        ["tools/commit-message-lint"],
-        description="Checks commit messages for common formatting errors (config: .gitlint)",
-    )
+    # pass the --hook argument to commit-message-lint if we're running in a git hook
+    if args.from_hook:
+        linter_config.external_linter(
+            "gitlint",
+            ["tools/commit-message-lint", "--hook"],
+            description="Checks commit messages for common formatting errors (config: .gitlint)",
+        )
+    else:
+        linter_config.external_linter(
+            "gitlint",
+            ["tools/commit-message-lint"],
+            description="Checks commit messages for common formatting errors (config: .gitlint)",
+        )
 
     linter_config.external_linter(
         "isort",
@@ -57,7 +88,13 @@ def run():
         description="Sorts Python import statements",
         check_arg=["--check-only", "--diff"],
     )
-
+    linter_config.external_linter(
+        "prettier",
+        ["node_modules/.bin/prettier", "--check", "--log-level=warn"],
+        ["css", "flow", "js", "json", "md", "ts", "yaml", "yml"],
+        fix_arg=["--write"],
+        description="Formats CSS, JavaScript, YAML",
+    )
     linter_config.external_linter(
         "black",
         ["black"],
@@ -68,15 +105,6 @@ def run():
         or re.fullmatch(r"\d+ files? would be left unchanged\.\n", line) is not None
         or re.fullmatch(r"\d+ file? left unchanged\.\n", line) is not None,
     )
-
-    # linter_config.external_linter(
-    #     "prettier",
-    #     ["node_modules/.bin/prettier", "--check", "--loglevel=warn"],
-    #     ["json", "yaml", "yml"],
-    #     fix_arg=["--write"],
-    #     description="Formats Json, YAML",
-    # )
-
     linter_config.external_linter(
         "shellcheck",
         ["shellcheck", "-x", "-P", "SCRIPTDIR"],
@@ -118,15 +146,14 @@ def run():
         return 1 if failed else 0
 
     @linter_config.lint
-    def pyflakes():
-        # type: () -> int
-        suppress_patterns = [
-            # Error patters in this list will be will not be reported by the linter.
-            # syntax: ('File Path', 'Error message')
-            # eg: ('path/to/file.py', 'imported but unused')
-        ]  # type: List[Tuple[str, str]]
-        failed = run_pyflakes(by_lang["py"], args, suppress_patterns)
-        return 1 if failed else 0
+    def flake8() -> int:
+        """Runs flake8"""
+        return run_command(
+            "flake8",
+            "blue",
+            ["flake8"],
+            suppress_line=lambda line: line.startswith("./static/"),
+        )
 
     linter_config.do_lint()
 

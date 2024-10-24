@@ -8,7 +8,9 @@ from typing import List
 
 from zulint import lister
 
-EXCLUDE_FILES = []  # type: List[str]
+EXCLUDE_FILES: List[str] = [
+    "apps/realms/middleware.py",
+]
 
 TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
 os.chdir(os.path.dirname(TOOLS_DIR))

@@ -1,17 +1,33 @@
 #!/usr/bin/env bash
 set -eu
 
-apt install npm -y
+curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash -
+
+sudo apt-get update && sudo apt-get upgrade -y &&
+	sudo apt-get install -y \
+		python3.12 \
+		python3-pip \
+		python3.12-venv \
+		python3.12-dev \
+		build-essential \
+		libpq-dev \
+		gcc \
+		wget \
+		autoconf \
+		automake \
+		pkg-config \
+		libtool \
+		procps \
+		nodejs
+
 python3 -m venv venv
 if [ -d venv/bin ]; then
 	source venv/bin/activate
 fi
 cd "$(dirname "$0")"
 
-pip3 install build
-pip3 install wheel
-pip3 install -r ../../requirements.txt
-./install-shellcheck
-./install-shfmt
 npm install
-mypy --install-types
+
+pip3 install -r ../../requirements/dev.txt
+sudo ./install-shellcheck
+sudo ./install-shfmt
